@@ -4,6 +4,10 @@ This worker serves the pinned Hugging Face Transformers checkpoint
 `openai/whisper-large-v3` (`1b6101d1b1f60042cfabcf6574c8852850e621c2`). It uses
 PyTorch and Transformers only; `faster-whisper` is not included.
 
+The Dockerfile intentionally builds from Runpod's CUDA 12.4/PyTorch 2.4 base
+image. It does not download a separate CUDA PyTorch wheel, which prevents stale
+CUDA dependency pins from breaking Runpod's remote build.
+
 ## Worker contract
 
 The backend sends this Runpod queue-based endpoint input:
