@@ -21,9 +21,6 @@ HF_CACHE_ROOT = Path("/runpod-volume/huggingface-cache/hub")
 MAX_AUDIO_BYTES = 25 * 1024 * 1024
 MAX_DURATION_SECONDS = 120.0
 SAMPLE_RATE = 16_000
-# Whisper Large-v3 allows 448 decoder positions. Transformers supplies three
-# start tokens for English transcription, leaving 445 positions for generation.
-MAX_NEW_TOKENS = 445
 TIMESTAMP_TOKEN = re.compile(r"<\|(\d+(?:\.\d+)?)\|>")
 SPECIAL_TOKEN = re.compile(r"<\|[^|]+\|>")
 
@@ -245,7 +242,6 @@ class WhisperRuntime:
             "task": "transcribe",
             "num_beams": n_best,
             "num_return_sequences": n_best,
-            "max_new_tokens": MAX_NEW_TOKENS,
             "condition_on_prev_tokens": False,
             "return_timestamps": True,
             "return_dict_in_generate": True,

@@ -47,9 +47,16 @@ denoising, or source-audio mutation. It returns raw beam hypotheses, raw
 sequence scores when Transformers makes them available, and Whisper timestamp
 segments when timestamp tokens are present.
 
-Whisper's 448 decoder positions include three automatic transcription-start
-tokens, so generation is capped at 445 new tokens. This avoids an invalid
-Transformers generation request while retaining the model's full output limit.
+The worker deliberately does not override `max_new_tokens`. Whisper's own
+generation configuration owns its decoder-length limit, including automatic
+transcription-start tokens, so the code avoids a fragile duplicate limit.
+
+## Configuration ownership
+
+Inference behaviour—including English-only validation, N-best beam count,
+timestamps, decoding, and generation defaults—lives in this versioned worker
+code. Runpod endpoint settings are reserved for infrastructure: GPU selection,
+cached model, scaling, timeouts, and CUDA compatibility.
 
 The endpoint must enable Runpod's cached model `openai/whisper-large-v3`. The
 worker resolves the snapshot selected by Runpod's `refs/main` cache pointer,

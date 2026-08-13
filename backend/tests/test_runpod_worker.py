@@ -4,7 +4,6 @@ from pathlib import Path
 import pytest
 
 from runpod_worker.worker import (
-    MAX_NEW_TOKENS,
     MODEL_ID,
     WorkerConfig,
     WorkerInputError,
@@ -12,11 +11,6 @@ from runpod_worker.worker import (
     segments_from_timestamped_text,
     validate_input,
 )
-
-
-def test_generation_limit_leaves_room_for_whisper_decoder_start_tokens() -> None:
-    assert MAX_NEW_TOKENS == 445
-    assert MAX_NEW_TOKENS + 3 == 448
 
 
 def test_validate_input_accepts_a_small_english_wav_request() -> None:
@@ -110,3 +104,9 @@ def test_dockerfile_uses_an_adjacent_serverless_entrypoint() -> None:
     assert "FROM pytorch/pytorch:2.8.0-cuda12.8-cudnn9-runtime" in (
         worker_directory / "Dockerfile"
     ).read_text()
+
+
+def test_worker_defers_whisper_generation_length_to_the_model_configuration() -> None:
+    worker_source = (Path(__file__).parents[1] / "runpod_worker" / "worker.py").read_text()
+
+    assert '"max_new_tokens"' not in worker_source
