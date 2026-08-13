@@ -46,6 +46,11 @@ denoising, or source-audio mutation. It returns raw beam hypotheses, raw
 sequence scores when Transformers makes them available, and Whisper timestamp
 segments when timestamp tokens are present.
 
+The endpoint must enable Runpod's cached model `openai/whisper-large-v3`. The
+worker loads its pinned revision from the `/runpod-volume/huggingface-cache/hub`
+mount in offline mode; it will fail clearly rather than downloading the model
+during billed worker time.
+
 ## Build and deploy
 
 Build a Linux/AMD64 image and push it to your private registry. On Apple
@@ -75,9 +80,9 @@ In Runpod Serverless, create a **queue-based** endpoint from that image:
 - GPU priority: `NVIDIA GeForce RTX 4090`, then `NVIDIA L40S`.
 - Minimum workers: `0`; maximum workers: `1` for the POC.
 - Execution timeout: `180` seconds.
-- Mount a cache/volume at `/cache` when available so Hugging Face model files
-  survive worker restarts; otherwise expect the first worker start to download
-  the model before serving its first request.
+- Cached model: `openai/whisper-large-v3`.
+- Do not add a network volume for this POC. Runpod mounts its managed cached
+  model under `/runpod-volume/huggingface-cache/hub` automatically.
 
 After deployment, set these local backend values in `backend/.env`:
 

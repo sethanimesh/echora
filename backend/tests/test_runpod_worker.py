@@ -4,8 +4,11 @@ from pathlib import Path
 import pytest
 
 from runpod_worker.worker import (
+    MODEL_ID,
+    MODEL_REVISION,
     WorkerConfig,
     WorkerInputError,
+    resolve_cached_snapshot_path,
     segments_from_timestamped_text,
     validate_input,
 )
@@ -58,6 +61,22 @@ def test_timestamp_tokens_become_non_invented_segments() -> None:
             "text": "there",
         },
     ]
+
+
+def test_resolve_cached_snapshot_path_requires_the_pinned_model_revision(tmp_path) -> None:
+    snapshot_path = (
+        tmp_path / "models--openai--whisper-large-v3" / "snapshots" / MODEL_REVISION
+    )
+    snapshot_path.mkdir(parents=True)
+
+    resolved = resolve_cached_snapshot_path(MODEL_ID, MODEL_REVISION, cache_root=tmp_path)
+
+    assert resolved == snapshot_path
+
+
+def test_resolve_cached_snapshot_path_fails_when_runpod_cache_is_missing(tmp_path) -> None:
+    with pytest.raises(RuntimeError, match="cached model mount"):
+        resolve_cached_snapshot_path(MODEL_ID, MODEL_REVISION, cache_root=tmp_path)
 
 
 def test_dockerfile_uses_an_adjacent_serverless_entrypoint() -> None:

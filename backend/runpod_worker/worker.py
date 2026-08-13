@@ -18,6 +18,7 @@ from typing import Any
 
 MODEL_ID = "openai/whisper-large-v3"
 MODEL_REVISION = "1b6101d1b1f60042cfabcf6574c8852850e621c2"
+HF_CACHE_ROOT = Path("/runpod-volume/huggingface-cache/hub")
 MAX_AUDIO_BYTES = 25 * 1024 * 1024
 MAX_DURATION_SECONDS = 120.0
 SAMPLE_RATE = 16_000
@@ -27,6 +28,26 @@ SPECIAL_TOKEN = re.compile(r"<\|[^|]+\|>")
 
 class WorkerInputError(ValueError):
     """An invalid request that should be returned to the caller without retrying."""
+
+
+def resolve_cached_snapshot_path(
+    model_id: str,
+    revision: str,
+    *,
+    cache_root: Path = HF_CACHE_ROOT,
+) -> Path:
+    """Find the exact immutable model revision supplied by Runpod's cached-model mount."""
+
+    if "/" not in model_id:
+        raise RuntimeError(f"Invalid Hugging Face model ID: {model_id}.")
+    organization, model_name = model_id.split("/", maxsplit=1)
+    snapshot_path = cache_root / f"models--{organization}--{model_name}" / "snapshots" / revision
+    if snapshot_path.is_dir():
+        return snapshot_path
+    raise RuntimeError(
+        "Pinned Whisper revision was not found in Runpod's cached model mount. "
+        f"Expected: {snapshot_path}. Configure cached model '{model_id}' and redeploy."
+    )
 
 
 @dataclass(frozen=True)
@@ -119,21 +140,22 @@ class WhisperRuntime:
         self.torch: Any = None
 
     def load(self) -> None:
-        """Load the exact Transformers checkpoint during worker startup."""
+        """Load the exact cached Transformers checkpoint during worker startup."""
 
         import torch
         from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor
 
         if not torch.cuda.is_available():
             raise RuntimeError("A CUDA GPU is required for this Runpod worker.")
+        model_path = resolve_cached_snapshot_path(self.config.model_id, self.config.model_revision)
         self.torch = torch
         self.processor = AutoProcessor.from_pretrained(
-            self.config.model_id,
-            revision=self.config.model_revision,
+            model_path,
+            local_files_only=True,
         )
         self.model = AutoModelForSpeechSeq2Seq.from_pretrained(
-            self.config.model_id,
-            revision=self.config.model_revision,
+            model_path,
+            local_files_only=True,
             torch_dtype=torch.float16,
             low_cpu_mem_usage=True,
             use_safetensors=True,
