@@ -97,6 +97,7 @@ def test_dockerfile_uses_an_adjacent_serverless_entrypoint() -> None:
     assert 'runpod.serverless.start({"handler": handler})' in (
         worker_directory / "handler.py"
     ).read_text()
+    assert "Loaded model {runtime.config.model_id}" in (worker_directory / "handler.py").read_text()
     assert 'CMD ["python", "-u", "handler.py"]' in (
         worker_directory / "Dockerfile"
     ).read_text()

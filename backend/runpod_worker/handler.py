@@ -17,6 +17,10 @@ def main() -> None:
     import runpod
 
     runtime.load()
+    print(
+        f"Loaded model {runtime.config.model_id} from cached revision {runtime.model_revision}.",
+        flush=True,
+    )
     runpod.serverless.start({"handler": handler})
 
 
