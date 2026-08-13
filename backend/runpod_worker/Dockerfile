@@ -17,12 +17,12 @@ WORKDIR /worker
 
 # Build context is the repository root. Install dependencies before copying the
 # worker source so edits to the source do not invalidate the pip layer.
-COPY backend/runpod_worker/requirements.txt ./backend/runpod_worker/
-RUN pip install -r backend/runpod_worker/requirements.txt
+COPY backend/runpod_worker/requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
 
-# Mirror the repository layout inside the image so handler.py resolves
-# `runpod_worker.worker` the same way locally and in the built container.
-COPY backend/runpod_worker/ ./backend/runpod_worker/
-COPY handler.py ./
+# Keep the process entry point next to this Dockerfile and its implementation.
+# Runpod's GitHub validation can then discover runpod.serverless.start() before
+# it begins the remote image build.
+COPY backend/runpod_worker/ ./
 
 CMD ["python", "-u", "handler.py"]

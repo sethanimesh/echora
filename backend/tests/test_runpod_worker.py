@@ -1,4 +1,5 @@
 import base64
+from pathlib import Path
 
 import pytest
 
@@ -57,3 +58,14 @@ def test_timestamp_tokens_become_non_invented_segments() -> None:
             "text": "there",
         },
     ]
+
+
+def test_dockerfile_uses_an_adjacent_serverless_entrypoint() -> None:
+    worker_directory = Path(__file__).parents[1] / "runpod_worker"
+
+    assert 'runpod.serverless.start({"handler": handler})' in (
+        worker_directory / "handler.py"
+    ).read_text()
+    assert 'CMD ["python", "-u", "handler.py"]' in (
+        worker_directory / "Dockerfile"
+    ).read_text()

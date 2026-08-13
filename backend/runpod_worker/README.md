@@ -14,16 +14,15 @@ CUDA dependency pins from breaking Runpod's remote build.
 and exposes the `handler(job)` function plus the shared `runtime` object. It
 does not start the serverless loop.
 
-The process entry point is `handler.py` at the **repository root**, which calls
+The process entry point is `backend/runpod_worker/handler.py`, beside the
+Dockerfile selected in Runpod's GitHub deployment flow. It calls
 `runtime.load()` and then `runpod.serverless.start({"handler": handler})`.
-Runpod's GitHub deploy check scans for `runpod.serverless.start()` in a
-root-level module and reports "Could not find runpod.serverless.start() in your
-repo" when the call is nested in a subdirectory, so the entry point is kept at
-the root deliberately. Do not move it back under `backend/`.
+This placement lets Runpod's repository validation find the Serverless startup
+call before the image is built.
 
-The image mirrors the repository layout (`/worker/handler.py` and
-`/worker/backend/runpod_worker/`), so `from runpod_worker.worker import ...`
-resolves the same way in a local checkout and in the built container.
+The image copies this directory directly to `/worker`, so the entry point can
+import `worker.py` exactly as it does when run locally with
+`python backend/runpod_worker/handler.py`.
 
 ## Worker contract
 
@@ -68,9 +67,8 @@ repository and set:
 - Build context: `.` (the repository root)
 
 The build context must be the repository root, because the Dockerfile copies
-`handler.py` from the root and `backend/runpod_worker/` by its full repository
-path. Runpod builds and stores the worker image; no Docker registry account is
-required.
+`backend/runpod_worker/` by its repository path. Runpod builds and stores the
+worker image; no Docker registry account is required.
 
 In Runpod Serverless, create a **queue-based** endpoint from that image:
 
