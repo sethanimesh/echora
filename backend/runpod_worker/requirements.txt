@@ -1,0 +1,6 @@
+accelerate==1.10.1
+numpy==2.2.6
+runpod==1.7.10
+safetensors==0.6.2
+soundfile==0.13.1
+transformers==4.57.1
