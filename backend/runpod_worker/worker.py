@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any
 
 MODEL_ID = "openai/whisper-large-v3"
-MODEL_REVISION = "1b6101d1b1f60042cfabcf6574c8852850e621c2"
 HF_CACHE_ROOT = Path("/runpod-volume/huggingface-cache/hub")
 MAX_AUDIO_BYTES = 25 * 1024 * 1024
 MAX_DURATION_SECONDS = 120.0
@@ -32,21 +31,30 @@ class WorkerInputError(ValueError):
 
 def resolve_cached_snapshot_path(
     model_id: str,
-    revision: str,
     *,
     cache_root: Path = HF_CACHE_ROOT,
-) -> Path:
-    """Find the exact immutable model revision supplied by Runpod's cached-model mount."""
+) -> tuple[Path, str]:
+    """Resolve the immutable snapshot selected by Runpod's managed model cache."""
 
     if "/" not in model_id:
         raise RuntimeError(f"Invalid Hugging Face model ID: {model_id}.")
     organization, model_name = model_id.split("/", maxsplit=1)
-    snapshot_path = cache_root / f"models--{organization}--{model_name}" / "snapshots" / revision
-    if snapshot_path.is_dir():
-        return snapshot_path
+    model_root = cache_root / f"models--{organization}--{model_name}"
+    snapshots_directory = model_root / "snapshots"
+    main_ref = model_root / "refs" / "main"
+    if main_ref.is_file():
+        revision = main_ref.read_text().strip()
+        snapshot_path = snapshots_directory / revision
+        if snapshot_path.is_dir():
+            return snapshot_path, revision
+
+    snapshots = sorted(path for path in snapshots_directory.glob("*") if path.is_dir())
+    if snapshots:
+        snapshot_path = snapshots[0]
+        return snapshot_path, snapshot_path.name
     raise RuntimeError(
-        "Pinned Whisper revision was not found in Runpod's cached model mount. "
-        f"Expected: {snapshot_path}. Configure cached model '{model_id}' and redeploy."
+        "Whisper was not found in Runpod's cached model mount. "
+        f"Expected model root: {model_root}. Configure cached model '{model_id}' and redeploy."
     )
 
 
@@ -55,7 +63,6 @@ class WorkerConfig:
     """Immutable model settings for this deployed worker image."""
 
     model_id: str = MODEL_ID
-    model_revision: str = MODEL_REVISION
     max_audio_bytes: int = MAX_AUDIO_BYTES
     max_duration_seconds: float = MAX_DURATION_SECONDS
 
@@ -138,6 +145,7 @@ class WhisperRuntime:
         self.model: Any = None
         self.processor: Any = None
         self.torch: Any = None
+        self.model_revision: str | None = None
 
     def load(self) -> None:
         """Load the exact cached Transformers checkpoint during worker startup."""
@@ -147,7 +155,7 @@ class WhisperRuntime:
 
         if not torch.cuda.is_available():
             raise RuntimeError("A CUDA GPU is required for this Runpod worker.")
-        model_path = resolve_cached_snapshot_path(self.config.model_id, self.config.model_revision)
+        model_path, self.model_revision = resolve_cached_snapshot_path(self.config.model_id)
         self.torch = torch
         self.processor = AutoProcessor.from_pretrained(
             model_path,
@@ -262,7 +270,7 @@ class WhisperRuntime:
 
         return {
             "model_id": self.config.model_id,
-            "model_revision": self.config.model_revision,
+            "model_revision": self.model_revision,
             "duration_seconds": duration_seconds,
             "hypotheses": hypotheses,
         }

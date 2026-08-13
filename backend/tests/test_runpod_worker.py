@@ -5,7 +5,6 @@ import pytest
 
 from runpod_worker.worker import (
     MODEL_ID,
-    MODEL_REVISION,
     WorkerConfig,
     WorkerInputError,
     resolve_cached_snapshot_path,
@@ -63,20 +62,33 @@ def test_timestamp_tokens_become_non_invented_segments() -> None:
     ]
 
 
-def test_resolve_cached_snapshot_path_requires_the_pinned_model_revision(tmp_path) -> None:
-    snapshot_path = (
-        tmp_path / "models--openai--whisper-large-v3" / "snapshots" / MODEL_REVISION
-    )
+def test_resolve_cached_snapshot_path_uses_runpod_main_reference(tmp_path) -> None:
+    model_root = tmp_path / "models--openai--whisper-large-v3"
+    revision = "cache-revision"
+    snapshot_path = model_root / "snapshots" / revision
     snapshot_path.mkdir(parents=True)
+    (model_root / "refs").mkdir()
+    (model_root / "refs" / "main").write_text(revision)
 
-    resolved = resolve_cached_snapshot_path(MODEL_ID, MODEL_REVISION, cache_root=tmp_path)
+    resolved, resolved_revision = resolve_cached_snapshot_path(MODEL_ID, cache_root=tmp_path)
 
     assert resolved == snapshot_path
+    assert resolved_revision == revision
+
+
+def test_resolve_cached_snapshot_path_falls_back_for_older_cache_layouts(tmp_path) -> None:
+    snapshot_path = tmp_path / "models--openai--whisper-large-v3" / "snapshots" / "old-cache"
+    snapshot_path.mkdir(parents=True)
+
+    resolved, resolved_revision = resolve_cached_snapshot_path(MODEL_ID, cache_root=tmp_path)
+
+    assert resolved == snapshot_path
+    assert resolved_revision == "old-cache"
 
 
 def test_resolve_cached_snapshot_path_fails_when_runpod_cache_is_missing(tmp_path) -> None:
     with pytest.raises(RuntimeError, match="cached model mount"):
-        resolve_cached_snapshot_path(MODEL_ID, MODEL_REVISION, cache_root=tmp_path)
+        resolve_cached_snapshot_path(MODEL_ID, cache_root=tmp_path)
 
 
 def test_dockerfile_uses_an_adjacent_serverless_entrypoint() -> None:

@@ -1,8 +1,8 @@
 # Runpod Whisper worker
 
-This worker serves the pinned Hugging Face Transformers checkpoint
-`openai/whisper-large-v3` (`1b6101d1b1f60042cfabcf6574c8852850e621c2`). It uses
-PyTorch and Transformers only; `faster-whisper` is not included.
+This worker serves the Hugging Face Transformers checkpoint
+`openai/whisper-large-v3`. It uses PyTorch and Transformers only;
+`faster-whisper` is not included.
 
 The Dockerfile intentionally builds from Runpod's CUDA 12.4/PyTorch 2.4 base
 image. It does not download a separate CUDA PyTorch wheel, which prevents stale
@@ -47,9 +47,10 @@ sequence scores when Transformers makes them available, and Whisper timestamp
 segments when timestamp tokens are present.
 
 The endpoint must enable Runpod's cached model `openai/whisper-large-v3`. The
-worker loads its pinned revision from the `/runpod-volume/huggingface-cache/hub`
-mount in offline mode; it will fail clearly rather than downloading the model
-during billed worker time.
+worker resolves the snapshot selected by Runpod's `refs/main` cache pointer,
+loads it from `/runpod-volume/huggingface-cache/hub` in offline mode, and
+reports the resolved immutable revision in its worker response. This follows
+Runpod's managed-cache layout while preserving the exact revision used.
 
 ## Build and deploy
 
