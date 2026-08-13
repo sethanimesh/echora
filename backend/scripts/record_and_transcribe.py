@@ -112,6 +112,10 @@ def main() -> int:
             )
         print(json.dumps(result, indent=2))
         return 0
+    except httpx.HTTPStatusError as error:
+        detail = error.response.text.strip()
+        print(f"Transcription failed: HTTP {error.response.status_code}: {detail}", file=sys.stderr)
+        return 1
     except (RuntimeError, httpx.HTTPError) as error:
         print(f"Transcription failed: {error}", file=sys.stderr)
         return 1

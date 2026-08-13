@@ -16,6 +16,22 @@ from app.services.asr.base import (
 )
 
 
+def response_detail(response: httpx.Response) -> str:
+    """Return a short upstream diagnostic without exposing request credentials."""
+
+    try:
+        payload = response.json()
+    except ValueError:
+        return response.text.strip()[:500] or "no response body"
+    if isinstance(payload, dict):
+        error = payload.get("error")
+        if isinstance(error, dict) and isinstance(error.get("message"), str):
+            return error["message"][:500]
+        if isinstance(error, str):
+            return error[:500]
+    return str(payload)[:500]
+
+
 class RunpodASRProvider:
     """Send retained audio to the dedicated Runpod serverless worker contract."""
 
@@ -86,13 +102,25 @@ class RunpodASRProvider:
                     json=request_body,
                 )
                 response.raise_for_status()
+        except httpx.HTTPStatusError as error:
+            detail = response_detail(error.response)
+            message = (
+                f"Runpod transcription failed with HTTP {error.response.status_code}: {detail}"
+            )
+            raise ProviderUpstreamError(message) from error
         except httpx.HTTPError as error:
             raise ProviderUpstreamError(f"Runpod transcription failed: {error}") from error
 
         try:
             payload = response.json()
             output = payload["output"]
+            worker_error = output.get("error") if isinstance(output, dict) else None
+            if isinstance(worker_error, dict):
+                worker_message = worker_error.get("message", "unknown worker error")
+                raise ProviderUpstreamError(f"Runpod worker rejected the request: {worker_message}")
             hypotheses = output["hypotheses"]
+        except ProviderUpstreamError:
+            raise
         except (KeyError, TypeError, ValueError) as error:
             message = "Runpod returned an invalid transcription response."
             raise ProviderUpstreamError(message) from error

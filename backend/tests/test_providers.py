@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.services.asr.base import ProviderUpstreamError
 from app.services.asr.groq import GroqASRProvider
 from app.services.asr.runpod import RunpodASRProvider
 
@@ -120,3 +121,37 @@ async def test_runpod_contract_maps_worker_output_to_normalized_result(tmp_path)
     assert result[0].text == "I want tea"
     assert result[0].score == -0.2
     assert result[0].segments[0].start_seconds == 0.0
+
+
+@pytest.mark.anyio
+async def test_runpod_contract_surfaces_worker_validation_error(tmp_path) -> None:
+    audio_path = tmp_path / "sample.wav"
+    audio_path.write_bytes(b"audio")
+
+    provider = RunpodASRProvider(
+        endpoint_id="runpod-test",
+        api_key="runpod-test-key",
+        model_id="openai/whisper-large-v3",
+        timeout_seconds=5,
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(
+                200,
+                json={
+                    "output": {
+                        "error": {
+                            "code": "invalid_input",
+                            "message": "Audio could not be decoded.",
+                        }
+                    }
+                },
+            )
+        ),
+    )
+
+    with pytest.raises(ProviderUpstreamError, match="Audio could not be decoded"):
+        await provider.transcribe(
+            audio_path,
+            original_filename="sample.wav",
+            language="en",
+            n_best=1,
+        )
