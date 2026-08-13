@@ -155,6 +155,15 @@ class WhisperRuntime:
 
         if not torch.cuda.is_available():
             raise RuntimeError("A CUDA GPU is required for this Runpod worker.")
+        device_name = torch.cuda.get_device_name(0)
+        capability = torch.cuda.get_device_capability(0)
+        supported_architectures = ", ".join(torch.cuda.get_arch_list())
+        print(
+            "CUDA preflight: "
+            f"device={device_name!r}, compute_capability={capability[0]}.{capability[1]}, "
+            f"PyTorch_architectures=[{supported_architectures}]",
+            flush=True,
+        )
         model_path, self.model_revision = resolve_cached_snapshot_path(self.config.model_id)
         self.torch = torch
         self.processor = AutoProcessor.from_pretrained(

@@ -4,9 +4,10 @@ This worker serves the Hugging Face Transformers checkpoint
 `openai/whisper-large-v3`. It uses PyTorch and Transformers only;
 `faster-whisper` is not included.
 
-The Dockerfile intentionally builds from Runpod's CUDA 12.4/PyTorch 2.4 base
-image. It does not download a separate CUDA PyTorch wheel, which prevents stale
-CUDA dependency pins from breaking Runpod's remote build.
+The Dockerfile builds from the official CUDA 12.8/PyTorch 2.8 runtime image. It
+does not download a separate CUDA PyTorch wheel, which prevents stale CUDA
+dependency pins from breaking Runpod's remote build. Set Runpod's **Allowed
+CUDA versions** to `12.8` (or leave it at **All versions**) for this image.
 
 ## Entry point
 
@@ -79,6 +80,8 @@ worker image; no Docker registry account is required.
 In Runpod Serverless, create a **queue-based** endpoint from that image:
 
 - GPU priority: `NVIDIA GeForce RTX 4090`, then `NVIDIA L40S`.
+- Avoid legacy GPUs that do not support the image's CUDA architecture. Startup
+  logs report the exact assigned GPU and compute capability for verification.
 - Minimum workers: `0`; maximum workers: `1` for the POC.
 - Execution timeout: `180` seconds.
 - Cached model: `openai/whisper-large-v3`.
