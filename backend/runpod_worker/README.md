@@ -8,6 +8,23 @@ The Dockerfile intentionally builds from Runpod's CUDA 12.4/PyTorch 2.4 base
 image. It does not download a separate CUDA PyTorch wheel, which prevents stale
 CUDA dependency pins from breaking Runpod's remote build.
 
+## Entry point
+
+`worker.py` is a library module: it owns validation, decoding, and generation,
+and exposes the `handler(job)` function plus the shared `runtime` object. It
+does not start the serverless loop.
+
+The process entry point is `handler.py` at the **repository root**, which calls
+`runtime.load()` and then `runpod.serverless.start({"handler": handler})`.
+Runpod's GitHub deploy check scans for `runpod.serverless.start()` in a
+root-level module and reports "Could not find runpod.serverless.start() in your
+repo" when the call is nested in a subdirectory, so the entry point is kept at
+the root deliberately. Do not move it back under `backend/`.
+
+The image mirrors the repository layout (`/worker/handler.py` and
+`/worker/backend/runpod_worker/`), so `from runpod_worker.worker import ...`
+resolves the same way in a local checkout and in the built container.
+
 ## Worker contract
 
 The backend sends this Runpod queue-based endpoint input:
@@ -44,9 +61,16 @@ docker buildx build --platform linux/amd64 \
 ```
 
 Alternatively, deploy directly from a GitHub repository. Connect Runpod to the
-repository, choose the `main` branch, and use
-`backend/runpod_worker/Dockerfile` as the Dockerfile path. Runpod builds and
-stores the worker image; no Docker registry account is required.
+repository and set:
+
+- Branch: `main`
+- Dockerfile path: `backend/runpod_worker/Dockerfile`
+- Build context: `.` (the repository root)
+
+The build context must be the repository root, because the Dockerfile copies
+`handler.py` from the root and `backend/runpod_worker/` by its full repository
+path. Runpod builds and stores the worker image; no Docker registry account is
+required.
 
 In Runpod Serverless, create a **queue-based** endpoint from that image:
 

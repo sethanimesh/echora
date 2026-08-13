@@ -7,3 +7,4 @@ backend/.ruff_cache/
 backend/__pycache__/
 backend/**/__pycache__/
 *.py[cod]
+backend/runpod_worker/README.md

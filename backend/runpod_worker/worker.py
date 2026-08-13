@@ -250,22 +250,9 @@ runtime = WhisperRuntime()
 
 
 def handler(job: dict[str, Any]) -> dict[str, Any]:
-    """Runpod entry point with user-safe input errors and retryable unexpected failures."""
+    """Job entry point with user-safe input errors and retryable unexpected failures."""
 
     try:
         return runtime.transcribe(job.get("input", {}))
     except WorkerInputError as error:
         return {"error": {"code": "invalid_input", "message": str(error)}}
-
-
-def main() -> None:
-    """Preload the model, then hand requests to Runpod's queue-based serverless runtime."""
-
-    import runpod
-
-    runtime.load()
-    runpod.serverless.start({"handler": handler})
-
-
-if __name__ == "__main__":
-    main()

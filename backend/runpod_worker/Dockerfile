@@ -15,9 +15,14 @@ RUN apt-get update \
 
 WORKDIR /worker
 
-COPY backend/runpod_worker/requirements.txt ./
-RUN pip install -r requirements.txt
+# Build context is the repository root. Install dependencies before copying the
+# worker source so edits to the source do not invalidate the pip layer.
+COPY backend/runpod_worker/requirements.txt ./backend/runpod_worker/
+RUN pip install -r backend/runpod_worker/requirements.txt
 
-COPY backend/runpod_worker/worker.py ./
+# Mirror the repository layout inside the image so handler.py resolves
+# `runpod_worker.worker` the same way locally and in the built container.
+COPY backend/runpod_worker/ ./backend/runpod_worker/
+COPY handler.py ./
 
-CMD ["python", "-u", "worker.py"]
+CMD ["python", "-u", "handler.py"]
