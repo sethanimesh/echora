@@ -47,6 +47,10 @@ denoising, or source-audio mutation. It returns raw beam hypotheses, raw
 sequence scores when Transformers makes them available, and Whisper timestamp
 segments when timestamp tokens are present.
 
+Whisper's 448 decoder positions include three automatic transcription-start
+tokens, so generation is capped at 445 new tokens. This avoids an invalid
+Transformers generation request while retaining the model's full output limit.
+
 The endpoint must enable Runpod's cached model `openai/whisper-large-v3`. The
 worker resolves the snapshot selected by Runpod's `refs/main` cache pointer,
 loads it from `/runpod-volume/huggingface-cache/hub` in offline mode, and

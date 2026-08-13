@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from runpod_worker.worker import (
+    MAX_NEW_TOKENS,
     MODEL_ID,
     WorkerConfig,
     WorkerInputError,
@@ -11,6 +12,11 @@ from runpod_worker.worker import (
     segments_from_timestamped_text,
     validate_input,
 )
+
+
+def test_generation_limit_leaves_room_for_whisper_decoder_start_tokens() -> None:
+    assert MAX_NEW_TOKENS == 445
+    assert MAX_NEW_TOKENS + 3 == 448
 
 
 def test_validate_input_accepts_a_small_english_wav_request() -> None:
