@@ -32,6 +32,27 @@ def response_detail(response: httpx.Response) -> str:
     return str(payload)[:500]
 
 
+def invalid_response_detail(payload: object) -> str:
+    """Summarize Runpod's job envelope without logging audio or auth data."""
+
+    if not isinstance(payload, dict):
+        return f"response type was {type(payload).__name__}"
+
+    details: list[str] = []
+    if "status" in payload:
+        details.append(f"status={payload['status']!r}")
+    if "error" in payload:
+        details.append(f"error={payload['error']!r}"[:500])
+    output = payload.get("output")
+    if isinstance(output, dict):
+        details.append(f"output keys={sorted(output)}")
+    elif "output" in payload:
+        details.append(f"output type={type(output).__name__}")
+    else:
+        details.append(f"top-level keys={sorted(payload)}")
+    return "; ".join(details)[:750]
+
+
 class RunpodASRProvider:
     """Send retained audio to the dedicated Runpod serverless worker contract."""
 
@@ -111,6 +132,7 @@ class RunpodASRProvider:
         except httpx.HTTPError as error:
             raise ProviderUpstreamError(f"Runpod transcription failed: {error}") from error
 
+        payload: object | None = None
         try:
             payload = response.json()
             output = payload["output"]
@@ -122,7 +144,10 @@ class RunpodASRProvider:
         except ProviderUpstreamError:
             raise
         except (KeyError, TypeError, ValueError) as error:
-            message = "Runpod returned an invalid transcription response."
+            message = (
+                "Runpod returned an invalid transcription response: "
+                f"{invalid_response_detail(payload)}"
+            )
             raise ProviderUpstreamError(message) from error
 
         try:

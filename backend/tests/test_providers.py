@@ -155,3 +155,30 @@ async def test_runpod_contract_surfaces_worker_validation_error(tmp_path) -> Non
             language="en",
             n_best=1,
         )
+
+
+@pytest.mark.anyio
+async def test_runpod_contract_surfaces_failed_job_envelope(tmp_path) -> None:
+    audio_path = tmp_path / "sample.wav"
+    audio_path.write_bytes(b"audio")
+
+    provider = RunpodASRProvider(
+        endpoint_id="runpod-test",
+        api_key="runpod-test-key",
+        model_id="openai/whisper-large-v3",
+        timeout_seconds=5,
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(
+                200,
+                json={"id": "job-id", "status": "FAILED", "error": "worker exited"},
+            )
+        ),
+    )
+
+    with pytest.raises(ProviderUpstreamError, match="status='FAILED'; error='worker exited'"):
+        await provider.transcribe(
+            audio_path,
+            original_filename="sample.wav",
+            language="en",
+            n_best=1,
+        )
