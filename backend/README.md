@@ -52,6 +52,34 @@ Supported extensions are WAV, FLAC, M4A, MP3, OGG, and WebM. Uploads are capped
 at 25 MiB by default. Audio duration validation is added with the real ASR
 worker, which will decode the media reliably.
 
+## Record and transcribe from your microphone
+
+With the API running and Runpod configured in `.env`, install the optional
+local recorder once:
+
+```bash
+uv sync --extra recorder --dev
+```
+
+On macOS, grant your terminal microphone permission when prompted. If the
+audio library reports that PortAudio is missing, install it with
+`brew install portaudio` and run the sync command again. Then record an
+eight-second English sample and send it to Runpod:
+
+```bash
+uv run python scripts/record_and_transcribe.py
+```
+
+Useful variations:
+
+```bash
+uv run python scripts/record_and_transcribe.py --seconds 15
+uv run python scripts/record_and_transcribe.py --list-devices
+```
+
+The recorder deletes its temporary WAV file after upload. The API retains its
+own copy until you delete the returned transcription record.
+
 ## Provider capabilities
 
 ```bash

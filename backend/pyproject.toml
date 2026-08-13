@@ -14,6 +14,12 @@ dependencies = [
   "uvicorn[standard]>=0.32,<1.0",
 ]
 
+[project.optional-dependencies]
+recorder = [
+  "sounddevice>=0.5,<1.0",
+  "soundfile>=0.13,<1.0",
+]
+
 [dependency-groups]
 dev = [
   "pytest>=8.3,<9.0",

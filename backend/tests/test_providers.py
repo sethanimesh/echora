@@ -9,14 +9,15 @@ from app.services.asr.groq import GroqASRProvider
 from app.services.asr.runpod import RunpodASRProvider
 
 
-def test_list_providers_reports_capabilities_without_secrets() -> None:
+def test_list_providers_reports_capabilities_without_exposing_secrets() -> None:
     with TestClient(app) as client:
         response = client.get("/v1/providers")
 
     assert response.status_code == 200
     providers = {provider["name"]: provider for provider in response.json()}
     assert providers["fake"]["configured"] is True
-    assert providers["runpod"]["configured"] is False
+    assert isinstance(providers["runpod"]["configured"], bool)
+    assert "api_key" not in providers["runpod"]
     assert providers["runpod"]["capabilities"]["n_best_maximum"] == 5
     assert providers["groq"]["capabilities"]["n_best_maximum"] == 1
 
