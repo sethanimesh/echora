@@ -272,3 +272,35 @@ dialog.sheet::backdrop { background: rgba(23, 51, 44, .38); backdrop-filter: blu
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .waveform i { transform: scaleY(.35); }
 }
+
+/* ---------- personal context ---- */
+.persona-action { display: inline-flex; align-items: center; gap: 6px; }
+.persona-action svg { width: 15px; height: 15px; flex: none; }
+
+.persona-list { list-style: none; margin: 0 0 calc(var(--u) * .9); padding: 0; display: grid; gap: calc(var(--u) * .5); }
+.persona-card { width: 100%; display: flex; align-items: flex-start; gap: calc(var(--u) * .7); padding: calc(var(--u) * .7); border: 1px solid var(--line); border-radius: calc(var(--radius) * .6); background: var(--paper); text-align: left; cursor: pointer; transition: background .18s ease; }
+.persona-card:hover { background: var(--mint); }
+/* Inset ring rather than a thicker border: the card must not resize when picked. */
+.persona-card[aria-pressed="true"] { background: var(--mint); box-shadow: inset 0 0 0 2px var(--green); }
+.persona-mark { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--sage); color: var(--green); }
+.persona-mark svg { width: 19px; height: 19px; }
+.persona-card[aria-pressed="true"] .persona-mark { background: var(--green); color: var(--paper); }
+.persona-text { display: grid; gap: 2px; min-width: 0; }
+.persona-text b { font-size: var(--step-1); color: var(--ink); }
+.persona-text small { font-size: var(--step-0); color: var(--ink-soft); line-height: 1.35; }
+.persona-text em { font-style: normal; font-size: calc(var(--step-0) * .92); color: var(--green); font-weight: 700; }
+
+/* The speaker's own wording is marked wherever it is used, and is one tap from
+   being taken back out -- personalization is never allowed to be invisible. */
+.detail-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: calc(var(--u) * .4) 0 0; padding: calc(var(--u) * .45) calc(var(--u) * .6); border-radius: 999px; background: var(--coral-light); font-size: var(--step-0); color: var(--ink); }
+.detail-mark { color: var(--coral); font-size: .7em; }
+.detail-note b { font-weight: 800; }
+
+.onboarding { display: grid; gap: 6px; padding-top: calc(var(--u) * .8); border-top: 1px solid var(--line); }
+.onboarding h3 { margin: 0; font-size: var(--step-1); color: var(--green); }
+.onboarding p { margin: 0 0 4px; font-size: var(--step-0); color: var(--ink-soft); }
+.onboarding label { font-size: var(--step-0); font-weight: 700; color: var(--ink); }
+.onboarding textarea, .onboarding input { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); font: inherit; font-size: var(--step-0); color: var(--ink); resize: vertical; }
+.onboarding-pair { display: flex; align-items: center; gap: 6px; }
+.onboarding-pair span { color: var(--ink-soft); }
+.onboarding .speak-button { margin-top: 6px; justify-self: start; }

@@ -1,12 +1,33 @@
 "use client";
 
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 
 type Hypothesis = {
   id: string;
   literal_text: string;
   sequence_score: number;
   search_weight: number;
+};
+
+type Specialization = {
+  anchor: string;
+  plain: string;
+  surface: string;
+  source: string;
+  kind: string;
+  profile_id: string;
+};
+
+type PersonaSummary = {
+  id: string;
+  label: string;
+  blurb: string;
+  icon: string;
+  context_default: CommunicationContext;
+  lexicon_size: number;
+  specialization_size: number;
+  history_size: number;
+  baseline: boolean;
 };
 
 type MessageCandidate = {
@@ -20,6 +41,8 @@ type MessageCandidate = {
   repair_status: "unchanged" | "corrected" | "unavailable";
   repair_note: string;
   word_alternatives: Record<string, string[]>;
+  specializations: Specialization[];
+  plain_text: string | null;
 };
 
 type SpeechAudio = {
@@ -37,6 +60,7 @@ type Transcription = {
   model: string;
   device: string;
   context: CommunicationContext;
+  persona: string | null;
   hypotheses: Hypothesis[];
   ranker: {
     decision: "selected" | "ambiguous";
@@ -57,12 +81,13 @@ type Health = {
   asr_backend: string;
   model_ready: boolean;
   groq_configured: boolean;
+  personal_ready: boolean;
   detail: string;
 };
 
 type Phase = "idle" | "recording" | "working" | "ready" | "error";
 type Stage = "idle" | "recording" | "working" | "choosing" | "composing" | "error";
-type Overlay = "evidence" | "about" | null;
+type Overlay = "evidence" | "about" | "persona" | null;
 
 const contexts: { value: CommunicationContext; label: string; hint: string }[] = [
   { value: "general", label: "General", hint: "No setting assumptions" },
@@ -129,6 +154,10 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [context, setContext] = useState<CommunicationContext>("general");
   const [overlay, setOverlay] = useState<Overlay>(null);
+  const [personas, setPersonas] = useState<PersonaSummary[]>([]);
+  // "" means nobody in particular, which is exactly how Echora behaved before
+  // personal context existed: no prior, no history, no details.
+  const [persona, setPersona] = useState("");
 
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -166,6 +195,13 @@ export default function Home() {
     return () => window.clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    fetch(`${API}/api/v1/personas`)
+      .then((response) => (response.ok ? response.json() : []))
+      .then((list: PersonaSummary[]) => setPersonas(list))
+      .catch(() => setPersonas([]));
+  }, []);
+
   useEffect(
     () => () => {
       stopMedia();
@@ -199,6 +235,11 @@ export default function Home() {
     if (overlayRef.current) return;
     stageRef.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus();
   }, [stage]);
+
+  const active = useMemo(
+    () => personas.find((item) => item.id === persona) || null,
+    [personas, persona],
+  );
 
   const selected = useMemo(
     () => result?.messages.find((candidate) => candidate.message_id === selectedId) || null,
@@ -395,6 +436,7 @@ export default function Home() {
     const form = new FormData();
     form.append("audio", blob, filename);
     form.append("context", context);
+    form.append("persona", persona);
     try {
       const response = await fetch(`${API}/api/v1/transcriptions`, { method: "POST", body: form });
       const body = await response.json();
@@ -412,6 +454,7 @@ export default function Home() {
       // literal evidence is meant to protect the speaker from.
       if (initialMessage && next.ranker.decision === "selected") {
         void speak(initialMessage.corrected_text, next.speech);
+        remember(initialMessage, initialMessage.corrected_text);
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Something went wrong while transcribing");
@@ -428,11 +471,37 @@ export default function Home() {
 
   // Choosing is the decision. The tap is also a live gesture, so the chosen
   // wording can be spoken straight back without waiting for a second confirmation.
+  // A message the speaker settled on is what the personal layer learns from.
+  // It is fire-and-forget: failing to remember something is never worth
+  // interrupting someone mid-conversation for.
+  function remember(candidate: MessageCandidate, text: string) {
+    if (!persona) return;
+    void fetch(`${API}/api/v1/accepted`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        persona,
+        context,
+        heard: candidate.interpreted_intent,
+        message: text,
+      }),
+    }).catch(() => undefined);
+  }
+
+  // Take a profile detail back out. The plain wording is derived by the backend,
+  // so this is a swap to a string that was computed, not one the model promised.
+  function revert(candidate: MessageCandidate) {
+    if (!candidate.plain_text) return;
+    setMessage(candidate.plain_text);
+    void speak(candidate.plain_text);
+  }
+
   function choose(candidate: MessageCandidate) {
     setSelectedId(candidate.message_id);
     setMessage(candidate.corrected_text);
     setCopied(false);
     void speak(candidate.corrected_text);
+    remember(candidate, candidate.corrected_text);
   }
 
   function compareOptions() {
@@ -498,6 +567,12 @@ export default function Home() {
             Start over
           </button>
         )}
+        {personas.length > 0 && (
+          <button className="bar-action persona-action" onClick={() => setOverlay("persona")}>
+            <PersonaIcon name={active?.icon || "none"} />
+            <span>{active ? active.label.split(",")[0] : "No profile"}</span>
+          </button>
+        )}
         <button className="bar-action" onClick={() => setOverlay("about")}>
           About
         </button>
@@ -534,6 +609,7 @@ export default function Home() {
             onCopy={copyMessage}
             onSpeak={speakMessage}
             onEvidence={() => setOverlay("evidence")}
+            onRevert={revert}
           />
         )}
         {stage === "error" && <ErrorStage message={error} onRetry={reset} />}
@@ -556,6 +632,18 @@ export default function Home() {
 
       <Sheet open={overlay === "evidence"} onClose={() => setOverlay(null)} title="Literal ASR evidence">
         {result && <EvidenceBody result={result} />}
+      </Sheet>
+
+      <Sheet open={overlay === "persona"} onClose={() => setOverlay(null)} title="Who is speaking?">
+        <PersonaBody
+          personas={personas}
+          persona={persona}
+          onPick={(next) => {
+            setPersona(next);
+            const picked = personas.find((item) => item.id === next);
+            if (picked && next) setContext(picked.context_default);
+          }}
+        />
       </Sheet>
 
       <Sheet open={overlay === "about"} onClose={() => setOverlay(null)} title="About Echora">
@@ -714,6 +802,7 @@ function ComposeStage({
   onCopy,
   onSpeak,
   onEvidence,
+  onRevert,
 }: {
   result: Transcription;
   selectedId: string | null;
@@ -727,8 +816,11 @@ function ComposeStage({
   onCopy: () => void;
   onSpeak: () => void;
   onEvidence: () => void;
+  onRevert: (candidate: MessageCandidate) => void;
 }) {
   const multiple = result.messages.length > 1;
+  const current = result.messages.find((candidate) => candidate.message_id === selectedId) || null;
+  const details = current?.specializations || [];
   return (
     <section className="stage-composing">
       {multiple && (
@@ -757,6 +849,18 @@ function ComposeStage({
         onChange={(event) => onEdit(event.target.value)}
         rows={2}
       />
+
+      {details.length > 0 && current?.plain_text && (
+        <p className="detail-note">
+          <span className="detail-mark" aria-hidden="true">◆</span>
+          <span>
+            Using your wording for <b>{details.map((item) => item.anchor).join(", ")}</b>
+          </span>
+          <button className="text-button" onClick={() => onRevert(current)}>
+            Say it plainly instead
+          </button>
+        </p>
+      )}
 
       <p className="evidence-caption">
         Based on literal evidence · <button className="text-button" onClick={onEvidence}>see all transcriptions</button>
@@ -858,5 +962,139 @@ function Sheet({
       </div>
       {open && children}
     </dialog>
+  );
+}
+
+// Abstract marks, not portraits. A gallery of little figures standing in for
+// disabled or ethnically-coded people is a worse idea the longer you look at it,
+// and a silhouette people can tell apart at a glance is what this needs to do.
+// Every mark inherits `currentColor`, so the selected chip tints its icon free.
+const ICONS: Record<string, ReactNode> = {
+  arc: <><path d="M4 18a8 8 0 0 1 16 0" /><path d="M9 18a3 3 0 0 1 6 0" /></>,
+  wave: <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />,
+  chevron: <><path d="M6 8l6 5 6-5" /><path d="M6 14l6 5 6-5" /></>,
+  orbit: <><circle cx="12" cy="12" r="3.5" /><ellipse cx="12" cy="12" rx="9" ry="4.5" /></>,
+  stack: <><path d="M5 7h14" /><path d="M7 12h10" /><path d="M9 17h6" /></>,
+  bloom: <><circle cx="12" cy="12" r="2.5" /><path d="M12 4v3M12 17v3M4 12h3M17 12h3" /></>,
+  ridge: <path d="M3 18l5-8 4 5 3-4 6 7z" />,
+  tide: <><path d="M3 10c2-3 4-3 6 0s4 3 6 0 4-3 6 0" /><path d="M3 16c2-3 4-3 6 0s4 3 6 0 4-3 6 0" /></>,
+  you: <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="2.5" /></>,
+  none: <circle cx="12" cy="12" r="8" strokeDasharray="3 3" />,
+};
+
+function PersonaIcon({ name }: { name: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ICONS[name] || ICONS.none}
+    </svg>
+  );
+}
+
+function PersonaBody({
+  personas,
+  persona,
+  onPick,
+}: {
+  personas: PersonaSummary[];
+  persona: string;
+  onPick: (id: string) => void;
+}) {
+  return (
+    <>
+      <p className="sheet-note">
+        A profile lets Echora use what it knows about a speaker to choose between the words it heard, and to
+        say their particular version of a thing. It never invents a word the recogniser did not produce.
+      </p>
+      <ul className="persona-list">
+        <li>
+          <button className="persona-card" aria-pressed={persona === ""} onClick={() => onPick("")}>
+            <span className="persona-mark"><PersonaIcon name="none" /></span>
+            <span className="persona-text">
+              <b>No profile</b>
+              <small>Nothing personal is used. This is how Echora behaves for a stranger.</small>
+            </span>
+          </button>
+        </li>
+        {personas.map((item) => (
+          <li key={item.id}>
+            <button className="persona-card" aria-pressed={persona === item.id} onClick={() => onPick(item.id)}>
+              <span className="persona-mark"><PersonaIcon name={item.icon} /></span>
+              <span className="persona-text">
+                <b>{item.label}</b>
+                <small>{item.blurb}</small>
+                <em>
+                  {item.history_size} remembered · {item.lexicon_size} known words · {item.specialization_size} details
+                </em>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      {persona === "user" && <Onboarding />}
+    </>
+  );
+}
+
+// The only form in the app. Everything else Echora learns, it learns from
+// messages the speaker actually accepted.
+function Onboarding() {
+  const [people, setPeople] = useState("");
+  const [places, setPlaces] = useState("");
+  const [things, setThings] = useState("");
+  const [word, setWord] = useState("");
+  const [wording, setWording] = useState("");
+  const [status, setStatus] = useState("");
+
+  const lines = (value: string) => value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
+
+  async function save() {
+    setStatus("Saving…");
+    try {
+      const response = await fetch(`${API}/api/v1/profile`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          people: lines(people),
+          places: lines(places),
+          things: lines(things),
+          details: word.trim() && wording.trim() ? [{ word: word.trim(), wording: wording.trim() }] : [],
+        }),
+      });
+      if (!response.ok) throw new Error("save failed");
+      const body = await response.json();
+      setStatus(
+        body.refused?.length
+          ? `Saved. “${body.refused[0]}” was not kept: the fuller wording has to contain the ordinary one.`
+          : `Saved ${body.lexicon_size} words and ${body.specialization_size} details.`,
+      );
+    } catch {
+      setStatus("That could not be saved.");
+    }
+  }
+
+  return (
+    <div className="onboarding">
+      <h3>Tell Echora about yourself</h3>
+      <p>One per line. You can leave any of these empty and fill them in later.</p>
+      <label htmlFor="ob-people">People you talk to</label>
+      <textarea id="ob-people" rows={2} value={people} onChange={(event) => setPeople(event.target.value)} />
+      <label htmlFor="ob-places">Rooms and places you are in</label>
+      <textarea id="ob-places" rows={2} value={places} onChange={(event) => setPlaces(event.target.value)} />
+      <label htmlFor="ob-things">Things you ask for often</label>
+      <textarea id="ob-things" rows={2} value={things} onChange={(event) => setThings(event.target.value)} />
+      <label htmlFor="ob-word">Something you have a particular version of</label>
+      <div className="onboarding-pair">
+        <input id="ob-word" placeholder="the soap" value={word} onChange={(event) => setWord(event.target.value)} />
+        <span aria-hidden="true">→</span>
+        <input
+          aria-label="How you would say it"
+          placeholder="the Dove soap"
+          value={wording}
+          onChange={(event) => setWording(event.target.value)}
+        />
+      </div>
+      <button className="speak-button" onClick={save}>Save profile</button>
+      {status && <p className="sheet-note" role="status">{status}</p>}
+    </div>
   );
 }
