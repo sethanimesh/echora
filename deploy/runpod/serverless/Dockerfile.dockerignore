@@ -1,0 +1,11 @@
+.git
+.venv
+data
+research
+frontend
+models/echora-qwen3-asr-command-v3/foundation
+models/echora-qwen3-asr-command-v3/evaluation/result.json
+models/echora-qwen3-asr-command-v3/evaluation/next_decision.json
+**/__pycache__
+**/*.pyc
+**/.DS_Store

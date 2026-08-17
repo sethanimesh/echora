@@ -1,0 +1,15 @@
+{
+  "name": "echora-command-v3",
+  "workersMin": 0,
+  "workersMax": 1,
+  "idleTimeout": 5,
+  "gpuTypeIds": [
+    "NVIDIA L4",
+    "NVIDIA RTX A5000",
+    "NVIDIA GeForce RTX 3090"
+  ],
+  "environment": {
+    "MODEL_NAME": "Qwen/Qwen3-ASR-1.7B-hf",
+    "ECHORA_DEVICE": "cuda"
+  }
+}
