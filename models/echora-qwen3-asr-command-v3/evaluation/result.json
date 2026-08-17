@@ -1,0 +1,1994 @@
+{
+  "status": "completed",
+  "run_id": "qwen3-asr-1.7b-command-v3",
+  "base_model_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
+  "v1_adapter_sha256": "4e211db6c6571a7a4efbe8e851b67d44f33feea41724d0ab7afcf7195e018e0c",
+  "config_sha256": "5a60862c24d0e548db2b4b436066461eef2b6c633e24419e81af095baae4a312",
+  "manifest_sha256": "7cc9070c44adf533de4e65ef7f7d930a21f61b6ac85afc77715d4b9530f4d85f",
+  "gpu": "NVIDIA L40S",
+  "stop_reason": "maximum_epochs",
+  "trainable_parameter_count": 53992448,
+  "total_parameter_count": 2038511232,
+  "baseline": {
+    "run_id": "qwen3-asr-1.7b-command-v3",
+    "base_model_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
+    "v1_adapter_sha256": "4e211db6c6571a7a4efbe8e851b67d44f33feea41724d0ab7afcf7195e018e0c",
+    "config_sha256": "5a60862c24d0e548db2b4b436066461eef2b6c633e24419e81af095baae4a312",
+    "manifest_sha256": "7cc9070c44adf533de4e65ef7f7d930a21f61b6ac85afc77715d4b9530f4d85f",
+    "foundation_prompt": {
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.2215909090909091,
+        "micro_cer": 0.1255447771685646,
+        "exact_match_rate": 0.5637342908438061,
+        "word_substitutions": 248,
+        "word_deletions": 15,
+        "word_insertions": 49,
+        "reference_words": 1408,
+        "deletion_rate": 0.01065340909090909,
+        "empty_outputs": 1,
+        "empty_rate": 0.0017953321364452424,
+        "speaker_wer": {
+          "F03": 0.2215909090909091
+        },
+        "slice_wer": {
+          "unspecified": 0.2215909090909091
+        },
+        "decode_seconds": 59.400074660778046,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.04292467766301443,
+        "predictions_sha256": "6695625e63cf24f8f20cd239dc8fcb3908bbe47357e7efd7b443ee85736b5f52"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.5391666666666667,
+        "micro_cer": 0.32815854665565647,
+        "exact_match_rate": 0.12916666666666668,
+        "word_substitutions": 549,
+        "word_deletions": 74,
+        "word_insertions": 24,
+        "reference_words": 1200,
+        "deletion_rate": 0.06166666666666667,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.5391666666666667
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.7666666666666667,
+          "command_2word_gap_long_stretch_none": 0.4166666666666667,
+          "command_2word_gap_long_stretch_strong": 0.6666666666666666,
+          "command_2word_gap_long_stretch_very_strong": 0.5166666666666667,
+          "command_2word_gap_short_stretch_mild": 0.5833333333333334,
+          "command_2word_gap_short_stretch_none": 0.4166666666666667,
+          "command_2word_gap_short_stretch_strong": 0.55,
+          "command_2word_gap_short_stretch_very_strong": 0.7166666666666667,
+          "command_3word_gap_medium_stretch_mild": 0.5444444444444444,
+          "command_3word_gap_medium_stretch_none": 0.34444444444444444,
+          "command_3word_gap_medium_stretch_strong": 0.5666666666666667,
+          "command_3word_gap_medium_stretch_very_strong": 0.6222222222222222,
+          "command_3word_gap_very_long_stretch_mild": 0.4888888888888889,
+          "command_3word_gap_very_long_stretch_none": 0.43333333333333335,
+          "command_3word_gap_very_long_stretch_strong": 0.5111111111111111,
+          "command_3word_gap_very_long_stretch_very_strong": 0.5888888888888889
+        },
+        "decode_seconds": 58.44758694060147,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.016836472000382047,
+        "predictions_sha256": "72113284e3ade4b77dd8e39f93fcf12262109a49d8a61cb31ab96aa05657a56a"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.034379028792436615,
+        "micro_cer": 0.011475036096967855,
+        "exact_match_rate": 0.7868852459016393,
+        "word_substitutions": 60,
+        "word_deletions": 12,
+        "word_insertions": 8,
+        "reference_words": 2327,
+        "deletion_rate": 0.005156854318865492,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.033216783216783216,
+          "cv-6dfef9a740f9183f": 0.020710059171597635,
+          "cv-868c12f75b7240d5": 0.034340659340659344,
+          "cv-8a5d72d90f11f21c": 0.05737704918032787,
+          "cv-8ab1fa31d3fcf868": 0.01507537688442211,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.06369426751592357,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.06779661016949153
+        },
+        "slice_wer": {
+          "unspecified": 0.034379028792436615
+        },
+        "decode_seconds": 55.87866849638522,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.04562835075579693,
+        "predictions_sha256": "75ee4f6ff4a4bdd33fa75d5173cdd3ed7375c10dab464d1ccddb4fd2f2c726c9"
+      }
+    },
+    "v1_no_prompt": {
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.10369318181818182,
+        "micro_cer": 0.05778152678194855,
+        "exact_match_rate": 0.7827648114901257,
+        "word_substitutions": 123,
+        "word_deletions": 11,
+        "word_insertions": 12,
+        "reference_words": 1408,
+        "deletion_rate": 0.0078125,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.10369318181818182
+        },
+        "slice_wer": {
+          "unspecified": 0.10369318181818182
+        },
+        "decode_seconds": 52.40808569826186,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03787200939359999,
+        "predictions_sha256": "cc4995dc6b069d20857b4b7c8c904b309104dce0bef751775048f7816a5a4022"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.5191666666666667,
+        "micro_cer": 0.3767134599504542,
+        "exact_match_rate": 0.18958333333333333,
+        "word_substitutions": 295,
+        "word_deletions": 325,
+        "word_insertions": 3,
+        "reference_words": 1200,
+        "deletion_rate": 0.2708333333333333,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.5191666666666667
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.6666666666666666,
+          "command_2word_gap_long_stretch_none": 0.45,
+          "command_2word_gap_long_stretch_strong": 0.5833333333333334,
+          "command_2word_gap_long_stretch_very_strong": 0.4666666666666667,
+          "command_2word_gap_short_stretch_mild": 0.48333333333333334,
+          "command_2word_gap_short_stretch_none": 0.38333333333333336,
+          "command_2word_gap_short_stretch_strong": 0.5666666666666667,
+          "command_2word_gap_short_stretch_very_strong": 0.6166666666666667,
+          "command_3word_gap_medium_stretch_mild": 0.5777777777777777,
+          "command_3word_gap_medium_stretch_none": 0.3888888888888889,
+          "command_3word_gap_medium_stretch_strong": 0.4777777777777778,
+          "command_3word_gap_medium_stretch_very_strong": 0.5888888888888889,
+          "command_3word_gap_very_long_stretch_mild": 0.5777777777777777,
+          "command_3word_gap_very_long_stretch_none": 0.36666666666666664,
+          "command_3word_gap_very_long_stretch_strong": 0.5777777777777777,
+          "command_3word_gap_very_long_stretch_very_strong": 0.5555555555555556
+        },
+        "decode_seconds": 38.818568820133805,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.011182116854529644,
+        "predictions_sha256": "39978ca67a6f09c6920b14d90e6a662f593681285675da71233eaba2f3f97bd5"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.0446927374301676,
+        "micro_cer": 0.016794589254502622,
+        "exact_match_rate": 0.75,
+        "word_substitutions": 83,
+        "word_deletions": 10,
+        "word_insertions": 11,
+        "reference_words": 2327,
+        "deletion_rate": 0.004297378599054577,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.05419580419580419,
+          "cv-6dfef9a740f9183f": 0.026627218934911243,
+          "cv-868c12f75b7240d5": 0.04395604395604396,
+          "cv-8a5d72d90f11f21c": 0.07377049180327869,
+          "cv-8ab1fa31d3fcf868": 0.02512562814070352,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.07643312101910828,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.0423728813559322
+        },
+        "slice_wer": {
+          "unspecified": 0.0446927374301676
+        },
+        "decode_seconds": 56.04169151186943,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.04576146901956269,
+        "predictions_sha256": "ffd65c0e7c882017b707cbbd9000db6d25c6b2b7ddcce84f18163d0380a5f75e"
+      }
+    },
+    "v1_prompt": {
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.10369318181818182,
+        "micro_cer": 0.05890622803317869,
+        "exact_match_rate": 0.7791741472172352,
+        "word_substitutions": 126,
+        "word_deletions": 12,
+        "word_insertions": 8,
+        "reference_words": 1408,
+        "deletion_rate": 0.008522727272727272,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.10369318181818182
+        },
+        "slice_wer": {
+          "unspecified": 0.10369318181818182
+        },
+        "decode_seconds": 51.81421149149537,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03744285405931112,
+        "predictions_sha256": "3888d0c4c21b6638db255f2fe41a9e42c4f22d8d95135b5bfa4c8dc769741d70"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.4875,
+        "micro_cer": 0.33773740710156896,
+        "exact_match_rate": 0.22916666666666666,
+        "word_substitutions": 310,
+        "word_deletions": 269,
+        "word_insertions": 6,
+        "reference_words": 1200,
+        "deletion_rate": 0.22416666666666665,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.4875
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.65,
+          "command_2word_gap_long_stretch_none": 0.4166666666666667,
+          "command_2word_gap_long_stretch_strong": 0.5166666666666667,
+          "command_2word_gap_long_stretch_very_strong": 0.4166666666666667,
+          "command_2word_gap_short_stretch_mild": 0.48333333333333334,
+          "command_2word_gap_short_stretch_none": 0.2833333333333333,
+          "command_2word_gap_short_stretch_strong": 0.5666666666666667,
+          "command_2word_gap_short_stretch_very_strong": 0.6666666666666666,
+          "command_3word_gap_medium_stretch_mild": 0.5666666666666667,
+          "command_3word_gap_medium_stretch_none": 0.34444444444444444,
+          "command_3word_gap_medium_stretch_strong": 0.4666666666666667,
+          "command_3word_gap_medium_stretch_very_strong": 0.5444444444444444,
+          "command_3word_gap_very_long_stretch_mild": 0.5222222222222223,
+          "command_3word_gap_very_long_stretch_none": 0.3888888888888889,
+          "command_3word_gap_very_long_stretch_strong": 0.4777777777777778,
+          "command_3word_gap_very_long_stretch_very_strong": 0.5222222222222223
+        },
+        "decode_seconds": 39.8653833437711,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.011483663322730701,
+        "predictions_sha256": "31a04db7f96b8a782774ad3d9b43b1db7bd3b7d321e405d38514b643e8428862"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.04426299957026214,
+        "micro_cer": 0.015958659472604303,
+        "exact_match_rate": 0.7459016393442623,
+        "word_substitutions": 80,
+        "word_deletions": 13,
+        "word_insertions": 10,
+        "reference_words": 2327,
+        "deletion_rate": 0.00558659217877095,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.05419580419580419,
+          "cv-6dfef9a740f9183f": 0.026627218934911243,
+          "cv-868c12f75b7240d5": 0.04395604395604396,
+          "cv-8a5d72d90f11f21c": 0.04918032786885246,
+          "cv-8ab1fa31d3fcf868": 0.02512562814070352,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.08280254777070063,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.05084745762711865
+        },
+        "slice_wer": {
+          "unspecified": 0.04426299957026214
+        },
+        "decode_seconds": 56.3176004383713,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.045986765534562817,
+        "predictions_sha256": "37d678aac6c30deea45f6208cce9866c87b827f8e7178469e3926e3915c54a73"
+      }
+    }
+  },
+  "history": [
+    {
+      "training_mean_loss": 1.0996336172456833,
+      "training_examples": 5143,
+      "epoch": 1,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.1455965909090909,
+        "micro_cer": 0.08182201602699284,
+        "exact_match_rate": 0.703770197486535,
+        "word_substitutions": 172,
+        "word_deletions": 14,
+        "word_insertions": 19,
+        "reference_words": 1408,
+        "deletion_rate": 0.009943181818181818,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.1455965909090909
+        },
+        "slice_wer": {
+          "unspecified": 0.1455965909090909
+        },
+        "decode_seconds": 60.59252555295825,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.04378638651553894,
+        "predictions_sha256": "671e2c67341a9a4fb7356bec842558e74b8b1ae45150d8893e780b4e4e5539c2"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.35583333333333333,
+        "micro_cer": 0.19091659785301404,
+        "exact_match_rate": 0.3541666666666667,
+        "word_substitutions": 411,
+        "word_deletions": 1,
+        "word_insertions": 15,
+        "reference_words": 1200,
+        "deletion_rate": 0.0008333333333333334,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.35583333333333333
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.4666666666666667,
+          "command_2word_gap_long_stretch_none": 0.26666666666666666,
+          "command_2word_gap_long_stretch_strong": 0.43333333333333335,
+          "command_2word_gap_long_stretch_very_strong": 0.35,
+          "command_2word_gap_short_stretch_mild": 0.4,
+          "command_2word_gap_short_stretch_none": 0.21666666666666667,
+          "command_2word_gap_short_stretch_strong": 0.38333333333333336,
+          "command_2word_gap_short_stretch_very_strong": 0.5,
+          "command_3word_gap_medium_stretch_mild": 0.43333333333333335,
+          "command_3word_gap_medium_stretch_none": 0.2111111111111111,
+          "command_3word_gap_medium_stretch_strong": 0.34444444444444444,
+          "command_3word_gap_medium_stretch_very_strong": 0.36666666666666664,
+          "command_3word_gap_very_long_stretch_mild": 0.4222222222222222,
+          "command_3word_gap_very_long_stretch_none": 0.2222222222222222,
+          "command_3word_gap_very_long_stretch_strong": 0.35555555555555557,
+          "command_3word_gap_very_long_stretch_very_strong": 0.37777777777777777
+        },
+        "decode_seconds": 43.596056846901774,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.012558324968588898,
+        "predictions_sha256": "e17cf67042a204be19190ea884142799d789036d55fc0c4bdea698a7b331fa0f"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.04211431027073485,
+        "micro_cer": 0.013830838209590395,
+        "exact_match_rate": 0.7254098360655737,
+        "word_substitutions": 75,
+        "word_deletions": 13,
+        "word_insertions": 10,
+        "reference_words": 2327,
+        "deletion_rate": 0.00558659217877095,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.045454545454545456,
+          "cv-6dfef9a740f9183f": 0.026627218934911243,
+          "cv-868c12f75b7240d5": 0.042582417582417584,
+          "cv-8a5d72d90f11f21c": 0.07377049180327869,
+          "cv-8ab1fa31d3fcf868": 0.03015075376884422,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.05732484076433121,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.04211431027073485
+        },
+        "decode_seconds": 58.88780756480992,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.048085496865066454,
+        "predictions_sha256": "c73c1ffc44666c0a84eacbbafd8e13abc9f4e63595084f2e05224df6e96527da"
+      },
+      "objective": 0.4328430598149523,
+      "deployable_guard_passed": false,
+      "deployable_guard_failures": [
+        "TORGO-dev WER"
+      ]
+    },
+    {
+      "training_mean_loss": 0.028945152849797946,
+      "training_examples": 6143,
+      "epoch": 2,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.13210227272727273,
+        "micro_cer": 0.06973147757626881,
+        "exact_match_rate": 0.7378815080789947,
+        "word_substitutions": 154,
+        "word_deletions": 14,
+        "word_insertions": 18,
+        "reference_words": 1408,
+        "deletion_rate": 0.009943181818181818,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.13210227272727273
+        },
+        "slice_wer": {
+          "unspecified": 0.13210227272727273
+        },
+        "decode_seconds": 55.41834888420999,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.04004733623747318,
+        "predictions_sha256": "25eefdd5053efc8daa836f7c4c74febee4a6d30049614f087e0ac99d728d3ef3"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.3025,
+        "micro_cer": 0.15672997522708507,
+        "exact_match_rate": 0.40208333333333335,
+        "word_substitutions": 351,
+        "word_deletions": 1,
+        "word_insertions": 11,
+        "reference_words": 1200,
+        "deletion_rate": 0.0008333333333333334,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.3025
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.4,
+          "command_2word_gap_long_stretch_none": 0.23333333333333334,
+          "command_2word_gap_long_stretch_strong": 0.4,
+          "command_2word_gap_long_stretch_very_strong": 0.26666666666666666,
+          "command_2word_gap_short_stretch_mild": 0.36666666666666664,
+          "command_2word_gap_short_stretch_none": 0.15,
+          "command_2word_gap_short_stretch_strong": 0.43333333333333335,
+          "command_2word_gap_short_stretch_very_strong": 0.4,
+          "command_3word_gap_medium_stretch_mild": 0.35555555555555557,
+          "command_3word_gap_medium_stretch_none": 0.15555555555555556,
+          "command_3word_gap_medium_stretch_strong": 0.28888888888888886,
+          "command_3word_gap_medium_stretch_very_strong": 0.26666666666666666,
+          "command_3word_gap_very_long_stretch_mild": 0.36666666666666664,
+          "command_3word_gap_very_long_stretch_none": 0.18888888888888888,
+          "command_3word_gap_very_long_stretch_strong": 0.37777777777777777,
+          "command_3word_gap_very_long_stretch_very_strong": 0.26666666666666666
+        },
+        "decode_seconds": 45.321505434811115,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.013055359463237196,
+        "predictions_sha256": "38fdc1b7ef0626c415081734dfcca4561b6ab5eb5556913721f1151df640d5b6"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.03953588311130211,
+        "micro_cer": 0.01519872330724219,
+        "exact_match_rate": 0.75,
+        "word_substitutions": 69,
+        "word_deletions": 13,
+        "word_insertions": 10,
+        "reference_words": 2327,
+        "deletion_rate": 0.00558659217877095,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.043706293706293704,
+          "cv-6dfef9a740f9183f": 0.029585798816568046,
+          "cv-868c12f75b7240d5": 0.04120879120879121,
+          "cv-8a5d72d90f11f21c": 0.04918032786885246,
+          "cv-8ab1fa31d3fcf868": 0.020100502512562814,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.05732484076433121,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.03953588311130211
+        },
+        "decode_seconds": 60.36980205215514,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.049295636013087125,
+        "predictions_sha256": "9c287176d37d7c9aee0bb409ad37294642099fea7ecf4a7fb405abd48084e1c3"
+      },
+      "objective": 0.37250472467476653,
+      "deployable_guard_passed": false,
+      "deployable_guard_failures": [
+        "TORGO-dev WER"
+      ]
+    },
+    {
+      "training_mean_loss": 0.01406478181454622,
+      "training_examples": 7143,
+      "epoch": 3,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11931818181818182,
+        "micro_cer": 0.0684661886686349,
+        "exact_match_rate": 0.748653500897666,
+        "word_substitutions": 142,
+        "word_deletions": 12,
+        "word_insertions": 14,
+        "reference_words": 1408,
+        "deletion_rate": 0.008522727272727272,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11931818181818182
+        },
+        "slice_wer": {
+          "unspecified": 0.11931818181818182
+        },
+        "decode_seconds": 54.23854790441692,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03919476867668583,
+        "predictions_sha256": "733b59495e76808f27474419baf85be6b1ce32233faf102ff2be329db4128255"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.2725,
+        "micro_cer": 0.13971924029727498,
+        "exact_match_rate": 0.45625,
+        "word_substitutions": 314,
+        "word_deletions": 6,
+        "word_insertions": 7,
+        "reference_words": 1200,
+        "deletion_rate": 0.005,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.2725
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.35,
+          "command_2word_gap_long_stretch_none": 0.21666666666666667,
+          "command_2word_gap_long_stretch_strong": 0.36666666666666664,
+          "command_2word_gap_long_stretch_very_strong": 0.21666666666666667,
+          "command_2word_gap_short_stretch_mild": 0.26666666666666666,
+          "command_2word_gap_short_stretch_none": 0.15,
+          "command_2word_gap_short_stretch_strong": 0.3333333333333333,
+          "command_2word_gap_short_stretch_very_strong": 0.35,
+          "command_3word_gap_medium_stretch_mild": 0.3333333333333333,
+          "command_3word_gap_medium_stretch_none": 0.17777777777777778,
+          "command_3word_gap_medium_stretch_strong": 0.2777777777777778,
+          "command_3word_gap_medium_stretch_very_strong": 0.25555555555555554,
+          "command_3word_gap_very_long_stretch_mild": 0.28888888888888886,
+          "command_3word_gap_very_long_stretch_none": 0.2111111111111111,
+          "command_3word_gap_very_long_stretch_strong": 0.3,
+          "command_3word_gap_very_long_stretch_very_strong": 0.28888888888888886
+        },
+        "decode_seconds": 43.668418230488896,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.012579169463159933,
+        "predictions_sha256": "5904ead0f38efa1b40d62e27ef8abbf90e010543e9abdeb9e2cb7b3b0507ea2a"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.042973785990545764,
+        "micro_cer": 0.017630519036400942,
+        "exact_match_rate": 0.7459016393442623,
+        "word_substitutions": 76,
+        "word_deletions": 12,
+        "word_insertions": 12,
+        "reference_words": 2327,
+        "deletion_rate": 0.005156854318865492,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.043706293706293704,
+          "cv-6dfef9a740f9183f": 0.03254437869822485,
+          "cv-868c12f75b7240d5": 0.04120879120879121,
+          "cv-8a5d72d90f11f21c": 0.04918032786885246,
+          "cv-8ab1fa31d3fcf868": 0.035175879396984924,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.07006369426751592,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.07627118644067797
+        },
+        "slice_wer": {
+          "unspecified": 0.042973785990545764
+        },
+        "decode_seconds": 57.01222422346473,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.04655396834311958,
+        "predictions_sha256": "1a3e0b190689ce28a9221024753ff6498cb3d7a4fb647bc60ea3358419d5c690"
+      },
+      "objective": 0.3364564695081455,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    },
+    {
+      "training_mean_loss": 0.00818950745400323,
+      "training_examples": 7643,
+      "epoch": 4,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11860795454545454,
+        "micro_cer": 0.06593561085336708,
+        "exact_match_rate": 0.7576301615798923,
+        "word_substitutions": 138,
+        "word_deletions": 19,
+        "word_insertions": 10,
+        "reference_words": 1408,
+        "deletion_rate": 0.013494318181818182,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11860795454545454
+        },
+        "slice_wer": {
+          "unspecified": 0.11860795454545454
+        },
+        "decode_seconds": 53.298790818080306,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03851566565799605,
+        "predictions_sha256": "62438f5d8ddf090245dc087f2daed04dc50c6c0a0ba3acd9357f10b6c73aa2b2"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.26416666666666666,
+        "micro_cer": 0.13360858794384806,
+        "exact_match_rate": 0.4583333333333333,
+        "word_substitutions": 310,
+        "word_deletions": 2,
+        "word_insertions": 5,
+        "reference_words": 1200,
+        "deletion_rate": 0.0016666666666666668,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.26416666666666666
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.35,
+          "command_2word_gap_long_stretch_none": 0.15,
+          "command_2word_gap_long_stretch_strong": 0.38333333333333336,
+          "command_2word_gap_long_stretch_very_strong": 0.26666666666666666,
+          "command_2word_gap_short_stretch_mild": 0.2833333333333333,
+          "command_2word_gap_short_stretch_none": 0.15,
+          "command_2word_gap_short_stretch_strong": 0.38333333333333336,
+          "command_2word_gap_short_stretch_very_strong": 0.4,
+          "command_3word_gap_medium_stretch_mild": 0.28888888888888886,
+          "command_3word_gap_medium_stretch_none": 0.14444444444444443,
+          "command_3word_gap_medium_stretch_strong": 0.23333333333333334,
+          "command_3word_gap_medium_stretch_very_strong": 0.23333333333333334,
+          "command_3word_gap_very_long_stretch_mild": 0.3111111111111111,
+          "command_3word_gap_very_long_stretch_none": 0.15555555555555556,
+          "command_3word_gap_very_long_stretch_strong": 0.3111111111111111,
+          "command_3word_gap_very_long_stretch_very_strong": 0.26666666666666666
+        },
+        "decode_seconds": 43.74096724204719,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.012600068006037296,
+        "predictions_sha256": "f72bc60cfe7d1eaca6cae7aa14cf203548e2057a863fc9336fce9d407b5c00cd"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.03910614525139665,
+        "micro_cer": 0.016186640322212936,
+        "exact_match_rate": 0.7377049180327869,
+        "word_substitutions": 72,
+        "word_deletions": 12,
+        "word_insertions": 7,
+        "reference_words": 2327,
+        "deletion_rate": 0.005156854318865492,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.0472027972027972,
+          "cv-6dfef9a740f9183f": 0.020710059171597635,
+          "cv-868c12f75b7240d5": 0.03983516483516483,
+          "cv-8a5d72d90f11f21c": 0.04918032786885246,
+          "cv-8ab1fa31d3fcf868": 0.04020100502512563,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.05732484076433121,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.03389830508474576
+        },
+        "slice_wer": {
+          "unspecified": 0.03910614525139665
+        },
+        "decode_seconds": 57.97147199884057,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.047337252825988003,
+        "predictions_sha256": "7ebe466fee20c81587085cec30119026dfc92338756cabc13e44ee0bf25eac4c"
+      },
+      "objective": 0.32738125846453364,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    },
+    {
+      "training_mean_loss": 0.005731454924885957,
+      "training_examples": 7643,
+      "epoch": 5,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11647727272727272,
+        "micro_cer": 0.06228033178686911,
+        "exact_match_rate": 0.755834829443447,
+        "word_substitutions": 141,
+        "word_deletions": 11,
+        "word_insertions": 12,
+        "reference_words": 1408,
+        "deletion_rate": 0.0078125,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11647727272727272
+        },
+        "slice_wer": {
+          "unspecified": 0.11647727272727272
+        },
+        "decode_seconds": 54.72713386826217,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03954783885594907,
+        "predictions_sha256": "99ab1cb2d97ab46b93db583b0c6006c5e7e2a3d9419b09b746c49c8ee95f1e59"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.24833333333333332,
+        "micro_cer": 0.13724194880264245,
+        "exact_match_rate": 0.49375,
+        "word_substitutions": 287,
+        "word_deletions": 7,
+        "word_insertions": 4,
+        "reference_words": 1200,
+        "deletion_rate": 0.005833333333333334,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.24833333333333332
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.3333333333333333,
+          "command_2word_gap_long_stretch_none": 0.2,
+          "command_2word_gap_long_stretch_strong": 0.31666666666666665,
+          "command_2word_gap_long_stretch_very_strong": 0.21666666666666667,
+          "command_2word_gap_short_stretch_mild": 0.23333333333333334,
+          "command_2word_gap_short_stretch_none": 0.16666666666666666,
+          "command_2word_gap_short_stretch_strong": 0.36666666666666664,
+          "command_2word_gap_short_stretch_very_strong": 0.25,
+          "command_3word_gap_medium_stretch_mild": 0.3111111111111111,
+          "command_3word_gap_medium_stretch_none": 0.13333333333333333,
+          "command_3word_gap_medium_stretch_strong": 0.23333333333333334,
+          "command_3word_gap_medium_stretch_very_strong": 0.26666666666666666,
+          "command_3word_gap_very_long_stretch_mild": 0.24444444444444444,
+          "command_3word_gap_very_long_stretch_none": 0.18888888888888888,
+          "command_3word_gap_very_long_stretch_strong": 0.2777777777777778,
+          "command_3word_gap_very_long_stretch_very_strong": 0.26666666666666666
+        },
+        "decode_seconds": 43.36536891758442,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.012491872766435113,
+        "predictions_sha256": "4be6571ca13035dfb4ce304fcec0147c075dfb35c3ad4e3b601da91fc5b9ebe6"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.04598195100988397,
+        "micro_cer": 0.01747853180332852,
+        "exact_match_rate": 0.6967213114754098,
+        "word_substitutions": 86,
+        "word_deletions": 10,
+        "word_insertions": 11,
+        "reference_words": 2327,
+        "deletion_rate": 0.004297378599054577,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.05244755244755245,
+          "cv-6dfef9a740f9183f": 0.03550295857988166,
+          "cv-868c12f75b7240d5": 0.042582417582417584,
+          "cv-8a5d72d90f11f21c": 0.06557377049180328,
+          "cv-8ab1fa31d3fcf868": 0.04522613065326633,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.05732484076433121,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.04598195100988397
+        },
+        "decode_seconds": 58.085274025797844,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.04743017914192309,
+        "predictions_sha256": "bf6b547b0ab5689f87e3b1c1b299344a140739ca2ba622301298a0ad9c2b5ad0"
+      },
+      "objective": 0.3111701647979581,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    },
+    {
+      "training_mean_loss": 0.004004178545411669,
+      "training_examples": 7643,
+      "epoch": 6,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11576704545454546,
+        "micro_cer": 0.05876564037677492,
+        "exact_match_rate": 0.7594254937163375,
+        "word_substitutions": 136,
+        "word_deletions": 16,
+        "word_insertions": 11,
+        "reference_words": 1408,
+        "deletion_rate": 0.011363636363636364,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11576704545454546
+        },
+        "slice_wer": {
+          "unspecified": 0.11576704545454546
+        },
+        "decode_seconds": 53.894722098484635,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03894630750931941,
+        "predictions_sha256": "f03a5dbd0da4c628d54f64a2e2ad512c21292c36f76190e26a1e44a18636d9ce"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.25166666666666665,
+        "micro_cer": 0.13228736581337738,
+        "exact_match_rate": 0.4895833333333333,
+        "word_substitutions": 295,
+        "word_deletions": 3,
+        "word_insertions": 4,
+        "reference_words": 1200,
+        "deletion_rate": 0.0025,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.25166666666666665
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.38333333333333336,
+          "command_2word_gap_long_stretch_none": 0.16666666666666666,
+          "command_2word_gap_long_stretch_strong": 0.3333333333333333,
+          "command_2word_gap_long_stretch_very_strong": 0.23333333333333334,
+          "command_2word_gap_short_stretch_mild": 0.25,
+          "command_2word_gap_short_stretch_none": 0.2,
+          "command_2word_gap_short_stretch_strong": 0.3333333333333333,
+          "command_2word_gap_short_stretch_very_strong": 0.26666666666666666,
+          "command_3word_gap_medium_stretch_mild": 0.3111111111111111,
+          "command_3word_gap_medium_stretch_none": 0.14444444444444443,
+          "command_3word_gap_medium_stretch_strong": 0.23333333333333334,
+          "command_3word_gap_medium_stretch_very_strong": 0.2222222222222222,
+          "command_3word_gap_very_long_stretch_mild": 0.2777777777777778,
+          "command_3word_gap_very_long_stretch_none": 0.2,
+          "command_3word_gap_very_long_stretch_strong": 0.26666666666666666,
+          "command_3word_gap_very_long_stretch_very_strong": 0.25555555555555554
+        },
+        "decode_seconds": 43.31160516478121,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.012476385524513104,
+        "predictions_sha256": "91e8c5d41c1510d68ea6b15529396e2cda292b53b41d6fe2d5c613a2fdb44c29"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.0446927374301676,
+        "micro_cer": 0.016186640322212936,
+        "exact_match_rate": 0.6926229508196722,
+        "word_substitutions": 84,
+        "word_deletions": 11,
+        "word_insertions": 9,
+        "reference_words": 2327,
+        "deletion_rate": 0.004727116458960034,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.055944055944055944,
+          "cv-6dfef9a740f9183f": 0.023668639053254437,
+          "cv-868c12f75b7240d5": 0.042582417582417584,
+          "cv-8a5d72d90f11f21c": 0.07377049180327869,
+          "cv-8ab1fa31d3fcf868": 0.03015075376884422,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.06369426751592357,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.0446927374301676
+        },
+        "decode_seconds": 57.20864814892411,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.046714360492912325,
+        "predictions_sha256": "7d1f0e542c550faf86c56b7f238461fdf84469ebc32421663b5ff194677f204e"
+      },
+      "objective": 0.3140194631369561,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    },
+    {
+      "training_mean_loss": 0.002727864215109548,
+      "training_examples": 7643,
+      "epoch": 7,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11505681818181818,
+        "micro_cer": 0.06115563053563897,
+        "exact_match_rate": 0.7630161579892281,
+        "word_substitutions": 135,
+        "word_deletions": 16,
+        "word_insertions": 11,
+        "reference_words": 1408,
+        "deletion_rate": 0.011363636363636364,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11505681818181818
+        },
+        "slice_wer": {
+          "unspecified": 0.11505681818181818
+        },
+        "decode_seconds": 53.356420028954744,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.03855731064438514,
+        "predictions_sha256": "ad99d98da9d9dbc39ea2eabea49fb803bae8e69cc4ea4cf37e6644ecf8b1dc45"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.24916666666666668,
+        "micro_cer": 0.13162675474814203,
+        "exact_match_rate": 0.4895833333333333,
+        "word_substitutions": 290,
+        "word_deletions": 6,
+        "word_insertions": 3,
+        "reference_words": 1200,
+        "deletion_rate": 0.005,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.24916666666666668
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.3333333333333333,
+          "command_2word_gap_long_stretch_none": 0.16666666666666666,
+          "command_2word_gap_long_stretch_strong": 0.35,
+          "command_2word_gap_long_stretch_very_strong": 0.23333333333333334,
+          "command_2word_gap_short_stretch_mild": 0.23333333333333334,
+          "command_2word_gap_short_stretch_none": 0.18333333333333332,
+          "command_2word_gap_short_stretch_strong": 0.4,
+          "command_2word_gap_short_stretch_very_strong": 0.26666666666666666,
+          "command_3word_gap_medium_stretch_mild": 0.3,
+          "command_3word_gap_medium_stretch_none": 0.12222222222222222,
+          "command_3word_gap_medium_stretch_strong": 0.24444444444444444,
+          "command_3word_gap_medium_stretch_very_strong": 0.2222222222222222,
+          "command_3word_gap_very_long_stretch_mild": 0.26666666666666666,
+          "command_3word_gap_very_long_stretch_none": 0.2,
+          "command_3word_gap_very_long_stretch_strong": 0.2777777777777778,
+          "command_3word_gap_very_long_stretch_very_strong": 0.24444444444444444
+        },
+        "decode_seconds": 44.323162864893675,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.01276777587587222,
+        "predictions_sha256": "a59d63b41d41b08454ff38ef4018da1a16d4003741e84d4327b15d4ebf8eaf9d"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.0446927374301676,
+        "micro_cer": 0.016338627555285357,
+        "exact_match_rate": 0.6967213114754098,
+        "word_substitutions": 83,
+        "word_deletions": 12,
+        "word_insertions": 9,
+        "reference_words": 2327,
+        "deletion_rate": 0.005156854318865492,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.05244755244755245,
+          "cv-6dfef9a740f9183f": 0.020710059171597635,
+          "cv-868c12f75b7240d5": 0.04532967032967033,
+          "cv-8a5d72d90f11f21c": 0.06557377049180328,
+          "cv-8ab1fa31d3fcf868": 0.03015075376884422,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.07643312101910828,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.0446927374301676
+        },
+        "decode_seconds": 57.692768262699246,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.04710967417796724,
+        "predictions_sha256": "4d5a8f3864cd6d8b5faa62f1635b4180875123c94e35009371a5836e009926d3"
+      },
+      "objective": 0.3111643495005925,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    },
+    {
+      "training_mean_loss": 0.002337892302350531,
+      "training_examples": 7643,
+      "epoch": 8,
+      "torgo_dev": {
+        "utterances": 557,
+        "micro_wer": 0.11647727272727272,
+        "micro_cer": 0.061015042879235204,
+        "exact_match_rate": 0.7612208258527827,
+        "word_substitutions": 136,
+        "word_deletions": 16,
+        "word_insertions": 12,
+        "reference_words": 1408,
+        "deletion_rate": 0.011363636363636364,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.11647727272727272
+        },
+        "slice_wer": {
+          "unspecified": 0.11647727272727272
+        },
+        "decode_seconds": 53.27016809210181,
+        "audio_seconds": 1383.8210999999997,
+        "rtf": 0.038494981823952404,
+        "predictions_sha256": "7721233e416179f8f41345c0367591df327d585c3282c027bc747a49180bfbac"
+      },
+      "command_dev": {
+        "utterances": 480,
+        "micro_wer": 0.25083333333333335,
+        "micro_cer": 0.1319570602807597,
+        "exact_match_rate": 0.4875,
+        "word_substitutions": 292,
+        "word_deletions": 5,
+        "word_insertions": 4,
+        "reference_words": 1200,
+        "deletion_rate": 0.004166666666666667,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "F03": 0.25083333333333335
+        },
+        "slice_wer": {
+          "command_2word_gap_long_stretch_mild": 0.3333333333333333,
+          "command_2word_gap_long_stretch_none": 0.16666666666666666,
+          "command_2word_gap_long_stretch_strong": 0.35,
+          "command_2word_gap_long_stretch_very_strong": 0.23333333333333334,
+          "command_2word_gap_short_stretch_mild": 0.23333333333333334,
+          "command_2word_gap_short_stretch_none": 0.18333333333333332,
+          "command_2word_gap_short_stretch_strong": 0.36666666666666664,
+          "command_2word_gap_short_stretch_very_strong": 0.26666666666666666,
+          "command_3word_gap_medium_stretch_mild": 0.3,
+          "command_3word_gap_medium_stretch_none": 0.14444444444444443,
+          "command_3word_gap_medium_stretch_strong": 0.24444444444444444,
+          "command_3word_gap_medium_stretch_very_strong": 0.23333333333333334,
+          "command_3word_gap_very_long_stretch_mild": 0.26666666666666666,
+          "command_3word_gap_very_long_stretch_none": 0.2,
+          "command_3word_gap_very_long_stretch_strong": 0.28888888888888886,
+          "command_3word_gap_very_long_stretch_very_strong": 0.24444444444444444
+        },
+        "decode_seconds": 43.7076881211251,
+        "audio_seconds": 3471.4865999999997,
+        "rtf": 0.01259048158824093,
+        "predictions_sha256": "7b0e32200f1cd5b1bcc3392b63e44091292c4cbc79f9b86d6476b2f5a37258dc"
+      },
+      "normal_dev": {
+        "utterances": 244,
+        "micro_wer": 0.0446927374301676,
+        "micro_cer": 0.016946576487575044,
+        "exact_match_rate": 0.6967213114754098,
+        "word_substitutions": 82,
+        "word_deletions": 13,
+        "word_insertions": 9,
+        "reference_words": 2327,
+        "deletion_rate": 0.00558659217877095,
+        "empty_outputs": 0,
+        "empty_rate": 0.0,
+        "speaker_wer": {
+          "cv-3cf23f9e7d13c4ce": 0.05244755244755245,
+          "cv-6dfef9a740f9183f": 0.020710059171597635,
+          "cv-868c12f75b7240d5": 0.04532967032967033,
+          "cv-8a5d72d90f11f21c": 0.06557377049180328,
+          "cv-8ab1fa31d3fcf868": 0.03015075376884422,
+          "cv-97043e2a59d4e588": 0.0,
+          "cv-e248a3eada31dfe0": 0.07643312101910828,
+          "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+          "cv-ee8fb89c401498ad": 0.059322033898305086
+        },
+        "slice_wer": {
+          "unspecified": 0.0446927374301676
+        },
+        "decode_seconds": 57.35011349618435,
+        "audio_seconds": 1224.6480000000004,
+        "rtf": 0.046829875601956096,
+        "predictions_sha256": "838a851cc05f0fe14178967919d0c56d8d4e390efb9e39b256b7357a3e131d10"
+      },
+      "objective": 0.31354124343998646,
+      "deployable_guard_passed": true,
+      "deployable_guard_failures": []
+    }
+  ],
+  "selected_kind": "deployable",
+  "selected_development": {
+    "training_mean_loss": 0.002727864215109548,
+    "training_examples": 7643,
+    "epoch": 7,
+    "torgo_dev": {
+      "utterances": 557,
+      "micro_wer": 0.11505681818181818,
+      "micro_cer": 0.06115563053563897,
+      "exact_match_rate": 0.7630161579892281,
+      "word_substitutions": 135,
+      "word_deletions": 16,
+      "word_insertions": 11,
+      "reference_words": 1408,
+      "deletion_rate": 0.011363636363636364,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "F03": 0.11505681818181818
+      },
+      "slice_wer": {
+        "unspecified": 0.11505681818181818
+      },
+      "decode_seconds": 53.356420028954744,
+      "audio_seconds": 1383.8210999999997,
+      "rtf": 0.03855731064438514,
+      "predictions_sha256": "ad99d98da9d9dbc39ea2eabea49fb803bae8e69cc4ea4cf37e6644ecf8b1dc45"
+    },
+    "command_dev": {
+      "utterances": 480,
+      "micro_wer": 0.24916666666666668,
+      "micro_cer": 0.13162675474814203,
+      "exact_match_rate": 0.4895833333333333,
+      "word_substitutions": 290,
+      "word_deletions": 6,
+      "word_insertions": 3,
+      "reference_words": 1200,
+      "deletion_rate": 0.005,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "F03": 0.24916666666666668
+      },
+      "slice_wer": {
+        "command_2word_gap_long_stretch_mild": 0.3333333333333333,
+        "command_2word_gap_long_stretch_none": 0.16666666666666666,
+        "command_2word_gap_long_stretch_strong": 0.35,
+        "command_2word_gap_long_stretch_very_strong": 0.23333333333333334,
+        "command_2word_gap_short_stretch_mild": 0.23333333333333334,
+        "command_2word_gap_short_stretch_none": 0.18333333333333332,
+        "command_2word_gap_short_stretch_strong": 0.4,
+        "command_2word_gap_short_stretch_very_strong": 0.26666666666666666,
+        "command_3word_gap_medium_stretch_mild": 0.3,
+        "command_3word_gap_medium_stretch_none": 0.12222222222222222,
+        "command_3word_gap_medium_stretch_strong": 0.24444444444444444,
+        "command_3word_gap_medium_stretch_very_strong": 0.2222222222222222,
+        "command_3word_gap_very_long_stretch_mild": 0.26666666666666666,
+        "command_3word_gap_very_long_stretch_none": 0.2,
+        "command_3word_gap_very_long_stretch_strong": 0.2777777777777778,
+        "command_3word_gap_very_long_stretch_very_strong": 0.24444444444444444
+      },
+      "decode_seconds": 44.323162864893675,
+      "audio_seconds": 3471.4865999999997,
+      "rtf": 0.01276777587587222,
+      "predictions_sha256": "a59d63b41d41b08454ff38ef4018da1a16d4003741e84d4327b15d4ebf8eaf9d"
+    },
+    "normal_dev": {
+      "utterances": 244,
+      "micro_wer": 0.0446927374301676,
+      "micro_cer": 0.016338627555285357,
+      "exact_match_rate": 0.6967213114754098,
+      "word_substitutions": 83,
+      "word_deletions": 12,
+      "word_insertions": 9,
+      "reference_words": 2327,
+      "deletion_rate": 0.005156854318865492,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "cv-3cf23f9e7d13c4ce": 0.05244755244755245,
+        "cv-6dfef9a740f9183f": 0.020710059171597635,
+        "cv-868c12f75b7240d5": 0.04532967032967033,
+        "cv-8a5d72d90f11f21c": 0.06557377049180328,
+        "cv-8ab1fa31d3fcf868": 0.03015075376884422,
+        "cv-97043e2a59d4e588": 0.0,
+        "cv-e248a3eada31dfe0": 0.07643312101910828,
+        "cv-e73f33ab2cb5bb36": 0.02127659574468085,
+        "cv-ee8fb89c401498ad": 0.059322033898305086
+      },
+      "slice_wer": {
+        "unspecified": 0.0446927374301676
+      },
+      "decode_seconds": 57.692768262699246,
+      "audio_seconds": 1224.6480000000004,
+      "rtf": 0.04710967417796724,
+      "predictions_sha256": "4d5a8f3864cd6d8b5faa62f1635b4180875123c94e35009371a5836e009926d3"
+    },
+    "objective": 0.3111643495005925,
+    "deployable_guard_passed": true,
+    "deployable_guard_failures": []
+  },
+  "v1_test": {
+    "torgo_test": {
+      "utterances": 281,
+      "micro_wer": 0.562942008486563,
+      "micro_cer": 0.407460960092539,
+      "exact_match_rate": 0.40569395017793597,
+      "word_substitutions": 303,
+      "word_deletions": 28,
+      "word_insertions": 67,
+      "reference_words": 707,
+      "deletion_rate": 0.039603960396039604,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "M04": 0.562942008486563
+      },
+      "slice_wer": {
+        "unspecified": 0.562942008486563
+      },
+      "decode_seconds": 29.540024541318417,
+      "audio_seconds": 1315.0218,
+      "rtf": 0.02246352459048087,
+      "predictions_sha256": "bc9ff707386ae182e6b68137dd30d01b7229ac60e135503f054001f108919d97"
+    },
+    "command_test": {
+      "utterances": 480,
+      "micro_wer": 0.7258333333333333,
+      "micro_cer": 0.5139334571862861,
+      "exact_match_rate": 0.052083333333333336,
+      "word_substitutions": 479,
+      "word_deletions": 361,
+      "word_insertions": 31,
+      "reference_words": 1200,
+      "deletion_rate": 0.30083333333333334,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "M04": 0.7258333333333333
+      },
+      "slice_wer": {
+        "command_2word_gap_long_stretch_mild": 0.8666666666666667,
+        "command_2word_gap_long_stretch_none": 0.6166666666666667,
+        "command_2word_gap_long_stretch_strong": 0.7666666666666667,
+        "command_2word_gap_long_stretch_very_strong": 0.9166666666666666,
+        "command_2word_gap_short_stretch_mild": 0.7166666666666667,
+        "command_2word_gap_short_stretch_none": 0.6666666666666666,
+        "command_2word_gap_short_stretch_strong": 0.7833333333333333,
+        "command_2word_gap_short_stretch_very_strong": 0.8,
+        "command_3word_gap_medium_stretch_mild": 0.8444444444444444,
+        "command_3word_gap_medium_stretch_none": 0.6777777777777778,
+        "command_3word_gap_medium_stretch_strong": 0.7444444444444445,
+        "command_3word_gap_medium_stretch_very_strong": 0.7,
+        "command_3word_gap_very_long_stretch_mild": 0.7666666666666667,
+        "command_3word_gap_very_long_stretch_none": 0.5444444444444444,
+        "command_3word_gap_very_long_stretch_strong": 0.7111111111111111,
+        "command_3word_gap_very_long_stretch_very_strong": 0.6
+      },
+      "decode_seconds": 44.081014696508646,
+      "audio_seconds": 4439.136599999998,
+      "rtf": 0.009930087462617993,
+      "predictions_sha256": "3c936a33b69af33f447c63f004110b93444ecc1a9581dcd41bce14fad9c85e09"
+    },
+    "normal_test": {
+      "utterances": 262,
+      "micro_wer": 0.052260934025203855,
+      "micro_cer": 0.019136346468588694,
+      "exact_match_rate": 0.6526717557251909,
+      "word_substitutions": 114,
+      "word_deletions": 7,
+      "word_insertions": 20,
+      "reference_words": 2698,
+      "deletion_rate": 0.0025945144551519643,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "cv-0c9fdc7090614483": 0.07142857142857142,
+        "cv-0f3d9edaf10ce5d2": 0.2,
+        "cv-6d6b486ea2ade6e0": 0.04940530649588289,
+        "cv-71276677caa10b82": 0.05319148936170213,
+        "cv-bf677e8a6de2b30e": 0.05154639175257732,
+        "cv-d59b95350940f24a": 0.0488997555012225,
+        "cv-ec89fbe314078e87": 0.05454545454545454,
+        "cv-f5b6f3bb07329f5b": 0.09302325581395349
+      },
+      "slice_wer": {
+        "unspecified": 0.052260934025203855
+      },
+      "decode_seconds": 67.94240841083229,
+      "audio_seconds": 1540.9920000000006,
+      "rtf": 0.04409004615911845,
+      "predictions_sha256": "af6b741717876e392459a4571a24df75478a49db246feb16a54aecce7a92dc5e"
+    },
+    "personal": {
+      "utterances": 3,
+      "micro_wer": 0.2222222222222222,
+      "micro_cer": 0.13157894736842105,
+      "exact_match_rate": 0.6666666666666666,
+      "word_substitutions": 1,
+      "word_deletions": 1,
+      "word_insertions": 0,
+      "reference_words": 9,
+      "deletion_rate": 0.1111111111111111,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "external-personal": 0.2222222222222222
+      },
+      "slice_wer": {
+        "unspecified": 0.2222222222222222
+      },
+      "decode_seconds": 0.3258441910147667,
+      "audio_seconds": 11.7377,
+      "rtf": 0.027760480419057112,
+      "predictions_sha256": "193aa069c7762d751804e112f2376ef69df9c28c01f10958c51eb90ba4f1fb50"
+    }
+  },
+  "v3_test": {
+    "torgo_test": {
+      "utterances": 281,
+      "micro_wer": 0.5502121640735502,
+      "micro_cer": 0.384037015615963,
+      "exact_match_rate": 0.4377224199288256,
+      "word_substitutions": 300,
+      "word_deletions": 22,
+      "word_insertions": 67,
+      "reference_words": 707,
+      "deletion_rate": 0.031117397454031116,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "M04": 0.5502121640735502
+      },
+      "slice_wer": {
+        "unspecified": 0.5502121640735502
+      },
+      "decode_seconds": 29.73177339322865,
+      "audio_seconds": 1315.0218,
+      "rtf": 0.022609338790603055,
+      "predictions_sha256": "1115d7a165e6f508d3a8ed63e3fa16ee25cb3670c4ba582f6bc262fea5cbf41d"
+    },
+    "command_test": {
+      "utterances": 480,
+      "micro_wer": 0.5158333333333334,
+      "micro_cer": 0.3051849349771998,
+      "exact_match_rate": 0.18958333333333333,
+      "word_substitutions": 587,
+      "word_deletions": 4,
+      "word_insertions": 28,
+      "reference_words": 1200,
+      "deletion_rate": 0.0033333333333333335,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "M04": 0.5158333333333334
+      },
+      "slice_wer": {
+        "command_2word_gap_long_stretch_mild": 0.5833333333333334,
+        "command_2word_gap_long_stretch_none": 0.35,
+        "command_2word_gap_long_stretch_strong": 0.5333333333333333,
+        "command_2word_gap_long_stretch_very_strong": 0.55,
+        "command_2word_gap_short_stretch_mild": 0.6,
+        "command_2word_gap_short_stretch_none": 0.4666666666666667,
+        "command_2word_gap_short_stretch_strong": 0.6333333333333333,
+        "command_2word_gap_short_stretch_very_strong": 0.6,
+        "command_3word_gap_medium_stretch_mild": 0.5222222222222223,
+        "command_3word_gap_medium_stretch_none": 0.36666666666666664,
+        "command_3word_gap_medium_stretch_strong": 0.5333333333333333,
+        "command_3word_gap_medium_stretch_very_strong": 0.5,
+        "command_3word_gap_very_long_stretch_mild": 0.5888888888888889,
+        "command_3word_gap_very_long_stretch_none": 0.4444444444444444,
+        "command_3word_gap_very_long_stretch_strong": 0.5777777777777777,
+        "command_3word_gap_very_long_stretch_very_strong": 0.4666666666666667
+      },
+      "decode_seconds": 44.54429186321795,
+      "audio_seconds": 4439.136599999998,
+      "rtf": 0.010034449461009596,
+      "predictions_sha256": "8480a67366f5ec4a1a81cfe9d33e1e02277d99e3a0a4ef738775e1ebda7fe24e"
+    },
+    "normal_test": {
+      "utterances": 262,
+      "micro_wer": 0.052260934025203855,
+      "micro_cer": 0.018632758403625833,
+      "exact_match_rate": 0.6717557251908397,
+      "word_substitutions": 115,
+      "word_deletions": 7,
+      "word_insertions": 19,
+      "reference_words": 2698,
+      "deletion_rate": 0.0025945144551519643,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "cv-0c9fdc7090614483": 0.0,
+        "cv-0f3d9edaf10ce5d2": 0.0,
+        "cv-6d6b486ea2ade6e0": 0.043000914913083256,
+        "cv-71276677caa10b82": 0.06595744680851064,
+        "cv-bf677e8a6de2b30e": 0.05154639175257732,
+        "cv-d59b95350940f24a": 0.05378973105134474,
+        "cv-ec89fbe314078e87": 0.03636363636363636,
+        "cv-f5b6f3bb07329f5b": 0.06976744186046512
+      },
+      "slice_wer": {
+        "unspecified": 0.052260934025203855
+      },
+      "decode_seconds": 68.423264907673,
+      "audio_seconds": 1540.9920000000006,
+      "rtf": 0.04440208963295914,
+      "predictions_sha256": "0306f661efb1294c5b6baf4e89a6eb51ee22952e2ddc174d43c0401a7357465d"
+    },
+    "personal": {
+      "utterances": 3,
+      "micro_wer": 0.4444444444444444,
+      "micro_cer": 0.42105263157894735,
+      "exact_match_rate": 0.3333333333333333,
+      "word_substitutions": 2,
+      "word_deletions": 2,
+      "word_insertions": 0,
+      "reference_words": 9,
+      "deletion_rate": 0.2222222222222222,
+      "empty_outputs": 0,
+      "empty_rate": 0.0,
+      "speaker_wer": {
+        "external-personal": 0.4444444444444444
+      },
+      "slice_wer": {
+        "unspecified": 0.4444444444444444
+      },
+      "decode_seconds": 0.2654599342495203,
+      "audio_seconds": 11.7377,
+      "rtf": 0.022616009460926782,
+      "predictions_sha256": "ada35bab1452fd371fe8afd4d5f7398362e97fcef319ec73bb05c553052b46d5"
+    }
+  },
+  "v1_diagnostic": {
+    "beams": 5,
+    "overall": {
+      "utterances": 773,
+      "top1_wer": 0.6711271230056614,
+      "top1_cer": 0.4826356101143637,
+      "topk_oracle_wer": 0.5203293875450334,
+      "topk_oracle_cer": 0.35064526282656594,
+      "exact_in_topk_rate": 0.3260025873221216
+    },
+    "categories": {
+      "command_all": {
+        "utterances": 480,
+        "top1_wer": 0.7758333333333334,
+        "top1_cer": 0.5536226988684344,
+        "topk_oracle_wer": 0.6,
+        "topk_oracle_cer": 0.39216348589765243,
+        "exact_in_topk_rate": 0.16041666666666668
+      },
+      "pause_stress": {
+        "utterances": 9,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.18421052631578946,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.14035087719298245,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "personal_original": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.13157894736842105,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.13157894736842105,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "torgo_original": {
+        "utterances": 281,
+        "top1_wer": 0.5162659123055162,
+        "top1_cer": 0.3747831116252169,
+        "topk_oracle_wer": 0.4002828854314003,
+        "topk_oracle_cer": 0.2888953152111047,
+        "exact_in_topk_rate": 0.594306049822064
+      }
+    },
+    "slices": {
+      "command_2word_gap_long_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.8333333333333334,
+        "top1_cer": 0.5918367346938775,
+        "topk_oracle_wer": 0.6166666666666667,
+        "topk_oracle_cer": 0.4217687074829932,
+        "exact_in_topk_rate": 0.06666666666666667
+      },
+      "command_2word_gap_long_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.6333333333333333,
+        "top1_cer": 0.4355400696864111,
+        "topk_oracle_wer": 0.45,
+        "topk_oracle_cer": 0.24390243902439024,
+        "exact_in_topk_rate": 0.3333333333333333
+      },
+      "command_2word_gap_long_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.75,
+        "top1_cer": 0.5813953488372093,
+        "topk_oracle_wer": 0.6166666666666667,
+        "topk_oracle_cer": 0.43521594684385384,
+        "exact_in_topk_rate": 0.23333333333333334
+      },
+      "command_2word_gap_long_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.8666666666666667,
+        "top1_cer": 0.6158940397350994,
+        "topk_oracle_wer": 0.65,
+        "topk_oracle_cer": 0.4337748344370861,
+        "exact_in_topk_rate": 0.23333333333333334
+      },
+      "command_2word_gap_short_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.75,
+        "top1_cer": 0.5777027027027027,
+        "topk_oracle_wer": 0.5833333333333334,
+        "topk_oracle_cer": 0.3716216216216216,
+        "exact_in_topk_rate": 0.1
+      },
+      "command_2word_gap_short_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.6666666666666666,
+        "top1_cer": 0.3957597173144876,
+        "topk_oracle_wer": 0.43333333333333335,
+        "topk_oracle_cer": 0.2332155477031802,
+        "exact_in_topk_rate": 0.3333333333333333
+      },
+      "command_2word_gap_short_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.7833333333333333,
+        "top1_cer": 0.5774647887323944,
+        "topk_oracle_wer": 0.6333333333333333,
+        "topk_oracle_cer": 0.4084507042253521,
+        "exact_in_topk_rate": 0.16666666666666666
+      },
+      "command_2word_gap_short_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 1.8333333333333333,
+        "top1_cer": 1.6783216783216783,
+        "topk_oracle_wer": 1.65,
+        "topk_oracle_cer": 1.444055944055944,
+        "exact_in_topk_rate": 0.13333333333333333
+      },
+      "command_3word_gap_medium_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.8111111111111111,
+        "top1_cer": 0.5931818181818181,
+        "topk_oracle_wer": 0.6555555555555556,
+        "topk_oracle_cer": 0.3931818181818182,
+        "exact_in_topk_rate": 0.03333333333333333
+      },
+      "command_3word_gap_medium_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.6444444444444445,
+        "top1_cer": 0.4009009009009009,
+        "topk_oracle_wer": 0.4888888888888889,
+        "topk_oracle_cer": 0.28153153153153154,
+        "exact_in_topk_rate": 0.1
+      },
+      "command_3word_gap_medium_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.7666666666666667,
+        "top1_cer": 0.5448430493273543,
+        "topk_oracle_wer": 0.5111111111111111,
+        "topk_oracle_cer": 0.36771300448430494,
+        "exact_in_topk_rate": 0.16666666666666666
+      },
+      "command_3word_gap_medium_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.7333333333333333,
+        "top1_cer": 0.46756152125279643,
+        "topk_oracle_wer": 0.5444444444444444,
+        "topk_oracle_cer": 0.319910514541387,
+        "exact_in_topk_rate": 0.2
+      },
+      "command_3word_gap_very_long_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.7444444444444445,
+        "top1_cer": 0.5472527472527473,
+        "topk_oracle_wer": 0.6,
+        "topk_oracle_cer": 0.3758241758241758,
+        "exact_in_topk_rate": 0.03333333333333333
+      },
+      "command_3word_gap_very_long_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.5444444444444444,
+        "top1_cer": 0.30648769574944074,
+        "topk_oracle_wer": 0.4111111111111111,
+        "topk_oracle_cer": 0.22371364653243847,
+        "exact_in_topk_rate": 0.2
+      },
+      "command_3word_gap_very_long_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.7444444444444445,
+        "top1_cer": 0.5101123595505618,
+        "topk_oracle_wer": 0.5444444444444444,
+        "topk_oracle_cer": 0.31685393258426964,
+        "exact_in_topk_rate": 0.06666666666666667
+      },
+      "command_3word_gap_very_long_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.6111111111111112,
+        "top1_cer": 0.40301724137931033,
+        "topk_oracle_wer": 0.4888888888888889,
+        "topk_oracle_cer": 0.3103448275862069,
+        "exact_in_topk_rate": 0.16666666666666666
+      },
+      "pause_0500ms": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.21052631578947367,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.18421052631578946,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "pause_1000ms": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.21052631578947367,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.13157894736842105,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "pause_2000ms": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.13157894736842105,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.10526315789473684,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "personal_original": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.13157894736842105,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.13157894736842105,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "torgo_1word": {
+        "utterances": 216,
+        "top1_wer": 0.5092592592592593,
+        "top1_cer": 0.36129032258064514,
+        "topk_oracle_wer": 0.30092592592592593,
+        "topk_oracle_cer": 0.19032258064516128,
+        "exact_in_topk_rate": 0.7314814814814815
+      },
+      "torgo_2_3word": {
+        "utterances": 1,
+        "top1_wer": 1.0,
+        "top1_cer": 1.2,
+        "topk_oracle_wer": 1.0,
+        "topk_oracle_cer": 1.0,
+        "exact_in_topk_rate": 0.0
+      },
+      "torgo_4plus": {
+        "utterances": 64,
+        "top1_wer": 0.5173824130879345,
+        "top1_cer": 0.37812128418549346,
+        "topk_oracle_wer": 0.44171779141104295,
+        "topk_oracle_cer": 0.32382084819659135,
+        "exact_in_topk_rate": 0.140625
+      }
+    }
+  },
+  "v3_diagnostic": {
+    "beams": 5,
+    "overall": {
+      "utterances": 773,
+      "top1_wer": 0.5784868759650026,
+      "top1_cer": 0.41433217920470045,
+      "topk_oracle_wer": 0.4467318579516212,
+      "topk_oracle_cer": 0.31948378973874725,
+      "exact_in_topk_rate": 0.4424320827943079
+    },
+    "categories": {
+      "command_all": {
+        "utterances": 480,
+        "top1_wer": 0.6175,
+        "top1_cer": 0.4440128356696504,
+        "topk_oracle_wer": 0.4683333333333333,
+        "topk_oracle_cer": 0.3352474244215504,
+        "exact_in_topk_rate": 0.3645833333333333
+      },
+      "pause_stress": {
+        "utterances": 9,
+        "top1_wer": 0.37037037037037035,
+        "top1_cer": 0.3157894736842105,
+        "topk_oracle_wer": 0.2962962962962963,
+        "topk_oracle_cer": 0.21052631578947367,
+        "exact_in_topk_rate": 0.5555555555555556
+      },
+      "personal_original": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.23684210526315788,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.21052631578947367,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "torgo_original": {
+        "utterances": 281,
+        "top1_wer": 0.5247524752475248,
+        "top1_cer": 0.36871023713128975,
+        "topk_oracle_wer": 0.4186704384724187,
+        "topk_oracle_cer": 0.29728166570271836,
+        "exact_in_topk_rate": 0.5693950177935944
+      }
+    },
+    "slices": {
+      "command_2word_gap_long_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.5833333333333334,
+        "top1_cer": 0.3163265306122449,
+        "topk_oracle_wer": 0.4,
+        "topk_oracle_cer": 0.18027210884353742,
+        "exact_in_topk_rate": 0.4
+      },
+      "command_2word_gap_long_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.35,
+        "top1_cer": 0.18815331010452963,
+        "topk_oracle_wer": 0.18333333333333332,
+        "topk_oracle_cer": 0.08362369337979095,
+        "exact_in_topk_rate": 0.7
+      },
+      "command_2word_gap_long_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.5166666666666667,
+        "top1_cer": 0.36212624584717606,
+        "topk_oracle_wer": 0.4166666666666667,
+        "topk_oracle_cer": 0.2956810631229236,
+        "exact_in_topk_rate": 0.4666666666666667
+      },
+      "command_2word_gap_long_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 2.6,
+        "top1_cer": 3.0165562913907285,
+        "topk_oracle_wer": 2.4833333333333334,
+        "topk_oracle_cer": 2.847682119205298,
+        "exact_in_topk_rate": 0.5
+      },
+      "command_2word_gap_short_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.6,
+        "top1_cer": 0.3952702702702703,
+        "topk_oracle_wer": 0.4,
+        "topk_oracle_cer": 0.22297297297297297,
+        "exact_in_topk_rate": 0.4
+      },
+      "command_2word_gap_short_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.48333333333333334,
+        "top1_cer": 0.2579505300353357,
+        "topk_oracle_wer": 0.26666666666666666,
+        "topk_oracle_cer": 0.12367491166077739,
+        "exact_in_topk_rate": 0.5666666666666667
+      },
+      "command_2word_gap_short_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.6166666666666667,
+        "top1_cer": 0.3485915492957746,
+        "topk_oracle_wer": 0.4,
+        "topk_oracle_cer": 0.1936619718309859,
+        "exact_in_topk_rate": 0.36666666666666664
+      },
+      "command_2word_gap_short_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.6,
+        "top1_cer": 0.3986013986013986,
+        "topk_oracle_wer": 0.5,
+        "topk_oracle_cer": 0.3111888111888112,
+        "exact_in_topk_rate": 0.3333333333333333
+      },
+      "command_3word_gap_medium_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.5222222222222223,
+        "top1_cer": 0.32727272727272727,
+        "topk_oracle_wer": 0.4,
+        "topk_oracle_cer": 0.2340909090909091,
+        "exact_in_topk_rate": 0.16666666666666666
+      },
+      "command_3word_gap_medium_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.36666666666666664,
+        "top1_cer": 0.21621621621621623,
+        "topk_oracle_wer": 0.23333333333333334,
+        "topk_oracle_cer": 0.13288288288288289,
+        "exact_in_topk_rate": 0.4
+      },
+      "command_3word_gap_medium_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.5333333333333333,
+        "top1_cer": 0.35201793721973096,
+        "topk_oracle_wer": 0.37777777777777777,
+        "topk_oracle_cer": 0.2533632286995516,
+        "exact_in_topk_rate": 0.23333333333333334
+      },
+      "command_3word_gap_medium_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.5,
+        "top1_cer": 0.2953020134228188,
+        "topk_oracle_wer": 0.37777777777777777,
+        "topk_oracle_cer": 0.203579418344519,
+        "exact_in_topk_rate": 0.3
+      },
+      "command_3word_gap_very_long_stretch_mild": {
+        "utterances": 30,
+        "top1_wer": 0.5888888888888889,
+        "top1_cer": 0.34285714285714286,
+        "topk_oracle_wer": 0.43333333333333335,
+        "topk_oracle_cer": 0.24175824175824176,
+        "exact_in_topk_rate": 0.16666666666666666
+      },
+      "command_3word_gap_very_long_stretch_none": {
+        "utterances": 30,
+        "top1_wer": 0.43333333333333335,
+        "top1_cer": 0.232662192393736,
+        "topk_oracle_wer": 0.26666666666666666,
+        "topk_oracle_cer": 0.16331096196868009,
+        "exact_in_topk_rate": 0.36666666666666664
+      },
+      "command_3word_gap_very_long_stretch_strong": {
+        "utterances": 30,
+        "top1_wer": 0.5777777777777777,
+        "top1_cer": 0.3325842696629214,
+        "topk_oracle_wer": 0.4222222222222222,
+        "topk_oracle_cer": 0.20449438202247192,
+        "exact_in_topk_rate": 0.23333333333333334
+      },
+      "command_3word_gap_very_long_stretch_very_strong": {
+        "utterances": 30,
+        "top1_wer": 0.4777777777777778,
+        "top1_cer": 0.2629310344827586,
+        "topk_oracle_wer": 0.36666666666666664,
+        "topk_oracle_cer": 0.15948275862068967,
+        "exact_in_topk_rate": 0.23333333333333334
+      },
+      "pause_0500ms": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.21052631578947367,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.18421052631578946,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "pause_1000ms": {
+        "utterances": 3,
+        "top1_wer": 0.4444444444444444,
+        "top1_cer": 0.3684210526315789,
+        "topk_oracle_wer": 0.4444444444444444,
+        "topk_oracle_cer": 0.2894736842105263,
+        "exact_in_topk_rate": 0.3333333333333333
+      },
+      "pause_2000ms": {
+        "utterances": 3,
+        "top1_wer": 0.4444444444444444,
+        "top1_cer": 0.3684210526315789,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.15789473684210525,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "personal_original": {
+        "utterances": 3,
+        "top1_wer": 0.2222222222222222,
+        "top1_cer": 0.23684210526315788,
+        "topk_oracle_wer": 0.2222222222222222,
+        "topk_oracle_cer": 0.21052631578947367,
+        "exact_in_topk_rate": 0.6666666666666666
+      },
+      "torgo_1word": {
+        "utterances": 216,
+        "top1_wer": 0.48148148148148145,
+        "top1_cer": 0.3247311827956989,
+        "topk_oracle_wer": 0.3194444444444444,
+        "topk_oracle_cer": 0.2,
+        "exact_in_topk_rate": 0.7083333333333334
+      },
+      "torgo_2_3word": {
+        "utterances": 1,
+        "top1_wer": 1.0,
+        "top1_cer": 1.2,
+        "topk_oracle_wer": 0.5,
+        "topk_oracle_cer": 0.8,
+        "exact_in_topk_rate": 0.0
+      },
+      "torgo_4plus": {
+        "utterances": 64,
+        "top1_wer": 0.5419222903885481,
+        "top1_cer": 0.3832738803012287,
+        "topk_oracle_wer": 0.4621676891615542,
+        "topk_oracle_cer": 0.3321442726912406,
+        "exact_in_topk_rate": 0.109375
+      }
+    }
+  },
+  "decision": {
+    "decision": "deploy_v3_literal_multi_hypothesis",
+    "selected_kind": "deployable",
+    "selected_epoch": 7,
+    "test_guards": {
+      "torgo": true,
+      "normal": true,
+      "command": true
+    },
+    "command_test_relative_wer_improvement": 0.28932261768082657,
+    "command_top5_exact_gain_absolute": 0.20416666666666664,
+    "v1_test": {
+      "torgo_test": 0.562942008486563,
+      "command_test": 0.7258333333333333,
+      "normal_test": 0.052260934025203855,
+      "personal": 0.2222222222222222
+    },
+    "v3_test": {
+      "torgo_test": 0.5502121640735502,
+      "command_test": 0.5158333333333334,
+      "normal_test": 0.052260934025203855,
+      "personal": 0.4444444444444444
+    },
+    "v1_command_top5": {
+      "utterances": 480,
+      "top1_wer": 0.7758333333333334,
+      "top1_cer": 0.5536226988684344,
+      "topk_oracle_wer": 0.6,
+      "topk_oracle_cer": 0.39216348589765243,
+      "exact_in_topk_rate": 0.16041666666666668
+    },
+    "v3_command_top5": {
+      "utterances": 480,
+      "top1_wer": 0.6175,
+      "top1_cer": 0.4440128356696504,
+      "topk_oracle_wer": 0.4683333333333333,
+      "topk_oracle_cer": 0.3352474244215504,
+      "exact_in_topk_rate": 0.3645833333333333
+    },
+    "personal_i_water": {
+      "v1": {
+        "reference": "I water",
+        "top1": "gotten",
+        "top5": [
+          "gotten",
+          "garden",
+          "high, bottom",
+          "high button",
+          "bottle"
+        ],
+        "literal_present": false
+      },
+      "v3": {
+        "reference": "I water",
+        "top1": "thigh button",
+        "top5": [
+          "thigh button",
+          "thigh gotten",
+          "high button",
+          "nine button",
+          "thigh bottom"
+        ],
+        "literal_present": false
+      }
+    },
+    "limitations": [
+      "TORGO has only eight dysarthric speakers in these train/dev/test folds.",
+      "Command compositions are controlled augmentations, not naturally spoken commands.",
+      "Beam probabilities are relative search scores, not calibrated confidence.",
+      "No semantic repair, candidate ranker, or personal context was used."
+    ]
+  },
+  "artifact": {
+    "format": "echora-qwen3-asr-command-v3",
+    "run_id": "qwen3-asr-1.7b-command-v3",
+    "base_model_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
+    "v1_adapter_sha256": "4e211db6c6571a7a4efbe8e851b67d44f33feea41724d0ab7afcf7195e018e0c",
+    "config_sha256": "5a60862c24d0e548db2b4b436066461eef2b6c633e24419e81af095baae4a312",
+    "manifest_sha256": "7cc9070c44adf533de4e65ef7f7d930a21f61b6ac85afc77715d4b9530f4d85f",
+    "selected_kind": "deployable",
+    "selected_epoch": 7,
+    "literal_prompt": "Transcribe only the words actually spoken. Keep incomplete or unusual word sequences literal. Do not add missing words.",
+    "semantic_repair": false,
+    "candidate_ranker": false,
+    "adapter_file": "adapter.safetensors",
+    "adapter_sha256": "7cd203cc0cbf479e6afa198cc3895fedc71f1907b870fcb7f1dece0a1e6b2021"
+  },
+  "peak_cuda_memory_gib": 13.794528007507324,
+  "elapsed_seconds": 5418.596121303737,
+  "literal_transcripts_only": true,
+  "semantic_repair": false,
+  "candidate_ranker": false
+}

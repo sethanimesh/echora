@@ -1,0 +1,72 @@
+{
+  "decision": "deploy_v3_literal_multi_hypothesis",
+  "selected_kind": "deployable",
+  "selected_epoch": 7,
+  "test_guards": {
+    "torgo": true,
+    "normal": true,
+    "command": true
+  },
+  "command_test_relative_wer_improvement": 0.28932261768082657,
+  "command_top5_exact_gain_absolute": 0.20416666666666664,
+  "v1_test": {
+    "torgo_test": 0.562942008486563,
+    "command_test": 0.7258333333333333,
+    "normal_test": 0.052260934025203855,
+    "personal": 0.2222222222222222
+  },
+  "v3_test": {
+    "torgo_test": 0.5502121640735502,
+    "command_test": 0.5158333333333334,
+    "normal_test": 0.052260934025203855,
+    "personal": 0.4444444444444444
+  },
+  "v1_command_top5": {
+    "utterances": 480,
+    "top1_wer": 0.7758333333333334,
+    "top1_cer": 0.5536226988684344,
+    "topk_oracle_wer": 0.6,
+    "topk_oracle_cer": 0.39216348589765243,
+    "exact_in_topk_rate": 0.16041666666666668
+  },
+  "v3_command_top5": {
+    "utterances": 480,
+    "top1_wer": 0.6175,
+    "top1_cer": 0.4440128356696504,
+    "topk_oracle_wer": 0.4683333333333333,
+    "topk_oracle_cer": 0.3352474244215504,
+    "exact_in_topk_rate": 0.3645833333333333
+  },
+  "personal_i_water": {
+    "v1": {
+      "reference": "I water",
+      "top1": "gotten",
+      "top5": [
+        "gotten",
+        "garden",
+        "high, bottom",
+        "high button",
+        "bottle"
+      ],
+      "literal_present": false
+    },
+    "v3": {
+      "reference": "I water",
+      "top1": "thigh button",
+      "top5": [
+        "thigh button",
+        "thigh gotten",
+        "high button",
+        "nine button",
+        "thigh bottom"
+      ],
+      "literal_present": false
+    }
+  },
+  "limitations": [
+    "TORGO has only eight dysarthric speakers in these train/dev/test folds.",
+    "Command compositions are controlled augmentations, not naturally spoken commands.",
+    "Beam probabilities are relative search scores, not calibrated confidence.",
+    "No semantic repair, candidate ranker, or personal context was used."
+  ]
+}

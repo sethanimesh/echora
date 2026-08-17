@@ -1,0 +1,15 @@
+{
+  "format": "echora-qwen3-asr-command-v3",
+  "run_id": "qwen3-asr-1.7b-command-v3",
+  "base_model_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
+  "v1_adapter_sha256": "4e211db6c6571a7a4efbe8e851b67d44f33feea41724d0ab7afcf7195e018e0c",
+  "config_sha256": "5a60862c24d0e548db2b4b436066461eef2b6c633e24419e81af095baae4a312",
+  "manifest_sha256": "7cc9070c44adf533de4e65ef7f7d930a21f61b6ac85afc77715d4b9530f4d85f",
+  "selected_kind": "deployable",
+  "selected_epoch": 7,
+  "literal_prompt": "Transcribe only the words actually spoken. Keep incomplete or unusual word sequences literal. Do not add missing words.",
+  "semantic_repair": false,
+  "candidate_ranker": false,
+  "adapter_file": "adapter.safetensors",
+  "adapter_sha256": "7cd203cc0cbf479e6afa198cc3895fedc71f1907b870fcb7f1dece0a1e6b2021"
+}

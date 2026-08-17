@@ -1,0 +1,13 @@
+{
+  "name": "echora-qwen3-asr-command-v3",
+  "foundation": "Qwen/Qwen3-ASR-1.7B-hf",
+  "foundation_revision": "bcd2b5b7f32b480ab5790554cfa8347f246a14f3",
+  "foundation_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
+  "adapter_format": "echora-qwen3-asr-command-v3",
+  "adapter_sha256": "7cd203cc0cbf479e6afa198cc3895fedc71f1907b870fcb7f1dece0a1e6b2021",
+  "selected_epoch": 7,
+  "default_beams": 5,
+  "literal_prompt": "Transcribe only the words actually spoken. Keep incomplete or unusual word sequences literal. Do not add missing words.",
+  "semantic_repair": false,
+  "beam_probabilities_calibrated": false
+}
