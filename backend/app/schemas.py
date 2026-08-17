@@ -58,11 +58,25 @@ class MessageCandidate(BaseModel):
     word_alternatives: dict[str, list[str]] = Field(default_factory=dict)
 
 
+class SpeechAudio(BaseModel):
+    """Synthesized speech for one message, inlined so it plays without a round trip."""
+
+    audio_base64: str
+    media_type: str = "audio/wav"
+    voice: str
+    model: str
+
+
+class SpeechRequest(BaseModel):
+    text: str
+
+
 class Timing(BaseModel):
     audio_decode_seconds: float
     asr_seconds: float
     ranking_seconds: float
     grammar_seconds: float
+    speech_seconds: float = 0.0
     total_seconds: float
 
 
@@ -78,8 +92,13 @@ class TranscriptionResponse(BaseModel):
     messages: list[MessageCandidate]
     recommended_message_id: str | None
     needs_user_choice: bool
+    # Present only when one message survived the chain: that message is spoken on
+    # arrival, so the audio ships with the result rather than costing a round trip.
+    speech: SpeechAudio | None = None
     beam_weights_are_calibrated_confidence: bool = False
-    user_confirmation_required: bool = True
+    # An unambiguous message is spoken as soon as it lands, and choosing among
+    # ambiguous options speaks the chosen one. Neither waits for a confirm step.
+    user_confirmation_required: bool = False
     timing: Timing
     warnings: list[str]
 

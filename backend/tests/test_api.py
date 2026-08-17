@@ -8,7 +8,14 @@ from fastapi.testclient import TestClient
 from app import main
 from app.audio import encode_wav
 from app.messaging.groq_chain import MessageChainResult
-from app.schemas import AudioQuality, Hypothesis, MessageCandidate, RankerDecision, RawAsrResult
+from app.schemas import (
+    AudioQuality,
+    Hypothesis,
+    MessageCandidate,
+    RankerDecision,
+    RawAsrResult,
+    SpeechAudio,
+)
 
 
 class FakeBackend:
@@ -64,10 +71,76 @@ class FakeChain:
         )
 
 
-def client(monkeypatch):
+def _candidate(message_id: str, text: str) -> MessageCandidate:
+    return MessageCandidate(
+        message_id=message_id,
+        hypothesis_id="h1",
+        source_hypothesis_ids=["h1"],
+        source_literals=["I water"],
+        literal_text="I water",
+        interpreted_intent="i water",
+        corrected_text=text,
+        repair_status="corrected",
+        repair_note="Heard as \u201ci water\u201d.",
+    )
+
+
+class AmbiguousChain:
+    """Two readings survived, so the speaker still has to choose between them."""
+
+    def __init__(self, settings):
+        pass
+
+    async def run(self, hypotheses, context="general"):
+        messages = [_candidate("m1", "I would like some water."), _candidate("m2", "I would like to wait.")]
+        return MessageChainResult(
+            ranker=RankerDecision(
+                decision="ambiguous",
+                display_hypothesis_ids=["h1"],
+                display_message_ids=["m1", "m2"],
+                reason="These could be different messages; please choose.",
+                source="groq",
+            ),
+            messages=messages,
+        )
+
+
+class FakeSpeech:
+    spoken: list[str] = []
+
+    def __init__(self, settings):
+        pass
+
+    async def synthesize(self, text):
+        FakeSpeech.spoken.append(text)
+        return SpeechAudio(audio_base64="UklGRg==", voice="hannah", model="test-tts")
+
+
+class SilentSpeech:
+    """Groq TTS could not answer. The message must still be returned."""
+
+    def __init__(self, settings):
+        pass
+
+    async def synthesize(self, text):
+        return None
+
+
+def client(monkeypatch, chain=FakeChain, speech=FakeSpeech):
+    FakeSpeech.spoken = []
     monkeypatch.setattr(main, "create_backend", lambda settings: FakeBackend())
-    monkeypatch.setattr(main, "GroqMessageChain", FakeChain)
+    monkeypatch.setattr(main, "GroqMessageChain", chain)
+    monkeypatch.setattr(main, "GroqSpeech", speech)
     return TestClient(main.app)
+
+
+def _post(api, context: str | None = None):
+    audio = np.sin(np.linspace(0, 100, 8_000)).astype(np.float32) * 0.1
+    return api.post(
+        "/api/v1/transcriptions",
+        files={"audio": ("voice.wav", encode_wav(audio), "audio/wav")},
+        data={"context": context} if context else None,
+    )
 
 
 def test_health_and_transcription_contract(monkeypatch) -> None:
@@ -87,7 +160,7 @@ def test_health_and_transcription_contract(monkeypatch) -> None:
         assert body["context"] == "home"
         assert body["recommended_message_id"] == "m1"
         assert body["beam_weights_are_calibrated_confidence"] is False
-        assert body["user_confirmation_required"] is True
+        assert body["user_confirmation_required"] is False
 
 
 def test_invalid_context_is_rejected(monkeypatch) -> None:
@@ -154,3 +227,53 @@ def test_model_and_cloud_worker_unavailable_are_explicit(monkeypatch) -> None:
         )
         assert response.status_code == 503
         assert "TimeoutError" in response.json()["detail"]
+
+
+def test_one_surviving_message_is_synthesized_with_the_result(monkeypatch) -> None:
+    """An unambiguous message ships its own audio, so the browser can speak it at once."""
+    with client(monkeypatch) as api:
+        body = _post(api).json()
+        assert body["ranker"]["decision"] == "selected"
+        assert body["speech"]["audio_base64"] == "UklGRg=="
+        assert body["speech"]["media_type"] == "audio/wav"
+        # The realized message is spoken, never the raw literal.
+        assert FakeSpeech.spoken == ["I would like some water."]
+
+
+def test_an_ambiguous_result_is_never_spoken_for_the_speaker(monkeypatch) -> None:
+    with client(monkeypatch, chain=AmbiguousChain) as api:
+        body = _post(api).json()
+        assert body["needs_user_choice"] is True
+        assert body["speech"] is None
+        assert FakeSpeech.spoken == []
+
+
+def test_failed_synthesis_still_returns_the_message(monkeypatch) -> None:
+    with client(monkeypatch, speech=SilentSpeech) as api:
+        response = _post(api)
+        assert response.status_code == 200
+        body = response.json()
+        assert body["speech"] is None
+        assert body["messages"][0]["corrected_text"] == "I would like some water."
+
+
+def test_autoplay_can_be_switched_off(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        main.app.state.settings = SimpleNamespace(
+            **{**main.app.state.settings.__dict__, "speech_autoplay": False}
+        )
+        body = _post(api).json()
+        assert body["speech"] is None
+        assert FakeSpeech.spoken == []
+
+
+def test_the_speech_endpoint_serves_audio_and_reports_unavailability(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        ok = api.post("/api/v1/speech", json={"text": "My leg hurts."})
+        assert ok.status_code == 200
+        assert ok.json()["audio_base64"] == "UklGRg=="
+        assert FakeSpeech.spoken == ["My leg hurts."]
+
+    # A 503 is the signal for the interface to fall back to the browser voice.
+    with client(monkeypatch, speech=SilentSpeech) as api:
+        assert api.post("/api/v1/speech", json={"text": "My leg hurts."}).status_code == 503

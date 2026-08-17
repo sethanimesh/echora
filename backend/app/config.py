@@ -27,6 +27,9 @@ class Settings:
     max_upload_bytes: int
     groq_api_key: str | None
     groq_models: tuple[str, ...]
+    groq_tts_model: str
+    groq_tts_voice: str
+    speech_autoplay: bool
     pod_url: str | None
     pod_token: str | None
     runpod_endpoint_id: str | None
@@ -87,6 +90,10 @@ def load_settings() -> Settings:
         max_upload_bytes=int(os.getenv("ECHORA_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024))),
         groq_api_key=os.getenv("GROQ_API_KEY") or os.getenv("GROQ") or None,
         groq_models=groq_models,
+        groq_tts_model=os.getenv("ECHORA_TTS_MODEL", "canopylabs/orpheus-v1-english").strip(),
+        groq_tts_voice=os.getenv("ECHORA_TTS_VOICE", "hannah").strip(),
+        speech_autoplay=os.getenv("ECHORA_SPEECH_AUTOPLAY", "true").strip().lower()
+        not in {"0", "false", "no", "off"},
         pod_url=os.getenv("ECHORA_POD_URL") or None,
         pod_token=os.getenv("ECHORA_POD_TOKEN") or None,
         runpod_endpoint_id=os.getenv("RUNPOD_ENDPOINT_ID") or None,

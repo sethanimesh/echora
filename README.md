@@ -1,6 +1,6 @@
 # Echora
 
-Echora is a local-first communication assistant for people whose speech is difficult to understand. It keeps literal ASR evidence visible, proposes a small number of message candidates, and waits for the speaker to confirm before communicating anything.
+Echora is a local-first communication assistant for people whose speech is difficult to understand. It keeps literal ASR evidence visible, proposes a small number of message candidates, and speaks the one the speaker has settled on.
 
 ## Quick start on this Mac
 
@@ -30,8 +30,8 @@ The existing `.env` is preserved. `GROQ_API_KEY` is the preferred key name; the 
 5. A configurable evidence gate decides whether one intent is clear or multiple intents must be shown. An intent whose grouped beams disagree on competing content words is never cleared by a speech-act cue alone.
 6. A second Groq pass turns each displayed intent into a natural communication message.
 7. Deterministic grounding rejects wording that introduces unsupported substantive terms.
-8. The speaker edits or selects a message and explicitly confirms it.
-9. Only a confirmed message can be copied or spoken.
+8. A single surviving message is spoken immediately with Groq TTS; when several remain, the speaker picks one and that tap speaks it.
+9. The message stays editable, and an edited version is spoken on request. If Groq speech is unavailable the browser voice takes over, so a message is never left unsaid.
 
 The displayed search weights are relative beam-search evidence, not calibrated confidence. Grammar repair never changes the stored literal transcript.
 

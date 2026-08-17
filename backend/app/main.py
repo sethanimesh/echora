@@ -15,8 +15,16 @@ from .asr import create_backend
 from .asr.engine import EXPECTED_ADAPTER_SHA256
 from .audio import AudioValidationError, decode_audio
 from .config import Settings, load_settings
-from .messaging import GroqMessageChain
-from .schemas import CommunicationContext, HealthResponse, ModelInfo, Timing, TranscriptionResponse
+from .messaging import GroqMessageChain, GroqSpeech
+from .schemas import (
+    CommunicationContext,
+    HealthResponse,
+    ModelInfo,
+    SpeechAudio,
+    SpeechRequest,
+    Timing,
+    TranscriptionResponse,
+)
 
 
 SUPPORTED_CONTEXTS: tuple[CommunicationContext, ...] = ("general", "home", "care", "outdoors")
@@ -33,6 +41,7 @@ async def lifespan(app: FastAPI):
     except Exception as error:
         app.state.asr_error = f"{type(error).__name__}: {error}"
     app.state.message_chain = GroqMessageChain(settings)
+    app.state.speech = GroqSpeech(settings)
     yield
 
 
@@ -132,6 +141,15 @@ async def transcribe(
     chain = await app.state.message_chain.run(raw.hypotheses, selected_context)
     recommended = chain.ranker.selected_message_id
     warnings = list(chain.warnings)
+    # One surviving message means nothing is left to disambiguate, so it is spoken
+    # on arrival. Synthesizing it here rather than in a follow-up request is what
+    # lets the browser play it the instant the screen renders.
+    speech: SpeechAudio | None = None
+    speech_seconds = 0.0
+    if settings.speech_autoplay and chain.ranker.decision == "selected" and chain.messages:
+        speech_started = time.perf_counter()
+        speech = await app.state.speech.synthesize(chain.messages[0].corrected_text)
+        speech_seconds = round(time.perf_counter() - speech_started, 3)
     if raw.audio_quality.low_level_warning:
         warnings.append("Recording level is low; move closer to the microphone")
     return TranscriptionResponse(
@@ -146,12 +164,27 @@ async def transcribe(
         messages=chain.messages,
         recommended_message_id=recommended,
         needs_user_choice=chain.ranker.decision == "ambiguous",
+        speech=speech,
         timing=Timing(
             audio_decode_seconds=audio_decode_seconds,
             asr_seconds=raw.decode_seconds,
             ranking_seconds=chain.ranking_seconds,
             grammar_seconds=chain.grammar_seconds,
+            speech_seconds=speech_seconds,
             total_seconds=round(time.perf_counter() - started, 3),
         ),
         warnings=warnings,
     )
+
+
+@app.post("/api/v1/speech", response_model=SpeechAudio)
+async def speak(request: SpeechRequest) -> SpeechAudio:
+    """Synthesize a message the speaker asked to hear again, or edited by hand.
+
+    A 503 here is not an error the speaker should see: the interface falls back to
+    the browser's own voice, so the message is still spoken.
+    """
+    audio = await app.state.speech.synthesize(request.text)
+    if audio is None:
+        raise HTTPException(status_code=503, detail="Groq speech is unavailable")
+    return audio
