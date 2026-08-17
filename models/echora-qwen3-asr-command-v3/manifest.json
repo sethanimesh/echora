@@ -5,6 +5,8 @@
   "foundation_sha256": "2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1",
   "adapter_format": "echora-qwen3-asr-command-v3",
   "adapter_sha256": "7cd203cc0cbf479e6afa198cc3895fedc71f1907b870fcb7f1dece0a1e6b2021",
+  "adapter_repo": "sethanimesh/echora-qwen3-asr-command",
+  "adapter_revision": "v3",
   "selected_epoch": 7,
   "default_beams": 5,
   "literal_prompt": "Transcribe only the words actually spoken. Keep incomplete or unusual word sequences literal. Do not add missing words.",
