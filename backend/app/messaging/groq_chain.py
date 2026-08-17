@@ -6,9 +6,14 @@ different words the speaker said. This module aligns the beams, asks a model to
 resolve each position and write the sentence, and enforces exactly one property
 in code: no content word the recognizer never produced.
 
-Wording is left to the model. Earlier versions policed the English against a
-word allowlist, which rejected "My leg hurts." and substituted a blunter
-sentence; that lost the word that mattered while reporting success.
+Wording is left to the model, steered by who is speaking. Earlier versions
+policed the English against a word allowlist, which rejected "My leg hurts."
+and substituted a blunter sentence; that lost the word that mattered while
+reporting success. But asking only for "first person" was just as wrong in the
+other direction: it turned the instruction "clean the room" into "I need to
+clean the room", fluent and grammatical and the opposite of what was meant.
+This speaker is asking for help, reporting their body, or telling the person
+with them what to do, so the prompt names those acts instead.
 """
 
 from __future__ import annotations
@@ -30,10 +35,10 @@ EMPTY_SLOT = "—"
 MAX_OPTIONS = 3
 
 CONTEXT_GUIDANCE: dict[CommunicationContext, str] = {
-    "general": "No specific setting is known.",
-    "home": "The speaker is at home.",
-    "care": "The speaker is in a hospital or care setting.",
-    "outdoors": "The speaker is outdoors.",
+    "general": "No specific setting is known; assume someone is there to help.",
+    "home": "The speaker is at home, talking to family or a carer in the house.",
+    "care": "The speaker is in a hospital or care setting, talking to a nurse or carer.",
+    "outdoors": "The speaker is outdoors, talking to whoever is out with them.",
 }
 
 MESSAGE_SCHEMA = {
@@ -64,21 +69,25 @@ MESSAGE_SCHEMA = {
     },
 }
 
-SYSTEM_PROMPT = """You help a stroke survivor be understood. They spoke ONE sentence. A speech recognizer that is often wrong on this voice returned several competing transcriptions of that same audio. You cannot hear the audio.
+SYSTEM_PROMPT = """You help a stroke survivor with dysarthria be understood by the person who is with them. They spoke ONE short utterance: something they need, something they feel, something they want that person to do, or an answer to what they were just asked. They are not making conversation and not narrating their day, and they cannot carry out physical tasks themselves. A speech recognizer that is often wrong on this voice returned several competing transcriptions of that same audio. You cannot hear the audio.
 
 The alignment shows the utterance position by position. [a|b|c] means the recognizer heard one sound several ways. Pick the variant that forms ordinary English with its neighbours in this setting. Beam order is weak evidence: a contested sound splits one word across spellings, so the right word often looks like a minority.
 
 Decide, for each contested position, which case you are in.
 
-MISHEARING -- only one variant is a real word that fits the frame; the others are noise. Resolve it silently and return one message. In a care setting "[leg|link|league|lleg|ling] pain" is leg pain: only "leg" is a body part. Do not offer the others.
+MISHEARING -- only one variant is a real word that fits the frame and the way an adult asks for help; the others are noise. Resolve it silently and return one message. In a care setting "[leg|link|league|lleg|ling] pain" is leg pain: only "leg" is a body part. "[blanket|blankie]" is blanket: a grown adult asking a nurse for bedding does not say blankie. Do not offer the others.
 
-GENUINE CHOICE -- two or more variants are real words that fit, and a listener would act on them differently. Return one option for each, up to three. Examples that are a genuine choice: leg vs arm (different body part), tea vs toast (different thing to fetch), hot vs not (opposite meanings), window vs door (different object), head vs leg. When in doubt between MISHEARING and GENUINE CHOICE, it is a genuine choice -- the speaker confirms every message, and a wrong commit is harder to notice than an extra option.
+GENUINE CHOICE -- two or more variants are real words that fit, and a listener would act on them differently. Return one option for each, up to three. Examples that are a genuine choice: leg vs arm (different body part), tea vs toast (different thing to fetch), hot vs not (opposite meanings), window vs door (different object), head vs leg. When in doubt between MISHEARING and GENUINE CHOICE, it is a genuine choice -- a single option is spoken aloud the moment it arrives, with nothing to confirm, so a wrong commit is already said while an extra option only costs the speaker one tap.
 
-NO PLAUSIBLE READING -- no combination of the recognizer's own words forms something a person would actually say. Set unclear=true and return the transcriptions as they are. Do NOT assemble a fluent sentence out of noise: inventing "I have a thin dog" from "fen tog / fend og / thin tog" is far worse than admitting the audio was not understood.
+NO PLAUSIBLE READING -- no combination of the recognizer's own words forms something this speaker would say to the person with them. Set unclear=true and return the transcriptions as they are. Grammatical English is not the test, and neither is a topic you can imagine someone discussing: "help wash [your|two|stool|tooot] room" has no variant that makes a need, a symptom, an instruction or an answer this speaker would send -- they are not asking a nurse to go and wash the nurse's own room -- so it stays unclear instead of becoming a tidy sentence about cleaning a room. A reading that comes out as the listener's own business is a sign that words were misheard, not a message. Do NOT assemble a fluent sentence out of noise: inventing "I have a thin dog" from "fen tog / fend og / thin tog" is far worse than admitting the audio was not understood.
 
-For each option return the reading (the recognizer's own words, one chosen per position, never a word absent from that position's options) and the message -- the sentence the speaker would have said if their speech were clear. First person, complete, natural, speakable, adult to adult. Rephrase freely for natural English: "leg pain" may become "My leg hurts."
+For each option return the reading (the recognizer's own words, one chosen per position -- or none, where every variant of a position is noise -- never a word absent from that position's options) and the message -- what the speaker would have said to the person with them if their speech were clear. Short, natural, speakable, adult to adult; someone in pain or waiting for help says one clause, not a paragraph. Rephrase freely for natural English, but keep the act the words carry:
+- a body part or a sensation is a report on themselves: "leg pain" -> "My leg hurts." "cold" -> "I am cold."
+- a thing is a request for that thing: "blanket" -> "I need a blanket."
+- an action is asked of the listener, never announced as the speaker's own plan: "clean the room" -> "Please clean the room." "call the nurse" -> "Please call the nurse." Not "I need to clean the room", not "I am going to call the nurse."
+Supply nothing the speaker did not say: no reason, no apology, no explanation, no pleasantry. "Please" is the only word of politeness you may add.
 
-Never make a message vaguer to be safe. If you resolve a position, keep that word: "I have pain" when they said "leg pain" drops the word that matters. Offering a real alternative is not vagueness -- dropping a word is.
+Never make a message vaguer to be safe, and never pad it to sound complete. If you resolve a position, keep that word: "I have pain" when they said "leg pain" drops the word that matters. Offering a real alternative is not vagueness -- dropping a word is, and adding one the speaker never asked for puts words in their mouth.
 
 The setting tells you which of the words the recognizer produced is most likely. It never lets you introduce a word no beam contains."""
 
