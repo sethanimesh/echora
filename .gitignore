@@ -17,6 +17,10 @@ models/**/*.safetensors
 data/raw/**
 data/derived/**
 !data/raw/*/README.md
+
+# Live personal history. data/personas/ holds the shipped baselines and IS tracked;
+# data/personal/ is what a real speaker accumulates and must never be committed.
+data/personal/**
 *.tar.bz2
 *.tar.gz
 

@@ -7,6 +7,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 CommunicationContext = Literal["general", "home", "care", "outdoors"]
+PersonaKind = Literal["person", "place", "object", "routine", "brand", "food"]
 
 
 class Hypothesis(BaseModel):
@@ -33,6 +34,149 @@ class RawAsrResult(BaseModel):
     decode_seconds: float
 
 
+class Specialization(BaseModel):
+    """One profile-declared detail applied to a word the recognizer actually produced.
+
+    Nothing here is model-authored. `anchor` is a word that survived the grounding
+    check, and `surface` is copied verbatim from the profile, so a specialization
+    can be undone mechanically rather than on the model's promise.
+    """
+
+    anchor: str
+    plain: str
+    surface: str
+    source: str
+    kind: PersonaKind
+    profile_id: str
+
+
+class PersonalizationTrace(BaseModel):
+    """What the personal layer offered and what survived, so refusals are observable."""
+
+    profile_id: str
+    profile_label: str
+    lexicon_hints: list[str] = Field(default_factory=list)
+    examples_used: int = 0
+    specializations_offered: int = 0
+    specializations_applied: int = 0
+    specializations_refused: int = 0
+    retrieval_seconds: float = 0.0
+
+
+class LexiconHint(BaseModel):
+    """A known word the recognizer produced in this utterance, offered as a prior."""
+
+    word: str
+    display: str
+    kind: PersonaKind
+    note: str = ""
+
+
+class SpecializationOffer(BaseModel):
+    anchor: str
+    plain: str
+    surface: str
+    source: str
+    kind: PersonaKind
+
+
+class PersonalExample(BaseModel):
+    heard: str
+    message: str
+    context: CommunicationContext
+    score: float
+
+
+class PersonalBrief(BaseModel):
+    """Everything the personal layer contributes to one request, assembled up front."""
+
+    profile_id: str
+    profile_label: str
+    speaker_note: str = ""
+    lexicon: list[LexiconHint] = Field(default_factory=list)
+    specializations: list[SpecializationOffer] = Field(default_factory=list)
+    examples: list[PersonalExample] = Field(default_factory=list)
+    # Every content word this profile could supply, used only to audit the
+    # finished message. Deliberately wider than `lexicon`, which lists just the
+    # words this utterance actually contained: the word that needs catching is
+    # the one the recognizer never produced, so it is never a hint.
+    audit_vocabulary: list[str] = Field(default_factory=list)
+    retrieval_seconds: float = 0.0
+
+    def is_empty(self) -> bool:
+        return not (self.lexicon or self.specializations or self.examples)
+
+    def offer(self, anchor: str) -> SpecializationOffer | None:
+        lowered = anchor.strip().lower()
+        for candidate in self.specializations:
+            if candidate.anchor.lower() == lowered:
+                return candidate
+        return None
+
+
+class PersonaSummary(BaseModel):
+    id: str
+    label: str
+    blurb: str = ""
+    icon: str = "circle"
+    context_default: CommunicationContext = "general"
+    lexicon_size: int = 0
+    specialization_size: int = 0
+    history_size: int = 0
+    baseline: bool = True
+
+
+class AcceptedMessage(BaseModel):
+    """One message the speaker settled on, stored so later utterances can learn from it."""
+
+    id: str
+    profile_id: str
+    heard: str
+    message: str
+    context: CommunicationContext = "general"
+    hour: int = Field(default=12, ge=0, le=23)
+    accepted_at: str
+    uses: int = 1
+    source: Literal["baseline", "user"] = "user"
+
+
+class AcceptedMessageRequest(BaseModel):
+    persona: str
+    context: CommunicationContext = "general"
+    heard: str
+    message: str
+
+
+class ProfileDetailInput(BaseModel):
+    """One "I have a particular version of this" pair from the onboarding form."""
+
+    word: str
+    wording: str
+
+
+class ProfileRequest(BaseModel):
+    """The short onboarding form. Everything else is learned from accepted messages."""
+
+    people: list[str] = Field(default_factory=list)
+    places: list[str] = Field(default_factory=list)
+    things: list[str] = Field(default_factory=list)
+    details: list[ProfileDetailInput] = Field(default_factory=list)
+
+
+class ProfileResponse(BaseModel):
+    saved: bool
+    lexicon_size: int = 0
+    specialization_size: int = 0
+    refused: list[str] = Field(default_factory=list)
+    reason: str = ""
+
+
+class AcceptedMessageResponse(BaseModel):
+    stored: bool
+    merged: bool = False
+    reason: str
+
+
 class RankerDecision(BaseModel):
     decision: Literal["selected", "ambiguous"]
     selected_message_id: str | None = None
@@ -41,6 +185,7 @@ class RankerDecision(BaseModel):
     reason: str
     source: Literal["groq", "unavailable"]
     assistant_model: str | None = None
+    personalization: PersonalizationTrace | None = None
 
 
 class MessageCandidate(BaseModel):
@@ -56,6 +201,13 @@ class MessageCandidate(BaseModel):
     # Chosen word -> other variants the recognizer produced at that slot, so the
     # interface can mark an uncertain word inline instead of showing rival sentences.
     word_alternatives: dict[str, list[str]] = Field(default_factory=dict)
+    # Profile-derived details present in corrected_text. Empty for every message
+    # that used no personal knowledge, which is the whole un-personalized path.
+    specializations: list[Specialization] = Field(default_factory=list)
+    # corrected_text with every applied detail substituted back to its plain
+    # wording, derived in code. None when there is nothing to revert, so the
+    # interface asks a null check rather than comparing two strings.
+    plain_text: str | None = None
 
 
 class SpeechAudio(BaseModel):
@@ -86,6 +238,7 @@ class TranscriptionResponse(BaseModel):
     model: str
     device: str
     context: CommunicationContext
+    persona: str | None = None
     hypotheses: list[Hypothesis]
     audio_quality: AudioQuality
     ranker: RankerDecision
@@ -114,6 +267,7 @@ class HealthResponse(BaseModel):
     asr_backend: str
     model_ready: bool
     groq_configured: bool
+    personal_ready: bool = False
     detail: str
 
 

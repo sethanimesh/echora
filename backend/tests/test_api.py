@@ -12,6 +12,8 @@ from app.schemas import (
     AudioQuality,
     Hypothesis,
     MessageCandidate,
+    PersonalBrief,
+    PersonaSummary,
     RankerDecision,
     RawAsrResult,
     SpeechAudio,
@@ -42,7 +44,7 @@ class FakeChain:
     def __init__(self, settings):
         pass
 
-    async def run(self, hypotheses, context="general"):
+    async def run(self, hypotheses, context="general", brief=None):
         return MessageChainResult(
             ranker=RankerDecision(
                 decision="selected",
@@ -91,7 +93,7 @@ class AmbiguousChain:
     def __init__(self, settings):
         pass
 
-    async def run(self, hypotheses, context="general"):
+    async def run(self, hypotheses, context="general", brief=None):
         messages = [_candidate("m1", "I would like some water."), _candidate("m2", "I would like to wait.")]
         return MessageChainResult(
             ranker=RankerDecision(
@@ -126,20 +128,54 @@ class SilentSpeech:
         return None
 
 
-def client(monkeypatch, chain=FakeChain, speech=FakeSpeech):
+class FakePersonal:
+    """Stands in for the personal layer so no test loads the real encoder weights."""
+
+    briefs: list[tuple[str, str]] = []
+    remembered: list[tuple[str, str, str]] = []
+
+    def __init__(self, settings):
+        pass
+
+    def known_ids(self):
+        return {"krishnan", "user"}
+
+    def personas(self):
+        return [PersonaSummary(id="krishnan", label="Krishnan", history_size=3)]
+
+    async def brief(self, hypotheses, context, profile_id):
+        FakePersonal.briefs.append((profile_id, context))
+        if profile_id not in self.known_ids():
+            return None
+        return PersonalBrief(profile_id=profile_id, profile_label="Krishnan", speaker_note="note")
+
+    async def remember(self, profile_id, context, heard, message):
+        FakePersonal.remembered.append((profile_id, heard, message))
+        return True, False, "stored"
+
+
+def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersonal):
     FakeSpeech.spoken = []
+    FakePersonal.briefs = []
+    FakePersonal.remembered = []
     monkeypatch.setattr(main, "create_backend", lambda settings: FakeBackend())
     monkeypatch.setattr(main, "GroqMessageChain", chain)
     monkeypatch.setattr(main, "GroqSpeech", speech)
+    monkeypatch.setattr(main, "Personalizer", personal)
     return TestClient(main.app)
 
 
-def _post(api, context: str | None = None):
+def _post(api, context: str | None = None, persona: str | None = None):
     audio = np.sin(np.linspace(0, 100, 8_000)).astype(np.float32) * 0.1
+    form = {}
+    if context:
+        form["context"] = context
+    if persona:
+        form["persona"] = persona
     return api.post(
         "/api/v1/transcriptions",
         files={"audio": ("voice.wav", encode_wav(audio), "audio/wav")},
-        data={"context": context} if context else None,
+        data=form or None,
     )
 
 
@@ -277,3 +313,69 @@ def test_the_speech_endpoint_serves_audio_and_reports_unavailability(monkeypatch
     # A 503 is the signal for the interface to fall back to the browser voice.
     with client(monkeypatch, speech=SilentSpeech) as api:
         assert api.post("/api/v1/speech", json={"text": "My leg hurts."}).status_code == 503
+
+
+# ---------------------------------------------------------------- personal context
+
+
+def test_a_profile_reaches_the_message_chain(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        response = _post(api, context="home", persona="krishnan")
+    assert response.status_code == 200
+    assert response.json()["persona"] == "krishnan"
+    assert FakePersonal.briefs == [("krishnan", "home")]
+
+
+def test_a_request_without_a_profile_never_asks_the_personal_layer(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        response = _post(api)
+    assert response.status_code == 200
+    assert response.json()["persona"] is None
+    assert FakePersonal.briefs == []
+
+
+def test_an_unknown_profile_is_a_warning_and_still_speaks(monkeypatch) -> None:
+    """A stale value in the interface must never stand between a speaker and their message."""
+    with client(monkeypatch) as api:
+        response = _post(api, persona="nobody")
+    body = response.json()
+    assert response.status_code == 200
+    assert body["messages"][0]["corrected_text"] == "I would like some water."
+    assert any("nobody" in warning for warning in body["warnings"])
+
+
+def test_the_personal_layer_failing_to_load_leaves_transcription_working(monkeypatch) -> None:
+    class Broken:
+        def __init__(self, settings):
+            raise RuntimeError("no embedding bundle")
+
+    with client(monkeypatch, personal=Broken) as api:
+        assert api.get("/api/v1/health").json()["personal_ready"] is False
+        assert api.get("/api/v1/personas").json() == []
+        response = _post(api, persona="krishnan")
+    assert response.status_code == 200
+    assert response.json()["messages"][0]["corrected_text"] == "I would like some water."
+
+
+def test_an_accepted_message_is_handed_to_the_store(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        response = api.post(
+            "/api/v1/accepted",
+            json={"persona": "krishnan", "context": "home", "heard": "water", "message": "I would like some water."},
+        )
+    assert response.json() == {"stored": True, "merged": False, "reason": "stored"}
+    assert FakePersonal.remembered == [("krishnan", "water", "I would like some water.")]
+
+
+def test_remembering_is_never_an_error_when_the_layer_is_down(monkeypatch) -> None:
+    class Broken:
+        def __init__(self, settings):
+            raise RuntimeError("no embedding bundle")
+
+    with client(monkeypatch, personal=Broken) as api:
+        response = api.post(
+            "/api/v1/accepted",
+            json={"persona": "krishnan", "heard": "water", "message": "I would like some water."},
+        )
+    assert response.status_code == 200
+    assert response.json()["stored"] is False

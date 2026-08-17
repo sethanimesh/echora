@@ -16,10 +16,16 @@ from .asr.engine import EXPECTED_ADAPTER_SHA256
 from .audio import AudioValidationError, decode_audio
 from .config import Settings, load_settings
 from .messaging import GroqMessageChain, GroqSpeech
+from .personal import USER_PROFILE_ID, Personalizer
 from .schemas import (
+    AcceptedMessageRequest,
+    AcceptedMessageResponse,
     CommunicationContext,
     HealthResponse,
     ModelInfo,
+    PersonaSummary,
+    ProfileRequest,
+    ProfileResponse,
     SpeechAudio,
     SpeechRequest,
     Timing,
@@ -42,6 +48,15 @@ async def lifespan(app: FastAPI):
         app.state.asr_error = f"{type(error).__name__}: {error}"
     app.state.message_chain = GroqMessageChain(settings)
     app.state.speech = GroqSpeech(settings)
+    # Personal context loads like the recognizer -- eagerly, and never fatally.
+    # Without it every message is produced exactly as it was before this layer.
+    app.state.personal = None
+    app.state.personal_error = None
+    if settings.personal_enabled:
+        try:
+            app.state.personal = Personalizer(settings)
+        except Exception as error:
+            app.state.personal_error = f"{type(error).__name__}: {error}"
     yield
 
 
@@ -73,6 +88,7 @@ async def health() -> HealthResponse:
         asr_backend=settings.backend,
         model_ready=ready,
         groq_configured=settings.groq_configured,
+        personal_ready=app.state.personal is not None,
         detail=(
             f"{settings.backend} ASR and Groq are ready"
             if ready and settings.groq_configured
@@ -112,6 +128,7 @@ async def model_info() -> ModelInfo:
 async def transcribe(
     audio: UploadFile = File(...),
     context: str = Form(default="general"),
+    persona: str = Form(default=""),
 ) -> TranscriptionResponse:
     settings = _settings()
     if context not in SUPPORTED_CONTEXTS:
@@ -138,9 +155,20 @@ async def transcribe(
     except Exception as error:
         raise HTTPException(status_code=503, detail=f"ASR failed: {type(error).__name__}: {error}") from error
     selected_context: CommunicationContext = context  # type: ignore[assignment]
-    chain = await app.state.message_chain.run(raw.hypotheses, selected_context)
+    # An unknown profile is a warning, never a rejection. Unlike the setting, it is
+    # not part of the prompt, and a stale value in the interface must never stand
+    # between the speaker and a spoken message.
+    brief = None
+    profile_warning: str | None = None
+    if persona and app.state.personal is not None:
+        brief = await app.state.personal.brief(raw.hypotheses, selected_context, persona)
+        if persona not in app.state.personal.known_ids():
+            profile_warning = f"Unknown profile '{persona}'; this message was not personalized"
+    chain = await app.state.message_chain.run(raw.hypotheses, selected_context, brief=brief)
     recommended = chain.ranker.selected_message_id
     warnings = list(chain.warnings)
+    if profile_warning:
+        warnings.append(profile_warning)
     # One surviving message means nothing is left to disambiguate, so it is spoken
     # on arrival. Synthesizing it here rather than in a follow-up request is what
     # lets the browser play it the instant the screen renders.
@@ -158,6 +186,7 @@ async def transcribe(
         model=raw.model,
         device=raw.device,
         context=selected_context,
+        persona=persona or None,
         hypotheses=raw.hypotheses,
         audio_quality=raw.audio_quality,
         ranker=chain.ranker,
@@ -188,3 +217,62 @@ async def speak(request: SpeechRequest) -> SpeechAudio:
     if audio is None:
         raise HTTPException(status_code=503, detail="Groq speech is unavailable")
     return audio
+
+
+@app.get("/api/v1/personas", response_model=list[PersonaSummary])
+async def personas() -> list[PersonaSummary]:
+    """The profiles the interface can offer. Empty when personal context is unavailable."""
+    if app.state.personal is None:
+        return []
+    return app.state.personal.personas()
+
+
+@app.post("/api/v1/accepted", response_model=AcceptedMessageResponse)
+async def accepted(request: AcceptedMessageRequest) -> AcceptedMessageResponse:
+    """Record a message the speaker settled on, so later utterances can learn from it.
+
+    Never an error. Failing to remember something is not worth telling a speaker
+    about mid-conversation, and the message has already been said.
+    """
+    if app.state.personal is None:
+        return AcceptedMessageResponse(stored=False, reason="personal context is unavailable")
+    stored, merged, reason = await app.state.personal.remember(
+        request.persona, request.context, request.heard, request.message
+    )
+    return AcceptedMessageResponse(stored=stored, merged=merged, reason=reason)
+
+
+@app.get("/api/v1/profile", response_model=ProfileResponse)
+async def read_profile(persona: str = USER_PROFILE_ID) -> ProfileResponse:
+    """What Echora currently thinks it knows, so the speaker can see and change it."""
+    if app.state.personal is None:
+        return ProfileResponse(saved=False, reason="personal context is unavailable")
+    profile = app.state.personal.describe(persona)
+    if profile is None:
+        return ProfileResponse(saved=False, reason="no such profile")
+    return ProfileResponse(
+        saved=True,
+        lexicon_size=len(profile.lexicon),
+        specialization_size=len(profile.specializations),
+    )
+
+
+@app.post("/api/v1/profile", response_model=ProfileResponse)
+async def write_profile(request: ProfileRequest) -> ProfileResponse:
+    """Save the onboarding answers. Only the speaker's own profile is writable."""
+    if app.state.personal is None:
+        raise HTTPException(status_code=503, detail="Personal context is unavailable")
+    profile, refused = await asyncio.to_thread(
+        app.state.personal.save_user_profile,
+        request.people,
+        request.places,
+        request.things,
+        [(item.word, item.wording) for item in request.details],
+    )
+    return ProfileResponse(
+        saved=True,
+        lexicon_size=len(profile.lexicon),
+        specialization_size=len(profile.specializations),
+        refused=refused,
+        reason="saved",
+    )

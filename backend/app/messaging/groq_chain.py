@@ -23,15 +23,31 @@ import json
 import re
 import time
 from dataclasses import dataclass, field
-from difflib import SequenceMatcher
 
 from groq import Groq
 
 from ..config import Settings
-from ..schemas import CommunicationContext, Hypothesis, MessageCandidate, RankerDecision
+from ..schemas import (
+    CommunicationContext,
+    Hypothesis,
+    MessageCandidate,
+    PersonalBrief,
+    PersonalizationTrace,
+    RankerDecision,
+    Specialization,
+)
+from .alignment import (
+    EMPTY_SLOT,
+    _alignment_template,
+    _grounded_reading,
+    _slot_alignment,
+    _slot_options,
+    _tokens,
+    settled_words,
+    _word_alternatives,
+)
 
 
-EMPTY_SLOT = "—"
 MAX_OPTIONS = 3
 
 CONTEXT_GUIDANCE: dict[CommunicationContext, str] = {
@@ -92,6 +108,59 @@ Never make a message vaguer to be safe, and never pad it to sound complete. If y
 The setting tells you which of the words the recognizer produced is most likely. It never lets you introduce a word no beam contains."""
 
 
+PERSONAL_MESSAGE_SCHEMA = {
+    "name": "echora_personal_message",
+    "strict": True,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "options": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": MAX_OPTIONS,
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "reading": {"type": "string"},
+                        "message": {"type": "string"},
+                        "specializations": {
+                            "type": "array",
+                            "maxItems": MAX_OPTIONS,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "anchor": {"type": "string"},
+                                    "surface": {"type": "string"},
+                                    "source": {"type": "string"},
+                                },
+                                "required": ["anchor", "surface", "source"],
+                                "additionalProperties": False,
+                            },
+                        },
+                    },
+                    "required": ["reading", "message", "specializations"],
+                    "additionalProperties": False,
+                },
+            },
+            "unclear": {"type": "boolean"},
+            "note": {"type": "string"},
+        },
+        "required": ["options", "unclear", "note"],
+        "additionalProperties": False,
+    },
+}
+
+PERSONAL_GUIDANCE = """
+
+You also know some things about this particular speaker. They never change what counts as evidence.
+
+known_words are people, places and things in this speaker's life. When a contested position offers one of them, that is strong evidence it is the right variant of that sound: "[marge|march|large] tea" from someone whose carer is Marge is Marge. This is still only a choice among the words the recognizer produced. It never lets you write a word no beam contains.
+
+known_details are the speaker's own version of an ordinary thing. If your reading contains the anchor word, you may write say_instead in place of it -- copied exactly, not reworded -- and you must then list it under specializations with that anchor and its source. Never attach a detail to a word that is not in your reading, never invent a detail that is not listed, and never alter the wording you were given. An undeclared or altered detail is discarded and the plain wording is used instead.
+
+past_accepted_messages are messages this speaker settled on before, retrieved because they resemble this audio. They show you how this person phrases things and what they usually need. They are NOT evidence about what was said just now. Never take a word from them into your reading, and never answer with one of them because it looks close."""
+
+
 @dataclass
 class MessageChainResult:
     ranker: RankerDecision
@@ -101,95 +170,117 @@ class MessageChainResult:
     warnings: list[str] = field(default_factory=list)
 
 
-def _tokens(text: str) -> list[str]:
-    normalized = text.lower().replace("won't", "not").replace("can't", "cannot")
-    return re.findall(r"[a-z0-9]+", normalized)
+# Articles and possessives carried by a display form like "the veranda" say
+# nothing about whose word it is, and flagging them would reject ordinary English.
+_AUDIT_IGNORED = frozenset(
+    {"a", "an", "the", "my", "your", "his", "her", "their", "our", "some", "of", "to", "for"}
+)
 
 
-def _slot_alignment(hypotheses: list[Hypothesis]) -> list[dict[str, object]]:
-    """Line the beams up against the leading beam, position by position."""
-    reference = _tokens(hypotheses[0].literal_text)
-    if not reference:
-        return []
-    total_weight = sum(item.search_weight for item in hypotheses) or 1.0
-    columns: list[dict[str, float]] = [{} for _ in reference]
-    for item in hypotheses:
-        tokens = _tokens(item.literal_text)
-        aligned: list[str] = [""] * len(reference)
-        for tag, i1, i2, j1, j2 in SequenceMatcher(a=reference, b=tokens, autojunk=False).get_opcodes():
-            if tag == "equal":
-                for offset in range(i2 - i1):
-                    aligned[i1 + offset] = tokens[j1 + offset]
-            elif tag == "replace":
-                span = tokens[j1:j2]
-                for position in range(i1, i2):
-                    offset = position - i1
-                    aligned[position] = span[offset] if offset < len(span) else ""
-        for position, token in enumerate(aligned):
-            word = token or EMPTY_SLOT
-            columns[position][word] = columns[position].get(word, 0.0) + item.search_weight / total_weight
-    return [
-        {
-            "position": position + 1,
-            "stable": len(column) == 1,
-            "options": [
-                {"word": word, "share": round(share, 3)}
-                for word, share in sorted(column.items(), key=lambda pair: -pair[1])
-            ],
-        }
-        for position, column in enumerate(columns)
-    ]
+def _phrase_pattern(phrase: str) -> re.Pattern[str] | None:
+    """Match a multi-word phrase on word boundaries, tolerating spacing and case."""
+    words = _tokens(phrase)
+    if not words:
+        return None
+    return re.compile(r"\b" + r"\W+".join(re.escape(word) for word in words) + r"\b", re.IGNORECASE)
 
 
-def _alignment_template(slots: list[dict[str, object]]) -> str:
-    parts = []
-    for slot in slots:
-        options = slot["options"]
-        if slot["stable"]:
-            parts.append(str(options[0]["word"]))
-        else:
-            parts.append("[" + "|".join(str(option["word"]) for option in options) + "]")
-    return " ".join(parts)
+def _replace_phrase(text: str, phrase: str, replacement: str) -> tuple[str, bool]:
+    pattern = _phrase_pattern(phrase)
+    if pattern is None or not pattern.search(text):
+        return text, False
+    return pattern.sub(replacement, text, count=1), True
 
 
-def _slot_options(slots: list[dict[str, object]]) -> list[list[str]]:
-    return [
-        [str(option["word"]) for option in slot["options"] if option["word"] != EMPTY_SLOT]
-        for slot in slots
-    ]
+def _apply_specializations(
+    declared: list[dict],
+    reading: list[str],
+    message: str,
+    slots: list[dict[str, object]],
+    brief: PersonalBrief | None,
+    anchor_share: float,
+) -> tuple[list[Specialization], str, str | None, int]:
+    """Keep only details the profile declared, riding on words that were heard.
 
-
-def _word_alternatives(slots: list[dict[str, object]], reading: list[str]) -> dict[str, list[str]]:
-    """Other words heard at each position the chosen reading used."""
-    alternatives: dict[str, list[str]] = {}
-    for slot, chosen in zip(slots, reading, strict=False):
-        others = [
-            str(option["word"])
-            for option in slot["options"]
-            if option["word"] not in (chosen, EMPTY_SLOT)
-        ]
-        if others:
-            alternatives[chosen] = others
-    return alternatives
-
-
-def _grounded_reading(reading: str, slots: list[dict[str, object]]) -> list[str] | None:
-    """The one property enforced in code: every word was actually heard.
-
-    Checked positionally when the lengths agree, otherwise against the union of
-    slot options. Returns None when nothing survives.
+    Returns the applied details, the message to show, the same message with every
+    applied detail reverted, and how many declarations were refused. A refused
+    declaration does not kill the message: the span the model marked as a detail
+    is stripped back to the plain wording, which lands exactly where an
+    un-personalized request would have.
     """
-    words = _tokens(reading)
-    options = _slot_options(slots)
-    if not words or not options:
-        return None
-    if len(words) == len(options):
-        if all(word in allowed for word, allowed in zip(words, options, strict=True)):
-            return words
-        return None
-    vocabulary = {word for allowed in options for word in allowed}
-    kept = [word for word in words if word in vocabulary]
-    return kept or None
+    applied: list[Specialization] = []
+    refused = 0
+    corrected = message
+    settled = settled_words(slots, anchor_share)
+    for record in declared:
+        anchor_tokens = _tokens(str(record.get("anchor", "")))
+        surface = str(record.get("surface", "")).strip()
+        source = str(record.get("source", "")).strip()
+        offer = brief.offer(anchor_tokens[0]) if (brief and len(anchor_tokens) == 1) else None
+        legal = (
+            offer is not None
+            and len(anchor_tokens) == 1
+            and source == offer.source
+            and _tokens(surface) == _tokens(offer.surface)
+            and anchor_tokens[0] in reading
+            and anchor_tokens[0] in settled
+            and _phrase_pattern(offer.surface) is not None
+            and bool(_phrase_pattern(offer.surface).search(corrected))
+        )
+        if legal:
+            applied.append(
+                Specialization(
+                    anchor=anchor_tokens[0],
+                    plain=offer.plain,
+                    surface=offer.surface,
+                    source=offer.source,
+                    kind=offer.kind,
+                    profile_id=brief.profile_id,
+                )
+            )
+            continue
+        refused += 1
+        # The model marked this span as a detail and we will not vouch for it, so
+        # take it back out. Falling back to the profile's plain wording when we
+        # have one, and to the bare heard word otherwise, keeps the sentence
+        # readable instead of leaving invented decoration in the speaker's mouth.
+        if surface:
+            plain = offer.plain if offer else (anchor_tokens[0] if anchor_tokens else "")
+            if plain:
+                corrected, _ = _replace_phrase(corrected, surface, plain)
+    plain_text: str | None = None
+    if applied:
+        reverted = corrected
+        for detail in sorted(applied, key=lambda item: -len(item.surface)):
+            reverted, _ = _replace_phrase(reverted, detail.surface, detail.plain)
+        plain_text = reverted if reverted != corrected else None
+    return applied, corrected, plain_text, refused
+
+
+def _unlicensed_profile_words(
+    message: str,
+    slots: list[dict[str, object]],
+    brief: PersonalBrief | None,
+    applied: list[Specialization],
+) -> list[str]:
+    """Profile words in the message that neither a beam nor a licensed detail explains.
+
+    This closes a gap the reading check cannot see. With beams `[march|large]` a
+    reading of `march` and a message of "Ask Marge." passes grounding today,
+    because the message is free prose. `marge` is a word only the profile
+    supplied, no beam produced it, and no detail licensed it -- so it is caught
+    here instead of being spoken as though the recognizer had heard it.
+    """
+    if brief is None or not brief.audit_vocabulary:
+        return []
+    profile_only = {word for word in brief.audit_vocabulary if word not in _AUDIT_IGNORED}
+    if not profile_only:
+        return []
+    heard = {word for options in _slot_options(slots) for word in options}
+    licensed: set[str] = set()
+    for detail in applied:
+        licensed |= set(_tokens(detail.surface))
+    return [word for word in _tokens(message) if word in profile_only - heard - licensed]
 
 
 def _is_rate_limited(error: Exception) -> bool:
@@ -275,12 +366,13 @@ class GroqMessageChain:
         self,
         hypotheses: list[Hypothesis],
         context: CommunicationContext = "general",
+        brief: PersonalBrief | None = None,
     ) -> MessageChainResult:
         if not self.client:
             return _unavailable(hypotheses, "Groq is not configured; showing raw ASR candidates")
         started = time.perf_counter()
         try:
-            result = await asyncio.to_thread(self._compose, hypotheses, context)
+            result = await asyncio.to_thread(self._compose, hypotheses, context, brief)
         except Exception as error:
             result = _unavailable(
                 hypotheses,
@@ -295,8 +387,13 @@ class GroqMessageChain:
         self,
         hypotheses: list[Hypothesis],
         context: CommunicationContext,
+        brief: PersonalBrief | None = None,
     ) -> MessageChainResult:
         slots = _slot_alignment(hypotheses)
+        # The evidence keys stay first and unchanged. Everything personal is
+        # appended after them, so the model reads what was heard before it reads
+        # anything about who was speaking, and an un-personalized request sends
+        # byte-for-byte what it sent before this layer existed.
         payload = {
             "setting": context,
             "setting_guidance": CONTEXT_GUIDANCE[context],
@@ -304,16 +401,47 @@ class GroqMessageChain:
             "slot_options": _slot_options(slots),
             "transcriptions": [item.literal_text for item in hypotheses],
         }
-        model, body = self._complete(payload)
+        personalized = brief is not None and not brief.is_empty()
+        if personalized and brief is not None:
+            if brief.speaker_note:
+                payload["speaker"] = brief.speaker_note
+            if brief.lexicon:
+                payload["known_words"] = [
+                    {"heard": hint.word, "means": hint.display, "kind": hint.kind, "note": hint.note}
+                    for hint in brief.lexicon
+                ]
+            if brief.specializations:
+                payload["known_details"] = [
+                    {"anchor": offer.anchor, "say_instead": offer.surface, "source": offer.source}
+                    for offer in brief.specializations
+                ]
+            if brief.examples:
+                payload["past_accepted_messages"] = [
+                    {"heard": example.heard, "message": example.message, "setting": example.context}
+                    for example in brief.examples
+                ]
+        model, body = self._complete(payload, personalized)
         if body.get("unclear"):
             return _unavailable(
                 hypotheses,
                 "The audio was not understood well enough to suggest a message; "
                 "these are the raw transcriptions",
             )
-        messages = self._build(body, hypotheses, slots)
+        messages, refused = self._build(body, hypotheses, slots, brief if personalized else None)
         if not messages:
             return _unavailable(hypotheses, "No grounded message could be formed from the audio")
+        trace: PersonalizationTrace | None = None
+        if personalized and brief is not None:
+            trace = PersonalizationTrace(
+                profile_id=brief.profile_id,
+                profile_label=brief.profile_label,
+                lexicon_hints=[hint.word for hint in brief.lexicon],
+                examples_used=len(brief.examples),
+                specializations_offered=len(brief.specializations),
+                specializations_applied=sum(len(item.specializations) for item in messages),
+                specializations_refused=refused,
+                retrieval_seconds=brief.retrieval_seconds,
+            )
         return MessageChainResult(
             ranker=RankerDecision(
                 decision="selected" if len(messages) == 1 else "ambiguous",
@@ -327,6 +455,7 @@ class GroqMessageChain:
                 ),
                 source="groq",
                 assistant_model=model,
+                personalization=trace,
             ),
             messages=messages,
         )
@@ -336,28 +465,47 @@ class GroqMessageChain:
         body: dict,
         hypotheses: list[Hypothesis],
         slots: list[dict[str, object]],
-    ) -> list[MessageCandidate]:
-        by_reading: dict[str, tuple[list[str], str]] = {}
+        brief: PersonalBrief | None = None,
+    ) -> tuple[list[MessageCandidate], int]:
+        allow_details = brief is not None and self.settings.personal_specializations
+        by_reading: dict[str, tuple[list[str], str, list[Specialization], str | None]] = {}
+        refused = 0
         for option in body["options"]:
             message = option["message"].strip()
             reading = _grounded_reading(option["reading"], slots)
             if not message or not reading:
                 continue
-            by_reading.setdefault(" ".join(reading), (reading, message))
+            applied: list[Specialization] = []
+            plain: str | None = None
+            declared = option.get("specializations") or []
+            if declared and allow_details:
+                applied, message, plain, rejected = _apply_specializations(
+                    declared, reading, message, slots, brief, self.settings.personal_anchor_share
+                )
+                refused += rejected
+            elif declared:
+                # The detail layer is switched off, so nothing may claim profile
+                # provenance; the wording still gets stripped back to plain.
+                _, message, _, rejected = _apply_specializations(
+                    declared, reading, message, slots, None, self.settings.personal_anchor_share
+                )
+                refused += rejected
+            # A profile word that no beam produced and no licensed detail explains
+            # is treated exactly like an ungrounded reading: the option is dropped.
+            if _unlicensed_profile_words(message, slots, brief, applied):
+                continue
+            by_reading.setdefault(" ".join(reading), (reading, message, applied, plain))
 
         # A reading contained by another is not a real alternative: offering both
         # "pain" and "leg pain" asks the speaker to choose between a message and a
         # worse version of the same message.
         kept = [
-            (reading, message)
-            for reading, message in by_reading.values()
-            if not any(
-                set(reading) < set(other)
-                for other, _ in by_reading.values()
-            )
+            entry
+            for entry in by_reading.values()
+            if not any(set(entry[0]) < set(other[0]) for other in by_reading.values())
         ]
         messages: list[MessageCandidate] = []
-        for index, (reading, message) in enumerate(kept[:MAX_OPTIONS], 1):
+        for index, (reading, message, applied, plain) in enumerate(kept[:MAX_OPTIONS], 1):
             literals = [
                 item.literal_text
                 for item in hypotheses
@@ -373,28 +521,32 @@ class GroqMessageChain:
                     interpreted_intent=" ".join(reading),
                     corrected_text=message,
                     repair_status="corrected" if _tokens(message) != reading else "unchanged",
-                    repair_note=f"Heard as “{' '.join(reading)}”.",
+                    repair_note=f"Heard as \u201c{' '.join(reading)}\u201d.",
                     word_alternatives=_word_alternatives(slots, reading),
+                    specializations=applied,
+                    plain_text=plain,
                 )
             )
-        return messages
+        return messages, refused
 
-    def _call(self, model: str, payload: dict) -> dict:
+    def _call(self, model: str, payload: dict, personalized: bool = False) -> dict:
         # `reasoning_effort: low` is a gpt-oss parameter; Qwen rejects it.
         extra = {"reasoning_effort": "low"} if model.startswith("openai/gpt-oss") else {}
+        prompt = SYSTEM_PROMPT + PERSONAL_GUIDANCE if personalized else SYSTEM_PROMPT
+        schema = PERSONAL_MESSAGE_SCHEMA if personalized else MESSAGE_SCHEMA
         response = self.client.chat.completions.create(
             model=model,
             temperature=0,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": prompt},
                 {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
             ],
-            response_format={"type": "json_schema", "json_schema": MESSAGE_SCHEMA},
+            response_format={"type": "json_schema", "json_schema": schema},
             **extra,
         )
         return json.loads(response.choices[0].message.content)
 
-    def _complete(self, payload: dict) -> tuple[str, dict]:
+    def _complete(self, payload: dict, personalized: bool = False) -> tuple[str, dict]:
         """Ask the first model that answers, walking the configured chain.
 
         Groq meters each model separately, so a rate limit is a reason to switch
@@ -407,7 +559,7 @@ class GroqMessageChain:
         for model in self.settings.groq_models:
             for attempt in range(2):
                 try:
-                    return model, self._call(model, payload)
+                    return model, self._call(model, payload, personalized)
                 except Exception as error:
                     recovered = _recover_tool_call(error)
                     if recovered is not None:
