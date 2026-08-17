@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# commit-msg: strip Claude co-author trailers from the commit message.
+#
+# Removes lines of the form:
+#   Co-Authored-By: Claude <noreply@anthropic.com>
+#   Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+#
+# The line is deleted silently and the commit proceeds; any blank lines it
+# leaves behind at the end of the message are trimmed too.
+
+set -e
+
+msg_file="$1"
+[ -f "$msg_file" ] || exit 0
+
+perl -0777 -i -pe '
+    # drop any Claude co-author trailer, whatever the model name
+    s{^[ \t]*Co-Authored-By:[ \t]*Claude[^\n<]*<noreply\@anthropic\.com>[ \t]*\r?\n?}{}gim;
+    # collapse the blank gap a removed trailer can leave mid-message
+    s{\n{3,}}{\n\n}g;
+    # trim trailing whitespace down to a single newline
+    s{\s+\z}{\n}s;
+' "$msg_file"
+
+exit 0
