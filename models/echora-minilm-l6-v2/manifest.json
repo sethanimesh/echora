@@ -1,0 +1,10 @@
+{
+  "name": "echora-minilm-l6-v2",
+  "foundation": "sentence-transformers/all-MiniLM-L6-v2",
+  "foundation_revision": "c9745ed1d9f207416be6d2e6f8de32d1f16199bf",
+  "pooling": "mean",
+  "normalize": true,
+  "dimension": 384,
+  "max_tokens": 128,
+  "purpose": "Retrieval over one speaker's accepted messages. Never used for ASR."
+}
