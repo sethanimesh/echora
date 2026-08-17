@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,6 +16,15 @@ export const metadata: Metadata = {
     description: "Literal speech. Honest choices. Your confirmation.",
     images: ["/og.png"],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5, // never lock zoom: assistive users need it
+  viewportFit: "cover", // enables env(safe-area-inset-*)
+  interactiveWidget: "resizes-content", // keyboard shrinks the shell instead of covering Confirm
+  themeColor: "#f7f3e9",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
