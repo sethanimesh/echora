@@ -1,0 +1,6 @@
+torch>=2.6
+transformers>=5.13  # native Qwen3-ASR support
+peft>=0.18
+soundfile>=0.12
+numpy>=1.26
+librosa>=0.10  # only needed by run_parakeet.py
