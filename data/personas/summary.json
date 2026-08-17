@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-08-17T00:00:00Z",
+  "count": 6,
+  "note": "Demonstration speakers. Shipped read-only; live history lives under data/personal/.",
+  "personas": [
+    {
+      "id": "krishnan",
+      "label": "Krishnan, 78, at home in Chennai",
+      "icon": "arc",
+      "context_default": "home",
+      "lexicon_entries": 6,
+      "specializations": 2,
+      "history_messages": 22
+    },
+    {
+      "id": "anya",
+      "label": "Anya Sharma, 32, three months after a hemorrhagic stroke",
+      "icon": "bloom",
+      "context_default": "home",
+      "lexicon_entries": 8,
+      "specializations": 4,
+      "history_messages": 34
+    },
+    {
+      "id": "vikram",
+      "label": "Captain Vikram Singh, 38, rehabilitation ward near Pune",
+      "icon": "ridge",
+      "context_default": "care",
+      "lexicon_entries": 9,
+      "specializations": 4,
+      "history_messages": 34
+    },
+    {
+      "id": "grace",
+      "label": "Grace Okonkwo, 61, alone in a council flat with a changing care rota",
+      "icon": "tide",
+      "context_default": "home",
+      "lexicon_entries": 8,
+      "specializations": 4,
+      "history_messages": 33
+    },
+    {
+      "id": "bea",
+      "label": "Bea Halloran, 84, a small care home in rural Ireland",
+      "icon": "wave",
+      "context_default": "care",
+      "lexicon_entries": 7,
+      "specializations": 4,
+      "history_messages": 33
+    },
+    {
+      "id": "tomas",
+      "label": "Tomás, 45, working part-time in Lisbon",
+      "icon": "chevron",
+      "context_default": "general",
+      "lexicon_entries": 8,
+      "specializations": 4,
+      "history_messages": 34
+    }
+  ]
+}
