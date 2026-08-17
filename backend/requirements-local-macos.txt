@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# The model was acceptance-tested with this exact Apple Silicon build.
+torch==2.13.0; platform_system == "Darwin"
