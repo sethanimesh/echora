@@ -1,0 +1,54 @@
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/.wrangler/
+
+# The verified local inference bundle is intentionally kept outside source control.
+models/**/foundation/
+models/**/*.safetensors
+
+# Licensed corpora and everything derived from them must never be committed.
+data/raw/**
+data/derived/**
+!data/raw/*/README.md
+*.tar.bz2
+*.tar.gz
+
+# Secrets. The example file is the only env file that belongs in the repo.
+.env
+.env.*
+!.env.example
+
+# Model weights and training state live on HuggingFace, not here.
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.onnx
+*.msgpack
+*.h5
+optimizer.pt
+scheduler.pt
+
+# Audio and other large binary artifacts.
+*.wav
+*.flac
+*.mp3
+*.ogg
+*.m4a
+
+# Local tooling noise.
+.idea/
+.vscode/
+*.log
+node_modules/
+
+# Build caches.
+*.tsbuildinfo
