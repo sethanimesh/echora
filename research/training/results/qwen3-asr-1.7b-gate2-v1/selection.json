@@ -1,0 +1,55 @@
+{
+  "run_id": "qwen3-asr-1.7b-gate2-v1",
+  "source_manifest": "/Users/animesh/Animesh/Project 2.0/Echora/data/derived/torgo/folds/M04/train.jsonl",
+  "source_manifest_sha256": "2cec525edfebb52f851090d44e813569aa69b3df883f763f87514d4fbb8a2cdd",
+  "config_sha256": "934e7ded6b1bec7d3c8e39e73cf64d241e5c5526c6771dfc6ebd2b4a54157f46",
+  "excluded_speakers": [
+    "F03",
+    "M04"
+  ],
+  "maximum_probe_audio_seconds": 30.0,
+  "longest_eligible": {
+    "id": "torgo-M05-Session1-0009",
+    "speaker": "M05",
+    "duration": 20.85,
+    "text": "Twice each day he plays skillfully and with zest upon our small organ."
+  },
+  "tiny_subset": [
+    {
+      "id": "torgo-F01-Session1-0022",
+      "speaker": "F01",
+      "duration": 4.9904,
+      "text": "You wished to know all about my grandfather."
+    },
+    {
+      "id": "torgo-F04-Session2-0127",
+      "speaker": "F04",
+      "duration": 4.9701,
+      "text": "There is a treehouse up above."
+    },
+    {
+      "id": "torgo-M01-Session2_3-0145",
+      "speaker": "M01",
+      "duration": 4.9798,
+      "text": "You're used to being on the field."
+    },
+    {
+      "id": "torgo-M02-Session1-0174",
+      "speaker": "M02",
+      "duration": 4.9836,
+      "text": "They carried me off on the stretcher."
+    },
+    {
+      "id": "torgo-M03-Session2-0128",
+      "speaker": "M03",
+      "duration": 4.995,
+      "text": "One validated acts of school districts."
+    },
+    {
+      "id": "torgo-M05-Session1-0115",
+      "speaker": "M05",
+      "duration": 4.955,
+      "text": "beat"
+    }
+  ]
+}

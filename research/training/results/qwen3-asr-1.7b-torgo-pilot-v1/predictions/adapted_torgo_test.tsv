@@ -1,0 +1,282 @@
+id	speaker	condition	audio_filepath	audio_seconds	decode_seconds	reference	transcript
+torgo-M04-Session2-0006	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0006.wav	3.2750	0.1866	jagged	jail
+torgo-M04-Session2-0007	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0007.wav	10.4400	0.2826	Grandfather likes to be modern in his language.	Grandpa likes to be modest in his language.
+torgo-M04-Session2-0008	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0008.wav	3.0450	0.0744	sticks	did
+torgo-M04-Session2-0009	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0009.wav	3.1300	0.0946	slip	slip
+torgo-M04-Session2-0010	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0010.wav	2.3950	0.0727	left	let
+torgo-M04-Session2-0011	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0011.wav	2.3650	0.0732	right	right
+torgo-M04-Session2-0012	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0012.wav	2.5750	0.0729	feet	pitch
+torgo-M04-Session2-0013	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0013.wav	2.3000	0.0763	form	form
+torgo-M04-Session2-0014	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0014.wav	12.8200	0.4592	She had your dark suit in greasy wash water all year.	Sweatshirt, buttoned in, neatly washed, white, all your.
+torgo-M04-Session2-0015	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0015.wav	2.7450	0.0729	up	up
+torgo-M04-Session2-0016	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0016.wav	3.1150	0.0945	jacket	jacket
+torgo-M04-Session2-0017	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0017.wav	3.1300	0.0945	storm	tum
+torgo-M04-Session2-0018	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0018.wav	2.7250	0.0718	go	go
+torgo-M04-Session2-0019	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0019.wav	3.1000	0.0777	sheet	suit
+torgo-M04-Session2-0020	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0020.wav	2.9550	0.1158	spark	spook
+torgo-M04-Session2-0021	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0021.wav	2.4350	0.0719	yes	yes
+torgo-M04-Session2-0022	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0022.wav	2.7500	0.0903	fee	heat
+torgo-M04-Session2-0023	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0023.wav	3.0000	0.1079	swarm	dumb
+torgo-M04-Session2-0024	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0024.wav	17.3700	0.3588	giving those who observe him a pronounced feeling of the utmost respect.	Given those who determine a pronounced feeling of the amount we possess.
+torgo-M04-Session2-0025	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0025.wav	2.3800	0.1633	xxx	oh we did this one
+torgo-M04-Session2-0026	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0026.wav	3.0650	0.0728	stubble	bubble
+torgo-M04-Session2-0028	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0028.wav	2.5350	0.0994	rage	fate
+torgo-M04-Session2-0029	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0029.wav	19.5451	0.6112	When he speaks, his voice is just a bit cracked and quivers a trifle.	When his feet afloat in crystalled upin goggles and quivered on dreadstrewed arms,
+torgo-M04-Session2-0030	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0030.wav	2.9500	0.0725	park	fuck
+torgo-M04-Session2-0031	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0031.wav	2.8600	0.0757	hair	hair
+torgo-M04-Session2-0032	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0032.wav	10.3400	0.3410	Don't ask me to carry an oily rag like that.	Don't ask me to carry an oil heater like that.
+torgo-M04-Session2-0033	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0033.wav	17.2550	0.3276	Except in the winter when the ooze or snow or ice prevents,	That in the winter when the bones or snow or ice prevents
+torgo-M04-Session2-0034	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0034.wav	2.4450	0.0725	down	down
+torgo-M04-Session2-0035	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0035.wav	2.2900	0.0716	sip	tip
+torgo-M04-Session2-0036	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0036.wav	2.5150	0.0949	knew	knew
+torgo-M04-Session2-0037	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0037.wav	2.7450	0.0723	sip	sip
+torgo-M04-Session2-0038	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0038.wav	10.5700	0.2924	The quick brown fox jumps over the lazy dog.	The quick brown fox jumped over the lazy dog.
+torgo-M04-Session2-0039	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0039.wav	6.8750	0.1209	I can	racketon
+torgo-M04-Session2-0040	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0040.wav	2.3950	0.0725	read	read
+torgo-M04-Session2-0041	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0041.wav	2.9300	0.0879	trade	trade
+torgo-M04-Session2-0042	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0042.wav	2.8500	0.0956	rate	rate
+torgo-M04-Session2-0043	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0043.wav	2.2450	0.1184	meat	meat
+torgo-M04-Session2-0044	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0044.wav	10.1450	0.2782	yet he still thinks as swiftly as ever.	yet she still seemed as sprightly as ever.
+torgo-M04-Session2-0045	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0045.wav	14.8950	0.3364	We have often urged him to walk more and smoke less,	We have often urged him to walk more and smoke less.
+torgo-M04-Session2-0046	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0046.wav	11.1450	0.4653	We have often urged him to walk more and smoke less,	We have hot enough heat in the room to do what more than an ant smoke less.
+torgo-M04-Session2-0047	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0047.wav	2.6750	0.0746	train	train
+torgo-M04-Session2-0048	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0048.wav	14.0850	0.3178	A long, flowing beard clings to his chin,	A long, flowing beard clings to his chin.
+torgo-M04-Session2-0049	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0049.wav	2.1850	0.0728	feed	feed
+torgo-M04-Session2-0050	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0050.wav	2.4850	0.0920	feed	feed
+torgo-M04-Session2-0051	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0051.wav	2.6100	0.0907	farm	firm
+torgo-M04-Session2-0052	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0052.wav	6.8351	0.1952	usually minus several buttons;	you eat minisilver buttons
+torgo-M04-Session2-0053	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0053.wav	2.4250	0.0729	dug	duck
+torgo-M04-Session2-0054	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0054.wav	2.2651	0.0726	bit	bit
+torgo-M04-Session2-0055	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0055.wav	2.6850	0.0752	race	race
+torgo-M04-Session2-0056	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0056.wav	2.2200	0.0721	sip	sip
+torgo-M04-Session2-0057	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0057.wav	2.5500	0.0887	range	range
+torgo-M04-Session2-0058	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0058.wav	2.8850	0.1128	share	jip
+torgo-M04-Session2-0059	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0059.wav	2.6450	0.0953	chair	jill
+torgo-M04-Session2-0060	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0060.wav	13.6000	0.3055	he slowly takes a short walk in the open air each day.	he slowly draped a soft cloth in the open air.
+torgo-M04-Session2-0061	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0061.wav	2.7300	0.0726	grow	grow
+torgo-M04-Session2-0062	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0062.wav	2.4550	0.0907	the	that
+torgo-M04-Session2-0063	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0063.wav	2.3200	0.0908	for	for
+torgo-M04-Session2-0064	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0064.wav	5.2500	0.1571	tear up that paper	there's a bit
+torgo-M04-Session2-0065	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0065.wav	2.8250	0.0725	tear	there
+torgo-M04-Session2-0066	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0066.wav	2.4900	0.0729	beat	pit
+torgo-M04-Session2-0067	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0067.wav	2.4800	0.0748	ship	tip
+torgo-M04-Session2-0068	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0068.wav	2.4350	0.1128	rake	rake
+torgo-M04-Session2-0069	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0069.wav	3.0100	0.0960	trouble	trouble
+torgo-M04-Session2-0070	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0070.wav	2.6000	0.0952	feet	teat
+torgo-M04-Session2-0071	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0071.wav	2.8850	0.0727	trace	trace
+torgo-M04-Session2-0072	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0072.wav	3.0100	0.0924	floor	floor
+torgo-M04-Session2-0073	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0073.wav	2.7800	0.1077	dark	dug
+torgo-M04-Session2-0074	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0074.wav	2.9250	0.0958	rave	rave
+torgo-M04-Session2-0075	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0075.wav	3.7950	0.0971	swore	swear
+torgo-M04-Session2-0076	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0076.wav	3.3950	0.0730	air	air
+torgo-M04-Session2-0077	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0077.wav	11.8800	0.2625	You wished to know all about my grandfather.	You ought to know all about my grandfather.
+torgo-M04-Session2-0078	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0078.wav	3.2300	0.0731	store	door
+torgo-M04-Session2-0079	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0079.wav	3.3800	0.0727	feed	seed
+torgo-M04-Session2-0080	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0080.wav	2.8200	0.1139	goat	goat
+torgo-M04-Session2-0081	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0081.wav	2.8200	0.0728	born	born
+torgo-M04-Session2-0082	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0082.wav	2.4100	0.0956	one	one
+torgo-M04-Session2-0083	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0083.wav	14.5251	0.3923	he dresses himself in an ancient black frock coat,	he dripped in felt in an unbuttoned black fox coat.
+torgo-M04-Session2-0084	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0084.wav	3.0600	0.0729	tip	tip
+torgo-M04-Session2-0085	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0085.wav	2.5950	0.0724	car	car
+torgo-M04-Session2-0086	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0086.wav	2.9550	0.0722	read	heat
+torgo-M04-Session2-0087	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0087.wav	2.5550	0.0955	swarm	swarm
+torgo-M04-Session2-0090	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0090.wav	3.6500	0.0732	warm	one
+torgo-M04-Session2-0091	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0091.wav	2.9900	0.0899	fair	fair
+torgo-M04-Session2-0092	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0092.wav	3.3750	0.1182	gadget	gadget
+torgo-M04-Session2-0093	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0093.wav	9.3150	0.1422	"but he always answers, ""Banana oil!"""	oil and banana oil
+torgo-M04-Session2-0094	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0094.wav	2.6350	0.0726	double	double
+torgo-M04-Session2-0095	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0095.wav	3.8550	0.0731	beta	beta
+torgo-M04-Session2-0096	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0096.wav	3.0050	0.0722	glow	though
+torgo-M04-Session2-0097	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0097.wav	3.2250	0.0954	air	there
+torgo-M04-Session2-0098	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0098.wav	8.3550	0.2544	Well, he is nearly ninety-three years old;	He is really ninety-three years old;
+torgo-M04-Session2-0099	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0099.wav	3.0350	0.0730	alpha	alpha
+torgo-M04-Session2-0100	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0100.wav	18.4451	0.4675	Twice each day he plays skillfully and with zest upon our small organ.	Twenty-eighty days he played skillfully, and with zest upon all our small organs.
+torgo-M04-Session2-0101	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0101.wav	3.2651	0.0732	horn	horn
+torgo-M04-Session2-0102	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0102.wav	3.6300	0.0916	horn	one
+torgo-M04-Session2-0103	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0103.wav	3.0050	0.1077	torn	twin
+torgo-M04-Session2-0104	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0104.wav	2.7250	0.0962	two	toot
+torgo-M04-Session2-0105	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0105.wav	2.8600	0.0953	corn	cotton
+torgo-M04-Session2-0106	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0106.wav	2.9400	0.0728	stick	stick
+torgo-M04-Session2-0107	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0107.wav	2.2650	0.0720	raid	raid
+torgo-M04-Session2-0110	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0110.wav	2.7600	0.0723	weed	weed
+torgo-M04-Session2-0111	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0111.wav	3.5900	0.0743	pat	pat
+torgo-M04-Session2-0112	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0112.wav	2.2850	0.0819	beat	beat
+torgo-M04-Session2-0113	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0113.wav	2.1500	0.1133	knee	knee
+torgo-M04-Session2-0114	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0114.wav	3.3850	0.0742	trait	traits
+torgo-M04-Session2-0115	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0115.wav	2.5600	0.0881	rain	rain
+torgo-M04-Session2-0116	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0116.wav	2.8450	0.0846	bubble	double
+torgo-M04-Session2-0117	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0117.wav	2.4900	0.0973	knew	knew
+torgo-M04-Session2-0119	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0119.wav	3.0600	0.1014	chair	jail
+torgo-M04-Session2-0120	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0120.wav	2.5600	0.0736	bug	back
+torgo-M04-Session2-0121	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0121.wav	3.4450	0.0737	warm	warm
+torgo-M04-Session2-0122	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0122.wav	2.2500	0.0762	bat	bat
+torgo-M04-Session2-0123	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0123.wav	2.3500	0.0763	no	no
+torgo-M04-Session2-0125	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0125.wav	2.5400	0.0789	know	no
+torgo-M04-Session2-0126	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0126.wav	2.7400	0.1218	storm	torn
+torgo-M04-Session2-0127	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0127.wav	3.0250	0.0746	lead	lead
+torgo-M04-Session2-0128	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0128.wav	3.8100	0.1120	dagger	dagger
+torgo-M04-Session2-0130	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0130.wav	2.5850	0.0738	whoop	hoot
+torgo-M04-Session2-0131	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0131.wav	2.4150	0.0918	wish	witch
+torgo-M04-Session2-0132	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0132.wav	3.4850	0.0883	boot	boot
+torgo-M04-Session2-0133	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0133.wav	8.3000	0.3885	They carried me off on the stretcher.	They gave me a new phone on a non-negotiable budget.
+torgo-M04-Session2-0134	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0134.wav	3.3150	0.0971	sprinkle	bigon
+torgo-M04-Session2-0135	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0135.wav	3.1400	0.0763	though	though
+torgo-M04-Session2-0136	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0136.wav	2.4000	0.0789	tie	die
+torgo-M04-Session2-0137	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0137.wav	2.2600	0.0770	back	back
+torgo-M04-Session2-0138	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0138.wav	2.4850	0.0747	back	back
+torgo-M04-Session2-0139	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0139.wav	2.5900	0.0809	bad	bat
+torgo-M04-Session2-0140	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0140.wav	3.6850	0.0937	bear	bit
+torgo-M04-Session2-0141	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0141.wav	2.8350	0.0952	bear	bear
+torgo-M04-Session2-0142	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0142.wav	2.6800	0.0968	floor	floor
+torgo-M04-Session2-0143	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0143.wav	2.8850	0.0952	near	near
+torgo-M04-Session2-0144	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0144.wav	2.8850	0.1003	bad	bad
+torgo-M04-Session2-0145	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0145.wav	2.8600	0.0932	three	three
+torgo-M04-Session2-0146	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0146.wav	3.8400	0.1166	hate	hate
+torgo-M04-Session2-0147	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0147.wav	12.0751	0.3645	Two other cases also were under advisement.	Two other naked men, although were undressed and bedded,
+torgo-M04-Session2-0148	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0148.wav	3.2200	0.0992	pile	bile
+torgo-M04-Session2-0149	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0149.wav	2.9500	0.0975	we're	wither
+torgo-M04-Session2-0150	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0150.wav	3.6300	0.1032	we're	we're
+torgo-M04-Session2-0151	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0151.wav	2.8500	0.0738	we're	yeah
+torgo-M04-Session2-0152	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0152.wav	3.0850	0.1025	steer	tear
+torgo-M04-Session2-0153	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0153.wav	11.9751	0.2238	One validated acts of school districts.	When validating out-of-school statistics,
+torgo-M04-Session2-0154	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0154.wav	5.9150	0.0784	xxx	thought
+torgo-M04-Session2-0155	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0155.wav	8.1050	0.1964	I was conscious all the time.	I worked all the time.
+torgo-M04-Session2-0156	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0156.wav	7.5100	0.2148	I was conscious all the time.	I work consistently all the time.
+torgo-M04-Session2-0157	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0157.wav	6.8350	0.2891	She is thinner than I am.	You wore it thinner than the hemstitch.
+torgo-M04-Session2-0158	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0158.wav	10.8300	0.3120	I just try to do my best.	I just wanted to be the tomb of my bed.
+torgo-M04-Session2-0159	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0159.wav	3.2900	0.0761	pad	bad
+torgo-M04-Session2-0160	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0160.wav	11.4300	0.2627	Are your grades higher or lower than Nancy's?	Are your grains higher or lower than planted?
+torgo-M04-Session2-0161	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0161.wav	2.8850	0.0979	group	goop
+torgo-M04-Session2-0162	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0162.wav	2.5550	0.0987	sigh	thigh
+torgo-M04-Session2-0163	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0163.wav	2.5400	0.0964	snoop	snoop
+torgo-M04-Session2-0164	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0164.wav	2.5650	0.0969	slay	slay
+torgo-M04-Session2-0165	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0165.wav	3.8000	0.0750	peer	bit
+torgo-M04-Session2-0166	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0166.wav	2.8250	0.0891	witch	witch
+torgo-M04-Session2-0167	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0167.wav	2.4950	0.0920	lip	lip
+torgo-M04-Session2-0168	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0168.wav	11.6850	0.2830	I tried to tell people in the community.	I tried to tell people in the crowded city.
+torgo-M04-Session2-0169	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0169.wav	3.2700	0.0711	area	area
+torgo-M04-Session2-0170	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0170.wav	3.0650	0.0713	sway	three
+torgo-M04-Session2-0171	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0171.wav	2.6100	0.0950	slip	slip
+torgo-M04-Session2-0172	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0172.wav	12.6200	0.2577	My sister made the flowered curtains.	Mistreated the flowers, cuttings,
+torgo-M04-Session2-0173	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0173.wav	2.0750	0.0928	knot	knot
+torgo-M04-Session2-0174	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0174.wav	6.4400	0.2532	We gathered shells on the beach.	We'd get a shirt on the beach.
+torgo-M04-Session2-0175	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0175.wav	4.7950	0.0950	explore	explorer
+torgo-M04-Session2-0176	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0176.wav	3.9750	0.0947	galore	galoot
+torgo-M04-Session2-0177	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0177.wav	2.3600	0.0712	root	root
+torgo-M04-Session2-0178	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0178.wav	3.9801	0.0943	gnaw	gnaw
+torgo-M04-Session2-0179	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0179.wav	2.9150	0.0719	cheer	j
+torgo-M04-Session2-0180	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0180.wav	2.3750	0.0950	write	right
+torgo-M04-Session2-0182	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0182.wav	6.5100	0.3207	He will allow a rare lie.	He will allow our very light, our very light.
+torgo-M04-Session2-0183	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0183.wav	5.6950	0.2300	He will allow a rare lie.	He will allow a very rare lie.
+torgo-M04-Session2-0184	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0184.wav	6.7750	0.0950	briar	bath
+torgo-M04-Session2-0185	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0185.wav	6.1700	0.0959	briar	bitter
+torgo-M04-Session2-0186	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0186.wav	5.5650	0.2074	Just one side got wet.	Just one fine day that way.
+torgo-M04-Session2-0187	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0187.wav	7.8600	0.2572	Why yell or worry over silly items?	Why yell or worry and over the item?
+torgo-M04-Session2-0188	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0188.wav	2.4150	0.0725	no	no
+torgo-M04-Session2-0189	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0189.wav	8.9150	0.3252	Bright sunshine shimmers on the ocean.	Bite, sunshine! The twins are on the ocean.
+torgo-M04-Session2-0190	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0190.wav	10.2750	0.3206	Where were you while we were away?	Where will we go? Why don't we go away?
+torgo-M04-Session2-0191	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0191.wav	6.6150	0.2537	Will Robin wear a yellow lily?	Who will open with a yellow lily?
+torgo-M04-Session2-0192	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0192.wav	2.6650	0.0709	white	witch
+torgo-M04-Session2-0193	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0193.wav	2.6950	0.0852	delta	delta
+torgo-M04-Session2-0194	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0194.wav	16.1900	0.4165	If you destroy confidence in banks, you do something to the economy, he said.	If you use an old-fashioned ban, you do something to the economy.
+torgo-M04-Session2-0195	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0195.wav	2.7600	0.0975	suit	feet
+torgo-M04-Session2-0196	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0196.wav	2.4050	0.0706	menu	menu
+torgo-M04-Session2-0197	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0197.wav	2.5400	0.0939	error	have
+torgo-M04-Session2-0198	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0198.wav	2.3350	0.0952	light	light
+torgo-M04-Session2-0199	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0199.wav	2.8000	0.0977	hear	here
+torgo-M04-Session2-0200	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0200.wav	2.6550	0.1182	sigh	thigh
+torgo-M04-Session2-0201	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0201.wav	2.5000	0.0767	here	hear
+torgo-M04-Session2-0202	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0202.wav	7.9400	0.3253	Everything went real smooth, the sheriff said.	Everything went beyond the moon, Father Chops said.
+torgo-M04-Session2-0203	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0203.wav	2.9250	0.0743	prior	fighter
+torgo-M04-Session2-0204	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0204.wav	2.6900	0.1016	slip	slip
+torgo-M04-Session2-0205	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0205.wav	2.5650	0.0738	rock	rock
+torgo-M04-Session2-0206	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0206.wav	6.1650	0.2607	I scrubbed the floors thoroughly.	I scrubbed the floors frantically.
+torgo-M04-Session2-0207	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0207.wav	2.4150	0.1018	pay	bail
+torgo-M04-Session2-0208	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0208.wav	7.0550	0.1705	All the big baseball players get traded.	other baseball players get paid
+torgo-M04-Session2-0209	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0209.wav	2.3750	0.0740	mut	mut
+torgo-M04-Session2-0210	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0210.wav	2.2950	0.0969	knew	knew
+torgo-M04-Session2-0211	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0211.wav	2.7650	0.0732	tear	deer
+torgo-M04-Session2-0212	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0212.wav	2.5200	0.0823	urgent	urgent
+torgo-M04-Session2-0213	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0213.wav	3.5100	0.0908	urgent	urgent
+torgo-M04-Session2-0214	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0214.wav	2.6100	0.0902	of	out
+torgo-M04-Session2-0215	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0215.wav	2.1551	0.0726	ate	eight
+torgo-M04-Session2-0216	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0216.wav	12.4100	0.4408	Mother sews yellow gingham aprons.	Mutton thorns, yellow ginseng, hoppin' hoppers.
+torgo-M04-Session2-0217	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0217.wav	7.2900	0.1878	I feel I can play this weekend.	I feel high blended weekends.
+torgo-M04-Session2-0218	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0218.wav	2.4100	0.0730	air	air
+torgo-M04-Session2-0219	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0219.wav	11.7750	0.3425	Both figures would go higher in later years.	Both fins wouldn't go higher than the lily pads.
+torgo-M04-Session2-0220	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0220.wav	9.8200	0.2783	Jane may earn more money by working hard.	Jane may earn more money by overworking hard.
+torgo-M04-Session2-0221	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0221.wav	2.5750	0.0960	sigh	sigh
+torgo-M04-Session2-0222	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0222.wav	2.7350	0.0731	rocks	lock
+torgo-M04-Session2-0223	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0223.wav	2.6850	0.0892	rocks	rock
+torgo-M04-Session2-0224	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0224.wav	2.8200	0.0949	rocks	rock
+torgo-M04-Session2-0226	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0226.wav	13.5400	0.3695	You'd be better off taking a cold shower.	You'd better be better off tugging at a coat tail.
+torgo-M04-Session2-0227	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0227.wav	3.1300	0.0963	side	thigh
+torgo-M04-Session2-0228	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0228.wav	3.1950	0.0729	side	foot
+torgo-M04-Session2-0229	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0229.wav	2.6400	0.0729	play	play
+torgo-M04-Session2-0230	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0230.wav	2.9050	0.0958	cycle	fighting
+torgo-M04-Session2-0231	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0231.wav	8.3401	0.3480	The train approached the depot slowly.	The train abounds in the best of both worlds, thoroughly.
+torgo-M04-Session2-0232	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0232.wav	3.2200	0.0727	suit	suit
+torgo-M04-Session2-0233	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0233.wav	2.4200	0.0721	bat	bat
+torgo-M04-Session2-0234	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0234.wav	2.2150	0.0721	ate	ate
+torgo-M04-Session2-0235	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0235.wav	3.0800	0.0787	troop	trip
+torgo-M04-Session2-0236	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0236.wav	6.3700	0.2088	Their house is grey and white.	Then down, grey and white
+torgo-M04-Session2-0238	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0238.wav	2.4700	0.0729	loop	loop
+torgo-M04-Session2-0239	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0239.wav	3.1550	0.1126	jungle	jungle
+torgo-M04-Session2-0240	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0240.wav	2.8000	0.0730	deer	deer
+torgo-M04-Session2-0241	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0241.wav	2.7150	0.0915	shear	share
+torgo-M04-Session2-0242	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0242.wav	9.2200	0.2734	I looked up and noticed two old men.	I looked up and noticed two old men.
+torgo-M04-Session2-0243	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0243.wav	2.6801	0.0740	fruit	fruit
+torgo-M04-Session2-0244	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0244.wav	2.4450	0.0959	fear	fear
+torgo-M04-Session2-0245	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0245.wav	2.9350	0.0950	droop	goop
+torgo-M04-Session2-0246	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0246.wav	10.4650	0.2561	Nothing is as offensive as innocence.	Nothing and nothing and nothing and nothing again.
+torgo-M04-Session2-0247	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0247.wav	4.5150	0.0973	innocence	hinen
+torgo-M04-Session2-0248	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0248.wav	8.7150	0.2108	Nothing is as offensive as innocence.	Nothing in our expensive air conditioning is
+torgo-M04-Session2-0249	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0249.wav	2.4351	0.0734	single	single
+torgo-M04-Session2-0250	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0250.wav	2.6150	0.0799	four	four
+torgo-M04-Session2-0251	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0251.wav	2.8000	0.1168	select	flood
+torgo-M04-Session2-0252	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0252.wav	2.2300	0.0723	dot	dot
+torgo-M04-Session2-0253	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0253.wav	6.1000	0.1652	This was easy for us.	this way in India
+torgo-M04-Session2-0254	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0254.wav	2.6851	0.0727	mere	mere
+torgo-M04-Session2-0255	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0255.wav	9.3900	0.2769	You're used to being on the field.	You usually find two beans on the autumn fields.
+torgo-M04-Session2-0256	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0256.wav	4.5351	0.0974	coupe	coupe
+torgo-M04-Session2-0257	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0257.wav	2.1500	0.0727	pot	but
+torgo-M04-Session2-0258	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0258.wav	0.3151	0.0798	xxx	xxx
+torgo-M04-Session2-0259	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0259.wav	2.5150	0.0795	xxx	xxx
+torgo-M04-Session2-0260	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0260.wav	3.0000	0.0720	sleep	sleep
+torgo-M04-Session2-0261	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0261.wav	2.9400	0.0947	toot	toot
+torgo-M04-Session2-0262	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0262.wav	2.6400	0.0723	pat	hat
+torgo-M04-Session2-0263	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0263.wav	2.4700	0.0720	write	right
+torgo-M04-Session2-0264	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0264.wav	8.5950	0.3245	The humidity is overwhelming there.	But cement is now winning as overwelding there.
+torgo-M04-Session2-0265	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0265.wav	3.0700	0.0727	shoot	shoot
+torgo-M04-Session2-0266	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0266.wav	2.6500	0.0953	fate	fate
+torgo-M04-Session2-0267	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0267.wav	2.4900	0.0725	know	no
+torgo-M04-Session2-0268	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0268.wav	2.7750	0.1153	charlie	chile
+torgo-M04-Session2-0269	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0269.wav	5.2050	0.0733	thigh	fly
+torgo-M04-Session2-0270	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0270.wav	3.3500	0.0919	tile	battle
+torgo-M04-Session2-0271	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0271.wav	2.9750	0.0959	tile	die
+torgo-M04-Session2-0272	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0272.wav	2.4800	0.0908	yes	yes
+torgo-M04-Session2-0273	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0273.wav	2.7150	0.0964	forward	porn
+torgo-M04-Session2-0274	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0274.wav	10.2050	0.2551	The islands are sparsely populated.	The islands are ballin' populated.
+torgo-M04-Session2-0275	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0275.wav	2.8900	0.1865	juliet	one, two, three stop
+torgo-M04-Session2-0276	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0276.wav	3.5500	0.1176	papa	juliet
+torgo-M04-Session2-0277	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0277.wav	3.4400	0.0953	brawn	babble
+torgo-M04-Session2-0278	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0278.wav	3.4750	0.0948	brawn	barn
+torgo-M04-Session2-0279	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0279.wav	2.4850	0.1180	loyal	lithium
+torgo-M04-Session2-0280	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0280.wav	2.5350	0.0726	hat	hat
+torgo-M04-Session2-0281	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0281.wav	12.3800	0.3035	Aluminum silverware can often be flimsy.	Holmium's of lower cannot be be fanned.
+torgo-M04-Session2-0282	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0282.wav	23.1750	0.4458	It also provides for funds to clear slums and help colleges build dormitories.	Buttons were fun to steal, and had outpainted the darnedest buttons.
+torgo-M04-Session2-0283	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0283.wav	7.5251	0.2329	It was a good win for us.	It wore a hooded raincoat and
+torgo-M04-Session2-0284	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0284.wav	3.5550	0.0723	kitten	hidden
+torgo-M04-Session2-0285	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0285.wav	15.3200	0.2823	I expect we'll bounce back this week.	I bet we will be down again this week.
+torgo-M04-Session2-0286	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0286.wav	9.1950	0.2796	She wore warm, fleecy, woolen overalls.	She wore one of these woolen overalls.
+torgo-M04-Session2-0287	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0287.wav	3.8550	0.0725	spit	pit
+torgo-M04-Session2-0288	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0288.wav	13.2700	0.3885	This is not a program of socialized medicine.	This is not a problem of suitable linen items, mullins.
+torgo-M04-Session2-0289	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0289.wav	7.0450	0.0969	pitting	bidding
+torgo-M04-Session2-0290	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0290.wav	4.4350	0.0962	pitting	bidding
+torgo-M04-Session2-0291	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0291.wav	17.4101	0.3968	Nothing has been done yet to take advantage of the enabling legislation.	Nothing has been done to the abandoned arm than the rain, nearly invisible.
+torgo-M04-Session2-0293	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0293.wav	2.6750	0.0729	fat	vat
+torgo-M04-Session2-0294	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0294.wav	2.7600	0.0864	park	park
+torgo-M04-Session2-0295	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0295.wav	6.2350	0.2694	There is a treehouse up above.	There is a tree out there up above.
+torgo-M04-Session2-0296	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0296.wav	3.2000	0.0954	vat	dut
+torgo-M04-Session2-0297	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0297.wav	2.2150	0.0722	bit	bit
+torgo-M04-Session2-0298	M04	dysarthric	/workspace/echora/pilot_data/audio/torgo_test/torgo-M04-Session2-0298.wav	10.0450	0.3002	Both injuries were to the same leg.	Both engines were two-masted tenterloins.

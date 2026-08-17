@@ -1,0 +1,4 @@
+id	speaker	condition	audio_filepath	audio_seconds	decode_seconds	reference	transcript
+personal-20260815-135933	external-personal	external_smoke	/workspace/echora/pilot_data/audio/personal/personal-20260815-135933.wav	4.1912	0.1517	I want water	I want water.
+personal-20260815-135957	external-personal	external_smoke	/workspace/echora/pilot_data/audio/personal/personal-20260815-135957.wav	4.7021	0.1015	I water	gotten
+personal-20260815-140043	external-personal	external_smoke	/workspace/echora/pilot_data/audio/personal/personal-20260815-140043.wav	2.8444	0.1860	I want water please	I want water, please.
