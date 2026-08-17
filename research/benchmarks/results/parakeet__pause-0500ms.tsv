@@ -1,0 +1,4 @@
+clip	seconds	audio_seconds	rtf	internal_gap_total	max_internal_gap	reference	transcript	alternatives	acoustic_score	model_id	device
+20260815-135933.wav	1.13	4.69	0.240	2.38	1.18	I want water	I want water.			nvidia/parakeet-tdt-0.6b-v3	cpu
+20260815-135957.wav	1.00	5.20	0.192	3.20	1.02	I water	Hi Gordon			nvidia/parakeet-tdt-0.6b-v3	cpu
+20260815-140043.wav	0.95	3.34	0.284	0.84	0.84	I want water please	I want water, please.			nvidia/parakeet-tdt-0.6b-v3	cpu

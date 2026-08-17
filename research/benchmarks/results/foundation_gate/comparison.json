@@ -1,0 +1,58 @@
+{
+  "scope": "literal ASR before any candidate ranker",
+  "models": {
+    "parakeet_tdt_1_1b": {
+      "utterances": 400,
+      "micro_wer": 0.4578544061302682,
+      "micro_cer": 0.28659003831417623,
+      "macro_speaker_wer": 0.4582681285127291,
+      "worst_speaker_wer": 0.8294573643410853,
+      "deletion_rate": 0.05842911877394636,
+      "empty_rate": 0.0125,
+      "median_rtf": 0.0102,
+      "speaker_wer": {
+        "F01": 0.6090225563909775,
+        "F03": 0.19607843137254902,
+        "F04": 0.15966386554621848,
+        "M01": 0.7578125,
+        "M02": 0.5163934426229508,
+        "M03": 0.11570247933884298,
+        "M04": 0.8294573643410853,
+        "M05": 0.48201438848920863
+      }
+    },
+    "qwen3_asr_1_7b": {
+      "utterances": 400,
+      "micro_wer": 0.41762452107279696,
+      "micro_cer": 0.2647509578544061,
+      "macro_speaker_wer": 0.41900059149293944,
+      "worst_speaker_wer": 0.8682170542635659,
+      "deletion_rate": 0.022988505747126436,
+      "empty_rate": 0.0,
+      "median_rtf": 0.39565,
+      "speaker_wer": {
+        "F01": 0.5714285714285714,
+        "F03": 0.16993464052287582,
+        "F04": 0.1092436974789916,
+        "M01": 0.6796875,
+        "M02": 0.5409836065573771,
+        "M03": 0.0743801652892562,
+        "M04": 0.8682170542635659,
+        "M05": 0.3381294964028777
+      }
+    }
+  },
+  "decision": {
+    "status": "provisional_winner",
+    "winner": "qwen3_asr_1_7b",
+    "lower_macro_wer_model": "qwen3_asr_1_7b",
+    "other_model": "parakeet_tdt_1_1b",
+    "relative_macro_wer_gain": 0.08568681646534998,
+    "required_relative_margin": 0.05,
+    "guardrail_margin_absolute": 0.02,
+    "guardrails": {
+      "deletion_rate": true,
+      "empty_rate": true
+    }
+  }
+}

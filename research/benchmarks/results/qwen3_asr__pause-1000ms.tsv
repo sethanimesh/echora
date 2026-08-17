@@ -1,0 +1,4 @@
+clip	seconds	audio_seconds	rtf	internal_gap_total	max_internal_gap	reference	transcript	alternatives	acoustic_score	model_id	device
+20260815-135933.wav	8.42	5.19	1.623	2.76	1.68	I want water	I want water.			Qwen/Qwen3-ASR-1.7B-hf	cpu
+20260815-135957.wav	2.10	5.70	0.368	3.50	1.24	I water	Hi. Good morning.			Qwen/Qwen3-ASR-1.7B-hf	cpu
+20260815-140043.wav	1.40	3.84	0.364	1.34	1.34	I want water please	I want water, please.			Qwen/Qwen3-ASR-1.7B-hf	cpu

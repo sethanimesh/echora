@@ -1,0 +1,401 @@
+id	speaker	condition	audio_filepath	audio_seconds	decode_seconds	rtf	reference	transcript	alternatives	acoustic_score	model_id	device
+torgo-F01-Session1-0034	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0034.wav	0.868	0.297	0.3423	feet	three	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0353	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0353.wav	0.008	0.069	8.3920	You want him to do well.		[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0352	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0352.wav	0.026	0.069	2.6312	bread	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0355	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0355.wav	0.060	0.069	1.1599	four	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0094	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0094.wav	0.642	0.069	0.1079	feet	three	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0086	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0086.wav	0.921	0.016	0.0172	sticks	six	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0158	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0158.wav	0.947	0.016	0.0168	lip	lip	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0059	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0059.wav	0.951	0.016	0.0167	the	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0082	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0082.wav	1.015	0.016	0.0156	rate	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0062	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0062.wav	1.067	0.018	0.0166	sip	so	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0129	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0129.wav	1.108	0.018	0.0160	bad	ah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0041	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0041.wav	1.112	0.018	0.0159	rave	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0076	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0076.wav	1.116	0.018	0.0159	born	born	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0061	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0061.wav	1.167	0.022	0.0191	dark	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0065	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0065.wav	1.167	0.022	0.0191	fee	b	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0161	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0161.wav	1.178	0.022	0.0189	sigh	si	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0151	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0151.wav	1.210	0.022	0.0184	fill	so	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0160	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0160.wav	1.215	0.017	0.0139	yankee	in k	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0063	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0063.wav	1.217	0.017	0.0139	farm	poem	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0079	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0079.wav	1.222	0.017	0.0138	air	oh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0170	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0170.wav	1.240	0.017	0.0136	leak	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0074	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0074.wav	1.254	0.016	0.0131	bubble	bye bye	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0168	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0168.wav	1.255	0.016	0.0131	see	see	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0165	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0165.wav	1.255	0.016	0.0131	yes	yes	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0226	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0226.wav	1.266	0.016	0.0130	chop	cup	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0176	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0176.wav	1.272	0.017	0.0137	zero	zero	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0208	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0208.wav	1.295	0.017	0.0135	him	hem	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0013	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0013.wav	1.303	0.017	0.0134	know	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0073	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0073.wav	1.312	0.017	0.0133	knee	me	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0155	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0155.wav	1.350	0.019	0.0138	oh	oh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0120	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0120.wav	1.350	0.019	0.0138	the	the	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0040	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0040.wav	1.356	0.019	0.0137	rave	we	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0132	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0132.wav	1.365	0.019	0.0136	meats	meet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0060	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0060.wav	1.367	0.021	0.0151	form	poem	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0193	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0193.wav	1.373	0.021	0.0150	though	go	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0250	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0250.wav	1.377	0.021	0.0150	side	sob	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0051	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0051.wav	1.384	0.021	0.0149	rage	wait	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0253	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0253.wav	1.398	0.023	0.0165	pitting	prayed in	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0006	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0006.wav	1.399	0.023	0.0165	stick	snake	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0069	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0069.wav	1.421	0.023	0.0162	bat	but	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0156	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0156.wav	1.425	0.023	0.0162	zero	zero	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0088	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0088.wav	1.430	0.018	0.0126	left	well	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0071	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0071.wav	1.435	0.018	0.0125	tort	to it	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0107	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0107.wav	1.436	0.018	0.0125	read	bye	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0233	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0233.wav	1.442	0.018	0.0125	dart	dart	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0306	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0306.wav	1.445	0.016	0.0113	november	november	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0068	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0068.wav	1.451	0.016	0.0113	range	range	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0005	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0005.wav	1.461	0.016	0.0112	race	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0128	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0128.wav	1.470	0.016	0.0111	rock	rock	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0096	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0096.wav	1.475	0.017	0.0113	seed	free	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0097	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0097.wav	1.482	0.017	0.0113	trade	pay	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0172	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0172.wav	1.504	0.017	0.0111	bit	babe	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0001	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0001.wav	1.514	0.017	0.0110	one	one	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0070	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0070.wav	1.521	0.018	0.0117	horn	one	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0155	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0155.wav	1.546	0.018	0.0116	light	eight	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0057	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0057.wav	1.568	0.018	0.0114	race	with	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0029	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0029.wav	1.573	0.018	0.0114	beat	bait	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0003	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0003.wav	1.575	0.018	0.0116	though	though	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0049	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0049.wav	1.584	0.018	0.0116	two	q	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0216	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0216.wav	1.595	0.018	0.0115	written	we didn't	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0068	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0068.wav	1.616	0.018	0.0113	boot	boot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0071	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0071.wav	1.638	0.018	0.0108	jagged	gagon	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0104	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0104.wav	1.640	0.018	0.0108	rock	rock	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0017	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0017.wav	1.641	0.018	0.0108	feet	food	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0206	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0206.wav	1.653	0.018	0.0107	bear	bar	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0201	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0201.wav	1.665	0.020	0.0119	pit	paid	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0114	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0114.wav	1.680	0.020	0.0118	goat	goth	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0123	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0123.wav	1.684	0.020	0.0118	down	girl	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0079	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0079.wav	1.715	0.020	0.0116	air	yeah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0234	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0234.wav	1.722	0.019	0.0112	troop	true	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0285	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0285.wav	1.728	0.019	0.0112	yes	yeah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0012	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0012.wav	1.735	0.019	0.0111	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0007	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0007.wav	1.750	0.019	0.0110	play	play	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0043	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0043.wav	1.751	0.021	0.0122	sip	zip	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0155	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0155.wav	1.770	0.021	0.0120	juliet	juliet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0083	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0083.wav	1.776	0.021	0.0120	goat	go	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0118	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0118.wav	1.783	0.021	0.0119	knew	new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0063	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0063.wav	1.785	0.020	0.0109	back	back	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0014	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0014.wav	1.800	0.020	0.0109	blend	lend	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0020	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0020.wav	1.806	0.020	0.0108	feed	three	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0038	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0038.wav	1.809	0.020	0.0108	air	air	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0044	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0044.wav	1.809	0.018	0.0102	sheet	sweet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0259	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0259.wav	1.832	0.018	0.0100	harp	i	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0113	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0113.wav	1.833	0.018	0.0100	knew	new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0117	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0117.wav	1.833	0.018	0.0100	feed	there	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0121	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0121.wav	1.833	0.020	0.0107	park	park	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0097	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0097.wav	1.865	0.020	0.0105	briar	but are you	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0116	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0116.wav	1.865	0.020	0.0105	near	near	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0057	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0057.wav	1.865	0.020	0.0105	said	third	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0276	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0276.wav	1.869	0.020	0.0105	mush	miles	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0224	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0224.wav	1.880	0.020	0.0104	peer	peer	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0122	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0122.wav	1.882	0.020	0.0104	tip	keep	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0052	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0052.wav	1.885	0.020	0.0104	area	area	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0200	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0200.wav	1.893	0.019	0.0098	rich	range	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0048	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0048.wav	1.901	0.019	0.0097	fair	four	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0195	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0195.wav	1.930	0.019	0.0096	thorn	thorn	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0050	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0050.wav	1.934	0.019	0.0096	beta	may	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0274	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0274.wav	1.940	0.018	0.0092	witty	who will it be	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0030	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0030.wav	1.955	0.018	0.0091	cycle	cycle	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0003	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0003.wav	1.955	0.018	0.0091	boot	boot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0161	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0161.wav	1.958	0.018	0.0091	mut	march	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0054	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0054.wav	1.964	0.018	0.0092	jaw	ju	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0085	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0085.wav	1.975	0.018	0.0091	meat	meet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0033	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0033.wav	1.985	0.018	0.0091	bear	bear	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0305	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0305.wav	2.015	0.018	0.0089	vat	vat	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0092	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0092.wav	2.018	0.018	0.0088	hate	eight	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0028	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0028.wav	2.035	0.018	0.0087	knot	not	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0061	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0061.wav	2.040	0.018	0.0087	bubble	bubble	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0076	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0076.wav	2.046	0.018	0.0086	right	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0026	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0026.wav	2.061	0.054	0.0264	train	thank	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0010	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0010.wav	2.075	0.054	0.0263	up	oh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0018	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0018.wav	2.075	0.054	0.0263	no	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0117	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0117.wav	2.075	0.054	0.0262	bloat	float	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0115	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0115.wav	2.080	0.022	0.0104	feed	three	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0048	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0048.wav	2.087	0.022	0.0103	park	park	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0184	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0184.wav	2.090	0.022	0.0103	leak	leak	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0223	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0223.wav	2.095	0.022	0.0103	knew	new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0023	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0023.wav	2.098	0.022	0.0105	sip	zip	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0125	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0125.wav	2.104	0.022	0.0105	of	uh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0396	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0396.wav	2.115	0.022	0.0104	sin	sin	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0066	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0066.wav	2.118	0.022	0.0104	weed	we	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0022	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0022.wav	2.125	0.019	0.0092	floor	zero	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0265	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0265.wav	2.130	0.019	0.0091	him	and	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0113	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0113.wav	2.130	0.019	0.0091	side	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0174	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0174.wav	2.130	0.019	0.0091	blow	blow	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0144	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0144.wav	2.145	0.025	0.0117	eight	mm	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0257	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0257.wav	2.150	0.025	0.0117	pot	but	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0005	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0005.wav	2.175	0.025	0.0115	shop	sharp	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0160	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0160.wav	2.175	0.025	0.0115	briar	brier	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0026	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0026.wav	2.180	0.021	0.0094	though	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0281	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0281.wav	2.180	0.021	0.0094	pit	pitt	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0130	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0130.wav	2.202	0.021	0.0094	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0308	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0308.wav	2.210	0.021	0.0093	bitten	bitton	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0056	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0056.wav	2.220	0.022	0.0099	sip	flip	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0281	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0281.wav	2.224	0.022	0.0098	pit	three	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0330	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0330.wav	2.230	0.022	0.0098	hat	hat	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0024	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0024.wav	2.235	0.022	0.0098	chip	sure	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0047	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0047.wav	2.240	0.019	0.0086	warm	warm	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0043	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0043.wav	2.245	0.019	0.0086	meat	meet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0417	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0417.wav	2.250	0.019	0.0086	bread	bread	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0169	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0169.wav	2.275	0.019	0.0085	spit	spack	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0175	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0175.wav	2.275	0.019	0.0084	suit	suit	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0370	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0370.wav	2.275	0.019	0.0084	much	much	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0128	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0128.wav	2.278	0.019	0.0084	storm	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0142	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0142.wav	2.286	0.019	0.0084	Just one side got wet.	just one side got wet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0185	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0185.wav	2.300	0.018	0.0077	spain	spain	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0013	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0013.wav	2.300	0.018	0.0077	form	phone	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0083	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0083.wav	2.310	0.018	0.0076	toot	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0010	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0010.wav	2.311	0.018	0.0076	sheet	she said	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0126	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0126.wav	2.325	0.020	0.0086	pad	pad	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0403	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0403.wav	2.340	0.020	0.0085	sand	sand	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0011	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0011.wav	2.340	0.020	0.0085	charlie	charlie	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0270	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0270.wav	2.343	0.020	0.0085	sell	see how	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0167	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0167.wav	2.350	0.018	0.0076	quebec	quebec	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0243	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0243.wav	2.350	0.018	0.0076	sigh	sigh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0084	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0084.wav	2.355	0.018	0.0076	down	down	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0109	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0109.wav	2.357	0.018	0.0076	bug	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0017	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0017.wav	2.360	0.023	0.0099	sprinkle	sprinkle	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0163	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0163.wav	2.365	0.023	0.0099	we're	where	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0045	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0045.wav	2.370	0.023	0.0099	sigh	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0390	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0390.wav	2.375	0.023	0.0098	sit	set	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0153	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0153.wav	2.385	0.021	0.0086	rocks	rocks	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0163	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0163.wav	2.385	0.021	0.0086	pay	pay	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0285	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0285.wav	2.415	0.021	0.0085	mike	mike	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0405	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0405.wav	2.430	0.021	0.0085	wicked	wick it	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0105	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0105.wav	2.435	0.025	0.0103	at	ah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0249	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0249.wav	2.435	0.025	0.0103	single	they know	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0164	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0164.wav	2.441	0.025	0.0103	dot	do	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0179	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0179.wav	2.441	0.025	0.0103	near	new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0008	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0008.wav	2.450	0.020	0.0081	lead	lead as	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0035	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0035.wav	2.460	0.020	0.0081	much	mud	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0145	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0145.wav	2.469	0.020	0.0081	droop	droop	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0290	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0290.wav	2.470	0.020	0.0081	sigh	sigh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0238	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0238.wav	2.470	0.026	0.0104	loop	loop	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0263	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0263.wav	2.470	0.026	0.0104	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0183	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0183.wav	2.470	0.026	0.0104	hat	i	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0016	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0016.wav	2.475	0.026	0.0104	bit	bit bit	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0226	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0226.wav	2.480	0.025	0.0101	pile	pyle	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0067	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0067.wav	2.480	0.025	0.0101	ship	should	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0138	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0138.wav	2.485	0.025	0.0100	back	back	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0065	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0065.wav	2.495	0.025	0.0100	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0181	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0181.wav	2.495	0.024	0.0096	tell	pelleu	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0133	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0133.wav	2.497	0.024	0.0096	here	here	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0201	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0201.wav	2.500	0.024	0.0096	here	here	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0259	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0259.wav	2.505	0.024	0.0096	pitting	pissing	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0095	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0095.wav	2.510	0.032	0.0129	golf	golf	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0236	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0236.wav	2.510	0.032	0.0129	fate	fate	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0028	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0028.wav	2.535	0.032	0.0127	rage	eight	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0280	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0280.wav	2.535	0.032	0.0127	hat	hot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0116	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0116.wav	2.540	0.023	0.0091	part	part	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0190	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0190.wav	2.540	0.023	0.0091	barn	barn	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0022	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0022.wav	2.545	0.023	0.0091	weed	weed	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0039	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0039.wav	2.550	0.023	0.0091	sticks	stairs	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0040	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0040.wav	2.551	0.020	0.0079	sip		[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0001	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0001.wav	2.555	0.020	0.0079	shoot	shoot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0205	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0205.wav	2.565	0.020	0.0079	rock	rock	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0077	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0077.wav	2.575	0.020	0.0079	pad	pen	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0137	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0137.wav	2.580	0.021	0.0081	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0318	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0318.wav	2.590	0.021	0.0081	tango	tango	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0138	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0138.wav	2.595	0.021	0.0081	fill	twelve	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0065	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0065.wav	2.605	0.021	0.0080	There was only one decision to be made.	there was only one decision to be made	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0114	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0114.wav	2.610	0.027	0.0102	spark	spunk	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0214	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0214.wav	2.610	0.027	0.0102	of	i	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0101	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0101.wav	2.615	0.027	0.0102	I've kept it with me ever since.	i've kept it with me ever since	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0369	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0369.wav	2.625	0.027	0.0102	nine	nine	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0229	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0229.wav	2.640	0.020	0.0075	play	play	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0108	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0108.wav	2.660	0.020	0.0074	pitting	pay leave	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0070	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0070.wav	2.665	0.020	0.0074	hate	hey	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0136	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0136.wav	2.666	0.020	0.0074	hear	him	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0293	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0293.wav	2.675	0.021	0.0080	fat	bad	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0280	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0280.wav	2.675	0.021	0.0080	in	in	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0243	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0243.wav	2.680	0.021	0.0080	fruit	food	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0237	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0237.wav	2.693	0.021	0.0079	thigh	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0183	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0183.wav	2.715	0.019	0.0071	hill	hell	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0191	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0191.wav	2.725	0.019	0.0071	bite	bite	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0018	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0018.wav	2.725	0.019	0.0071	go	go	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0104	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0104.wav	2.725	0.019	0.0071	two	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0194	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0194.wav	2.725	0.021	0.0079	mike	my	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0323	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0323.wav	2.735	0.021	0.0079	hark	hark	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0090	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0090.wav	2.745	0.021	0.0078	oscar	oscar	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0015	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0015.wav	2.745	0.021	0.0078	up	up	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0186	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0186.wav	2.765	0.028	0.0101	fill	four	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0075	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0075.wav	2.800	0.028	0.0100	hem	ham	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0017	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0017.wav	2.800	0.028	0.0100	warm	warm	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0240	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0240.wav	2.800	0.028	0.0100	deer	dear	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0309	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0309.wav	2.810	0.022	0.0078	zip	is it	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0056	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0056.wav	2.820	0.022	0.0078	explore	explore	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0100	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0100.wav	2.834	0.022	0.0078	rake	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0092	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0092.wav	2.840	0.022	0.0078	goat	goat	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0040	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0040.wav	2.845	0.022	0.0076	dot	dot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0039	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0039.wav	2.845	0.022	0.0076	range	range	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0042	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0042.wav	2.850	0.022	0.0076	rate	rate	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0175	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0175.wav	2.865	0.022	0.0075	kitten	caton	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0184	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0184.wav	2.885	0.159	0.0552	zero	zero wow	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0161	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0161.wav	2.885	0.159	0.0552	group	good	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0139	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0139.wav	2.890	0.159	0.0551	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0156	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0156.wav	2.895	0.159	0.0550	kilo	kilo	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0034	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0034.wav	2.905	0.186	0.0641	feet	feet	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0230	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0230.wav	2.905	0.186	0.0641	cycle	flight golf	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0173	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0173.wav	2.925	0.186	0.0636	city	thirdly	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0037	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0037.wav	2.930	0.186	0.0635	chair	can	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0106	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0106.wav	2.935	0.138	0.0471	seed	feed	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0012	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0012.wav	2.940	0.138	0.0470	spark		[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0146	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0146.wav	2.945	0.138	0.0470	at	at	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0271	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0271.wav	2.975	0.138	0.0465	tile	bye	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0107	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0107.wav	2.975	0.168	0.0565	A good attitude is unbeatable.	a good rather is unbeatable	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0189	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0189.wav	2.990	0.168	0.0562	blow	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0091	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0091.wav	2.990	0.168	0.0562	fair	there are	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0023	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0023.wav	3.000	0.168	0.0560	swarm	go on	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0406	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0406.wav	3.010	0.170	0.0564	nod	nod	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0069	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0069.wav	3.010	0.170	0.0564	trouble	to drebor	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0197	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0197.wav	3.015	0.170	0.0563	Being able to dance can help too.	being able to dance can help too	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0119	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0119.wav	3.060	0.170	0.0554	chair	sure	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0095	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0095.wav	3.065	0.037	0.0122	yes	yeah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0094	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0094.wav	3.085	0.037	0.0121	rake	reke	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0102	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0102.wav	3.087	0.037	0.0121	air	eh	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0130	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0130.wav	3.105	0.037	0.0121	dark	derek	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0227	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0227.wav	3.130	0.066	0.0210	side	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0071	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0071.wav	3.130	0.066	0.0210	forward	a ford	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0020	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0020.wav	3.140	0.066	0.0209	boot	boot	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0046	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0046.wav	3.155	0.066	0.0208	tear	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0221	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0221.wav	3.165	0.040	0.0125	fitting	fifteen	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0005	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0005.wav	3.170	0.040	0.0125	explore	exclow	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0125	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0125.wav	3.180	0.040	0.0125	steer	steer	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0196	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0196.wav	3.185	0.040	0.0124	leak	week	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0246	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0246.wav	3.195	0.063	0.0198	sell	so	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0228	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0228.wav	3.195	0.063	0.0198	side	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0263	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0263.wav	3.195	0.063	0.0198	take	take	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0296	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0296.wav	3.200	0.063	0.0198	vat	then	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0267	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0267.wav	3.245	0.048	0.0147	sell	cell	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0162	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0162.wav	3.250	0.048	0.0146	Night after night, they received annoying phone calls.	night after night they received annoying phone calls	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0112	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0112.wav	3.255	0.048	0.0146	jagged	g i ag	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0177	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0177.wav	3.270	0.048	0.0145	hotel	of care	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0008	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0008.wav	3.285	0.034	0.0103	briar	fire breyer	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0073	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0073.wav	3.285	0.034	0.0103	go	go	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0227	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0227.wav	3.320	0.034	0.0102	hitting	hey ding	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0249	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0249.wav	3.320	0.034	0.0102	Their house is grey and white.	their house is grey and white	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0264	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0264.wav	3.340	0.037	0.0111	loyal	though yeah	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0028	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0028.wav	3.370	0.037	0.0110	Where were you while we were away?	where were you while we were away	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0105	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0105.wav	3.375	0.037	0.0110	write	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0165	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0165.wav	3.385	0.037	0.0110	He will allow a rare lie.	he will allow a rare lie	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0132	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0132.wav	3.385	0.025	0.0074	brawn	braun	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0158	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0158.wav	3.390	0.025	0.0074	mitten	but mm	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0055	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0055.wav	3.410	0.025	0.0073	feed	feed	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0082	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0082.wav	3.410	0.025	0.0073	storm	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0134	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0134.wav	3.420	0.184	0.0537	snoop	is in new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session1-0182	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session1-0182.wav	3.451	0.184	0.0532	Are your grades higher or lower than Nancy's?	are your grades higher or lower than nancy's	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0332	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0332.wav	3.480	0.184	0.0528	dark	dark	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0169	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0169.wav	3.510	0.184	0.0523	were	were	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0133	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0133.wav	3.515	0.165	0.0470	pretty	pretty	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0136	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0136.wav	3.515	0.165	0.0470	nine	nine	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0039	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0039.wav	3.535	0.165	0.0468	lip	whip	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0097	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0097.wav	3.540	0.165	0.0467	weed	we	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0073	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0073.wav	3.545	0.046	0.0130	and	and	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0276	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0276.wav	3.550	0.046	0.0130	papa	you	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0121	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0121.wav	3.565	0.046	0.0129	troop	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0056	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0056.wav	3.585	0.046	0.0129	This is a good place, though small.	this is a good points to a smile	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0028	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0028.wav	3.607	0.037	0.0103	but he always answers, Banana oil!	but he always answer in banana oil	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0068	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0068.wav	3.630	0.037	0.0103	xxx		[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0102	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0102.wav	3.630	0.037	0.0103	horn	one	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0150	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0150.wav	3.630	0.037	0.0103	we're	we are	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0068	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0068.wav	3.640	0.039	0.0106	right	right	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0196	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0196.wav	3.650	0.039	0.0106	witty	wait the	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0071	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0071.wav	3.655	0.039	0.0106	rage	range	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0055	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0055.wav	3.700	0.039	0.0105	The results were very disappointing.	the results were very disappointing	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0166	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0166.wav	3.745	0.025	0.0066	The islands are sparsely populated.	the islands are sparsely populated	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0398	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0398.wav	3.750	0.025	0.0066	Each one volunteered to jump first.	each one volunteered to jump first	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0230	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0230.wav	3.760	0.025	0.0066	and	and	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0050	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0050.wav	3.765	0.025	0.0065	sigh	five	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0211	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0211.wav	3.795	0.038	0.0101	I feel I can play this weekend.	i feel i can play this weekend	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0213	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0213.wav	3.820	0.038	0.0100	ticker	took her	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0328	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0328.wav	3.835	0.038	0.0100	Swing your arm as high as you can.	swing your arms as high as you can	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0109	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0109.wav	3.840	0.038	0.0099	Carl lives in a lively home.	carl lives in a lively home	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0146	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0146.wav	3.840	0.026	0.0068	hate		[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0199	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0199.wav	3.855	0.026	0.0068	Mother sews yellow gingham aprons.	mother sews yellow gingham aprons	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0118	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0118.wav	3.870	0.026	0.0068	lead	read	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0111	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0111.wav	3.970	0.026	0.0066	beta	be ja	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0176	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0176.wav	3.975	0.047	0.0117	galore	get a	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0178	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0178.wav	3.980	0.047	0.0117	gnaw	no	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0060	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0060.wav	4.060	0.047	0.0115	rate	rate	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0099	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0099.wav	4.069	0.047	0.0114	dark	dark	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0078	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0078.wav	4.070	0.046	0.0112	storm	two	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0093	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0093.wav	4.151	0.046	0.0110	A long, flowing beard clings to his chin,	along flowing mere clinking	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0111	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0111.wav	4.185	0.046	0.0109	You wished to know all about my grandfather.	you wish to know all about my grandfather	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0127	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0127.wav	4.235	0.046	0.0108	We selected places where families will be welcome.	we selected places where families will be welcomed	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0023	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0023.wav	4.350	0.033	0.0075	She doesn't like to have it hanging around.	she doesn't like to have it hanging around	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0266	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0266.wav	4.425	0.033	0.0074	reek	rich	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0250	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0250.wav	4.440	0.033	0.0074	Two other cases also were under advisement.	two other cases also were under advisement	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0300	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0300.wav	4.575	0.033	0.0072	The museum hires musicians every evening.	the museum hires musicians every evening	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0210	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0210.wav	4.602	0.028	0.0062	You're used to being on the field.	we're used to being on the field	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0030	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0030.wav	4.801	0.028	0.0059	The quick brown fox jumps over the lazy dog.	the quick brown fox gumped over the raging dog	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0105	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0105.wav	4.820	0.028	0.0059	yet he still thinks as swiftly as ever.	yet he skilled things in swiftly and ever	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0002	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0002.wav	5.070	0.028	0.0056	I looked up and noticed two old men.	i looked up and noticed two old men	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0114	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0114.wav	5.102	0.026	0.0052	Well, he is nearly ninety three years old	well he's mealing i need to eagle	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0148	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0148.wav	5.150	0.026	0.0051	The little schoolhouse stood empty.	the little schoolhouse stood empty	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0149	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0149.wav	5.180	0.026	0.0051	Students watched as he got out.	students watched as he got out	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0080	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0080.wav	5.270	0.026	0.0050	The little schoolhouse stood empty.	the little schoolhouse stood empty	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0227	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0227.wav	5.394	0.035	0.0065	The box contained three sweaters.	the bog contained weather	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0393	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0393.wav	5.440	0.035	0.0064	the pair of shoes was new	the pay issues new	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0061	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0061.wav	5.475	0.035	0.0064	I feel I can play this weekend.	i feel i can play this weekend	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0222	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0222.wav	5.535	0.035	0.0063	Nothing is as offensive as innocence.	nothing is as offensive as innocence	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0130	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0130.wav	5.705	0.026	0.0046	The dolphins swam around our boat.	the dolphins swam around the boat	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0130	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0130.wav	5.746	0.026	0.0046	Grandfather likes to be modern in his language.	grandpa likes to be modern in his language	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0090	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0090.wav	5.760	0.026	0.0046	Where were you while we were away?	away	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0383	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0383.wav	5.765	0.026	0.0046	You can ride stagecoach.	you can ride stage coach	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0154	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0154.wav	5.915	0.028	0.0048	xxx	i so	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session3-0134	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session3-0134.wav	5.970	0.028	0.0047	The prospect of cutting back spending is an unpleasant one for any governor.	the prospect of cutting back spending is an unpleasant one for any governor	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M03-Session2-0096	M03	dysarthric	/workspace/echora/gate/audio/torgo-M03-Session2-0096.wav	6.005	0.028	0.0047	Twice each day he plays skillfully and with zest upon our small organ.	twice each day he plays skillfully and with zest upon our small organ	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0228	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0228.wav	6.035	0.028	0.0047	The owners regularly look for plumbing leaks.	the owners regularly look for plumbing leaks	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0147	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0147.wav	6.060	0.071	0.0118	It eventually became a rather proud claim.	it eventually became a rather proud claim	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0295	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0295.wav	6.235	0.071	0.0115	There is a treehouse up above.	then it uh drill out uh about	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0126	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0126.wav	6.241	0.071	0.0114	he dresses himself in an ancient black frock coat,	he engaged himself in drinking black botco	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0237	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0237.wav	6.250	0.071	0.0114	Being able to dance can help too.	being able to dance can help too	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0053	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0053.wav	6.440	0.053	0.0083	Are your grades higher or lower than Nancy's?	are your grades higher or lower than nancy's	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0183	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0183.wav	6.560	0.053	0.0081	Bright sunshine shimmers on the ocean.	bright sunshine shimmers on the ocean	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0014	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0014.wav	6.562	0.053	0.0081	he slowly takes a short walk in the open air each day.	he slowly kicks a slight walk in the open air each day	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0086	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0086.wav	6.580	0.053	0.0081	My sister made the flowered curtains.	my sister made the flowers curtains	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0020	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0020.wav	6.665	0.029	0.0044	The islands are sparsely populated.	the islands are sparsely populated	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0036	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0036.wav	6.690	0.029	0.0043	Nothing is as offensive as innocence.	nothing is as offensive as innocence	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0127	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0127.wav	6.706	0.029	0.0043	Both figures would go higher in later years.	both figures would go higher in later years	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F03-Session2-0037	F03	dysarthric	/workspace/echora/gate/audio/torgo-F03-Session2-0037.wav	6.775	0.029	0.0043	Both figures would go higher in later years.	both figures will go higher in later years	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0069	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0069.wav	6.848	0.031	0.0045	I tried to tell people in the community.	i try to help people in the community	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0370	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0370.wav	6.930	0.031	0.0044	Each one volunteered to jump first.	each one volunteered to jump first	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0209	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0209.wav	7.068	0.031	0.0044	Night after night, they received annoying phone calls.	night after night they received a noine phone calls	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0170	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0170.wav	7.435	0.031	0.0041	She wore warm, fleecy, woolen overalls.	she wore warm fleecy woolen overalls	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0151	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0151.wav	7.485	0.031	0.0042	He wrapped the package hastily.	he wrapped the package hastily	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0283	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0283.wav	7.525	0.031	0.0041	It was a good win for us.	it will it were the wing wing	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0032	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0032.wav	7.567	0.031	0.0041	She had your dark suit in greasy wash water all year.	she had in the walk all year	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0204	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0204.wav	7.670	0.031	0.0041	The job provides many benefits.	a job provides many benefits	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0154	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0154.wav	7.704	0.034	0.0044	The islands are sparsely populated.	the islands are sparsely populated	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0187	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0187.wav	7.860	0.034	0.0043	Why yell or worry over silly items?	why you are worrying over the item	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0177	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0177.wav	8.065	0.034	0.0042	Day after day some new episode is reported.	day after day some new episode is reported	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0155	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0155.wav	8.105	0.034	0.0042	I was conscious all the time.	i what what what what good do you all the the time	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0043	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0043.wav	8.370	0.080	0.0095	Mother sews yellow gingham aprons.	mary's yellow gingham apron	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0264	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0264.wav	8.595	0.080	0.0093	The humidity is overwhelming there.	the humanity is overwhelming	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0049	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0049.wav	8.885	0.080	0.0090	The islands are sparsely populated.	the islands are sparsely populated	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F01-Session1-0132	F01	dysarthric	/workspace/echora/gate/audio/torgo-F01-Session1-0132.wav	9.163	0.080	0.0087	When he speaks, his voice is just a bit cracked and quivers a trifle.	when he speaks his voice is disciples cracked and	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0026	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0026.wav	9.440	0.062	0.0066	yet he still thinks as swiftly as ever.	yet in the ring and through the ever	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0236	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0236.wav	9.485	0.062	0.0066	The misguided souls have lost their way.	the misguided schools have lost the way	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0055	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0055.wav	9.534	0.062	0.0065	She had your dark suit in greasy wash water all year.	she had her docts him in greedy wash water all year	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-F04-Session2-0115	F04	dysarthric	/workspace/echora/gate/audio/torgo-F04-Session2-0115.wav	9.705	0.062	0.0064	It also provides for funds to clear slums and help colleges build dormitories.	it also provides for funds to clear slums and help col colleges build dormitories	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0163	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0163.wav	9.750	0.052	0.0054	She wore warm, fleecy, woolen overalls.	she wore a warm lacy one overall	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session2-0137	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session2-0137.wav	9.865	0.052	0.0053	This is not a program of socialized medicine.	this is not a program of self life medicine	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0044	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0044.wav	10.145	0.052	0.0052	yet he still thinks as swiftly as ever.	yet she and	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0274	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0274.wav	10.205	0.052	0.0051	The islands are sparsely populated.	the island	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0012	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0012.wav	10.225	0.072	0.0071	A long, flowing beard clings to his chin,	and i'm throwing beard drinks to enjoy	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0072	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0072.wav	10.285	0.072	0.0070	She had your dark suit in greasy wash water all year.	she had ear dug in greedy wide wide all ear	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session2_3-0159	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session2_3-0159.wav	12.081	0.072	0.0060	This is not a program of socialized medicine.	did it a program of yoi can i start over again sorry	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0056	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0056.wav	12.435	0.072	0.0058	giving those who observe him a pronounced feeling of the utmost respect.	give it though it who ab him a burn now in the building albeit mold rebec	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0101	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0101.wav	12.465	0.176	0.0141	Grandfather likes to be modern in his language.	grandpa liked to be modern in his language	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0305	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0305.wav	12.476	0.176	0.0141	He really crucified him; he nailed it for a yard loss.	heself he knew it for a year	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session1-0104	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session1-0104.wav	12.540	0.176	0.0141	She had your dark suit in greasy wash water all year.	she had your dark shoot in greasy wash water oil	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0226	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0226.wav	13.540	0.176	0.0130	You'd be better off taking a cold shower.	you better better you you be better off talking titting a hotel	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M02-Session1-0115	M02	dysarthric	/workspace/echora/gate/audio/torgo-M02-Session1-0115.wav	13.693	0.103	0.0075	Except in the winter when the ooze or snow or ice prevents,	except the winter except in the winter when the snow or ice prevent	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M01-Session1-0084	M01	dysarthric	/workspace/echora/gate/audio/torgo-M01-Session1-0084.wav	15.030	0.103	0.0068	Twice each day he plays skillfully and with zest upon our small organ.	drained in the he breathed he carefully we and weld upon our small organ	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0033	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0033.wav	17.255	0.103	0.0059	Except in the winter when the ooze or snow or ice prevents,	is that in the winter when that the own or no or i	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0274	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0274.wav	17.330	0.103	0.0059	The prospect of cutting back spending is an unpleasant one for any governor.	the prospect of cutting back spending is an unpleasant one for any governor	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0024	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0024.wav	17.370	0.089	0.0051	giving those who observe him a pronounced feeling of the utmost respect.	given those who admir them a pronoun feeling of the unknown	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M05-Session2-0146	M05	dysarthric	/workspace/echora/gate/audio/torgo-M05-Session2-0146.wav	19.235	0.089	0.0046	He further proposed grants of an unspecified sum for experimental hospitals.	he proposed grants for an unexpensified sum for experimental hospital	[]		nvidia/parakeet-tdt-1.1b	cuda
+torgo-M04-Session2-0029	M04	dysarthric	/workspace/echora/gate/audio/torgo-M04-Session2-0029.wav	19.545	0.089	0.0046	When he speaks, his voice is just a bit cracked and quivers a trifle.	when he beat his head a bit gurgled and quivered undreadred	[]		nvidia/parakeet-tdt-1.1b	cuda
