@@ -2,7 +2,7 @@
 
 The browser sends one completed recording to the local FastAPI API. FastAPI normalizes it to 16 kHz mono audio and invokes exactly one configured ASR backend: local MPS, a persistent Pod, or RunPod Serverless.
 
-The ASR worker returns literal hypotheses only. The local API then runs a contextual Groq interpreter. Alongside the beams it receives a slot alignment that aligns them position by position, so stable words and unresolved words are separated before any judgement is made, plus the per-term share of search weight and of beams. It groups supporting hypothesis IDs, assigns a constrained speech act, and extracts key terms that must occur in the cited literal evidence. A key term is retained only when it holds a strict majority of the grouped beams by both search weight and beam count, so grouping more beams no longer discards the words that distinguish them. General, Home, Hospital/care, and Outdoors are session-only settings and are treated as weak priors.
+The ASR worker returns literal hypotheses only. The local API then runs a contextual Groq interpreter. Alongside the beams it receives a slot alignment that aligns them position by position, so stable words and unresolved words are separated before any judgement is made, plus the per-term share of search weight and of beams. It groups supporting hypothesis IDs, assigns a constrained speech act, and extracts key terms that must occur in the cited literal evidence. A key term is retained only when it holds a strict majority of the grouped beams by both search weight and beam count, so grouping more beams no longer discards the words that distinguish them. General, Home, Hospital/care, and Outdoors are session-only settings and are treated as weak priors. The speaker reaches them through named places, which resolve to one of those four and never extend the set: a place the speaker adds declares which of the four it borrows, so its prior and its retrieval pool are that built-in's. Places, and the switch that lets location choose between them, persist in `data/personal/settings.json`; the setting a given utterance was spoken in is still session-only.
 
 A deterministic clarity gate combines beam margin, normalized entropy, grouped search weight, semantic evidence strength, and explicit speech-act cues. A speech-act cue alone cannot clear an interpretation whose grouped beams offer competing alternatives for the same slot; that contested case stays ambiguous. A clear interpretation proceeds as one message; genuine uncertainty exposes up to three interpreted alternatives. The search features are relative evidence, not calibrated confidence.
 
@@ -33,3 +33,11 @@ bounded by the same score retrieval ranks with. Shipped personas are read-only; 
 into a gitignored live store on first use. Every failure in this layer returns nothing and is silent.
 
 Remote GPU workers never receive the Groq key and never perform semantic repair. They expose the same raw-ASR schema as the local engine.
+
+Location, when the speaker turns it on, only chooses among places they tagged themselves. A place is tagged by
+standing in it and asking the browser once for its coordinates -- there is no address lookup, no map provider, and
+no outbound request. Matching runs in the browser against a radius, widened by the reported accuracy of the fix
+because an indoor reading is routinely tens of metres out, so coordinates never reach the API and the transcription
+request is unchanged: it still carries only the borrowed context. Detection is confined to the idle screen, names
+the place it picked, and yields permanently to a tap. Every failure -- permission refused, no fix, nothing tagged,
+an unreadable document -- leaves the speaker choosing by hand, exactly as before the layer existed.

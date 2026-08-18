@@ -10,7 +10,9 @@ Current tuned model
 - Run the local application with `./scripts/dev.sh`; the backend loads the model once on MPS/BF16 on this Mac.
 - ASR returns up to five literal hypotheses with sequence scores and relative beam-search weights. These weights are not calibrated confidence.
 - Raw ASR is immutable evidence. Groq ranking and grammar repair happen afterward and must never overwrite the literal hypotheses.
-- Session context can be `general`, `home`, `care`, or `outdoors`; it is a weak prior and is never saved.
+- Session context can be `general`, `home`, `care`, or `outdoors`; it is a weak prior and the chosen value is never saved.
+- Named places are the layer that supplies that context. A place resolves to one of those four and behaves exactly as it does; it never becomes a fifth value, so the chain is never handed a setting it does not know. `Home`, `Care`, and `Outdoors` ship and cannot be removed; anything else the speaker adds and removes, choosing which of the four it borrows.
+- A place may be tagged with the speaker's current coordinates, and optional auto-detection then picks the setting when they are inside one. Matching happens in the browser, so coordinates never leave it; only the borrowed context is sent. Detection runs on the idle screen only, always shows which place it picked, and a tap outranks it for the session. Places persist in the gitignored `data/personal/settings.json`; a refused permission, a missing fix, or an unreadable file all fall back to choosing by hand.
 - Groq pass one groups literal beams into grounded intents. A deterministic threshold gate decides clear versus ambiguous. Groq pass two realizes only the displayed intents as natural messages.
 - Final suggestions must retain their source hypothesis IDs and key terms. Unsupported substantive wording is rejected before reaching the UI.
 - A message the speaker has settled on is spoken immediately, with no confirmation step: one surviving candidate speaks itself on arrival, and on the ambiguous screen the tap that picks an option is the decision. The speaker still chooses whenever the evidence is ambiguous.

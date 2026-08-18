@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from app import main
 from app.audio import encode_wav
 from app.messaging.groq_chain import MessageChainResult
+from app.places import BUILTIN_IDS, PlaceStore
 from app.schemas import (
     AudioQuality,
     Hypothesis,
@@ -154,7 +155,7 @@ class FakePersonal:
         return True, False, "stored"
 
 
-def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersonal):
+def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersonal, places_path=None):
     FakeSpeech.spoken = []
     FakePersonal.briefs = []
     FakePersonal.remembered = []
@@ -162,6 +163,10 @@ def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersona
     monkeypatch.setattr(main, "GroqMessageChain", chain)
     monkeypatch.setattr(main, "GroqSpeech", speech)
     monkeypatch.setattr(main, "Personalizer", personal)
+    if places_path is not None:
+        # Anything that writes places goes to a temporary file. The real document
+        # lives in data/personal/, which a test must never touch.
+        monkeypatch.setattr(main, "PlaceStore", lambda _path: PlaceStore(places_path))
     return TestClient(main.app)
 
 
@@ -379,3 +384,94 @@ def test_remembering_is_never_an_error_when_the_layer_is_down(monkeypatch) -> No
         )
     assert response.status_code == 200
     assert response.json()["stored"] is False
+
+
+# ------------------------------------------------------------------- places
+
+
+def test_places_start_at_the_shipped_defaults(monkeypatch, tmp_path) -> None:
+    with client(monkeypatch, places_path=tmp_path / "settings.json") as api:
+        body = api.get("/api/v1/places").json()
+    assert [place["id"] for place in body["places"]] == list(BUILTIN_IDS)
+    assert body["auto_detect"] is False
+
+
+def test_places_round_trip_through_the_api(monkeypatch, tmp_path) -> None:
+    path = tmp_path / "settings.json"
+    with client(monkeypatch, places_path=path) as api:
+        saved = api.post(
+            "/api/v1/places",
+            json={
+                "auto_detect": True,
+                "places": [
+                    {"id": "home", "label": "Home", "context": "home", "builtin": True,
+                     "latitude": 12.9716, "longitude": 80.2594, "radius_m": 150},
+                    {"id": "new", "label": "Shopping centre", "context": "outdoors"},
+                ],
+            },
+        )
+        assert saved.status_code == 200
+        # The response is what was stored, not an echo of the request.
+        assert saved.json() == api.get("/api/v1/places").json()
+
+    body = saved.json()
+    assert body["auto_detect"] is True
+    custom = next(place for place in body["places"] if place["id"] == "shopping-centre")
+    assert (custom["context"], custom["builtin"]) == ("outdoors", False)
+    assert next(place for place in body["places"] if place["id"] == "home")["tagged_at"]
+    assert path.is_file()
+
+
+def test_the_api_will_not_let_a_request_delete_or_rebind_a_builtin(monkeypatch, tmp_path) -> None:
+    with client(monkeypatch, places_path=tmp_path / "settings.json") as api:
+        emptied = api.post("/api/v1/places", json={"auto_detect": False, "places": []}).json()
+        assert [place["id"] for place in emptied["places"]] == list(BUILTIN_IDS)
+
+        rebound = api.post(
+            "/api/v1/places",
+            json={"places": [{"id": "home", "label": "Ward 4", "context": "care"}]},
+        ).json()
+        home = next(place for place in rebound["places"] if place["id"] == "home")
+        assert (home["label"], home["context"]) == ("Home", "home")
+
+
+def test_an_impossible_coordinate_is_rejected(monkeypatch, tmp_path) -> None:
+    with client(monkeypatch, places_path=tmp_path / "settings.json") as api:
+        response = api.post(
+            "/api/v1/places",
+            json={"places": [{"id": "x", "label": "Nowhere", "context": "home",
+                              "latitude": 900.0, "longitude": 0.0}]},
+        )
+    assert response.status_code == 422
+
+
+def test_a_silly_radius_is_clamped_rather_than_rejected(monkeypatch, tmp_path) -> None:
+    with client(monkeypatch, places_path=tmp_path / "settings.json") as api:
+        body = api.post(
+            "/api/v1/places",
+            json={"places": [{"id": "x", "label": "Wide", "context": "home",
+                              "latitude": 12.9, "longitude": 80.2, "radius_m": 999999}]},
+        ).json()
+    assert next(place for place in body["places"] if place["id"] == "wide")["radius_m"] == 2000
+
+
+def test_reading_places_is_never_an_error(monkeypatch, tmp_path) -> None:
+    """A document that cannot be read must not stop the interface from opening."""
+    path = tmp_path / "settings.json"
+    path.write_text("{ this is not json", encoding="utf-8")
+    with client(monkeypatch, places_path=path) as api:
+        response = api.get("/api/v1/places")
+    assert response.status_code == 200
+    assert [place["id"] for place in response.json()["places"]] == list(BUILTIN_IDS)
+
+
+def test_a_place_never_reaches_the_message_chain_as_a_setting(monkeypatch, tmp_path) -> None:
+    """A custom place borrows a built-in context; the chain only ever sees the four."""
+    with client(monkeypatch, places_path=tmp_path / "settings.json") as api:
+        api.post("/api/v1/places", json={"places": [{"id": "x", "label": "Shopping centre",
+                                                     "context": "outdoors"}]})
+        rejected = _post(api, context="shopping-centre")
+        assert rejected.status_code == 422
+        accepted = _post(api, context="outdoors")
+        assert accepted.status_code == 200
+        assert accepted.json()["context"] == "outdoors"

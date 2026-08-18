@@ -60,3 +60,57 @@ test("the shell is locked to a single screen", async () => {
   assert.match(css, /grid-template-rows: auto minmax\(0, 1fr\) auto/);
   assert.doesNotMatch(page, /setBars\(/);
 });
+
+test("places resolve to a built-in setting and never become one themselves", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  // The four settings stay a closed set. A place borrows one; it never adds one,
+  // so the message chain can never be handed a setting it does not know.
+  assert.match(page, /type CommunicationContext = "general" \| "home" \| "care" \| "outdoors";/);
+  assert.match(page, /context: CommunicationContext;/);
+  // The transcription request is untouched: still the setting, never a place id.
+  assert.match(page, /form\.append\("context", context\)/);
+  assert.doesNotMatch(page, /form\.append\("place"/);
+  assert.match(page, /setContext\(chosen \? chosen\.context : "general"\)/);
+});
+
+test("location is resolved in the browser and never blocks speaking", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  assert.match(page, /navigator\.geolocation/);
+  // Coordinates are matched here, so they never leave the machine -- only the
+  // borrowed setting is sent, through the field that already existed.
+  assert.match(page, /function nearestPlace\(/);
+  assert.match(page, /function metersBetween\(/);
+  assert.doesNotMatch(page, /api\/v1\/places\/resolve/);
+  // Detection only ever runs on the idle screen, so a reading cannot land
+  // mid-utterance, and a refused permission just leaves the chips in charge.
+  assert.match(page, /if \(stage !== "idle"\) return;/);
+  assert.match(page, /PERMISSION_DENIED/);
+});
+
+test("a detected setting is shown, and a tap outranks it", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  assert.match(page, /Detected <b>\{detected\.label\}<\/b>/);
+  assert.match(page, /manualPlaceRef/);
+  assert.match(page, /function pickPlace\([\s\S]*?manualPlaceRef\.current = true/);
+});
+
+test("the places panel cannot leave the speaker without the shipped places", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  const css = await readFile(new URL("app/globals.css", root), "utf8");
+  assert.match(page, /api\/v1\/places/);
+  // Remove is offered only on a place the speaker added.
+  assert.match(page, /\{!item\.builtin && \([\s\S]*?Remove/);
+  // The idle row is capped because that screen cannot scroll; the rest lives in
+  // the sheet, which can.
+  assert.match(page, /const IDLE_CHIPS = 5;/);
+  assert.match(page, /\{hidden\} more…/);
+  assert.match(css, /\.chip-more \{/);
+});
+
+test("the saved-state promise matches what is actually stored", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  // Places persist on this machine now, so the old blanket claim would overstate it.
+  assert.doesNotMatch(page, /No history is saved after refresh/);
+  assert.match(page, /No conversation is saved after refresh/);
+  assert.match(page, /stay on\s*\n?\s*this machine|stay on this machine/);
+});

@@ -9,6 +9,12 @@ from pydantic import BaseModel, Field
 CommunicationContext = Literal["general", "home", "care", "outdoors"]
 PersonaKind = Literal["person", "place", "object", "routine", "brand", "food"]
 
+# A tagged place is matched by distance, so the radius is the whole match rule.
+# 150 m covers a house or a ward without swallowing the next street.
+DEFAULT_RADIUS_M = 150
+MIN_RADIUS_M = 25
+MAX_RADIUS_M = 2000
+
 
 class Hypothesis(BaseModel):
     id: str
@@ -124,6 +130,48 @@ class PersonaSummary(BaseModel):
     specialization_size: int = 0
     history_size: int = 0
     baseline: bool = True
+
+
+class Place(BaseModel):
+    """A named place that resolves to one of the four communication contexts.
+
+    A place is a label and an optional location. It never introduces a new
+    context value: `context` is the built-in whose prior and retrieval pool the
+    place borrows, so a custom place behaves exactly as that built-in already
+    does. `latitude`/`longitude` stay None until the speaker tags the place while
+    standing in it.
+    """
+
+    id: str
+    label: str
+    context: CommunicationContext
+    builtin: bool = False
+    latitude: float | None = Field(default=None, ge=-90.0, le=90.0)
+    longitude: float | None = Field(default=None, ge=-180.0, le=180.0)
+    # Deliberately unbounded here and clamped in `places.normalize` instead: a
+    # hand-edited radius should be corrected, not rejected, because rejecting it
+    # drops the whole place and loses a location tag with it.
+    radius_m: int = DEFAULT_RADIUS_M
+    tagged_at: str | None = None
+
+    @property
+    def tagged(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
+
+
+class PlaceSettings(BaseModel):
+    """The whole places document: the detection switch and every known place."""
+
+    auto_detect: bool = False
+    places: list[Place] = Field(default_factory=list)
+    updated_at: str | None = None
+
+
+class PlaceSettingsRequest(BaseModel):
+    """A full replacement of the document. The server normalizes before storing."""
+
+    auto_detect: bool = False
+    places: list[Place] = Field(default_factory=list)
 
 
 class AcceptedMessage(BaseModel):

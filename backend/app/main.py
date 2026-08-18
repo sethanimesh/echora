@@ -17,6 +17,7 @@ from .audio import AudioValidationError, decode_audio
 from .config import Settings, load_settings
 from .messaging import GroqMessageChain, GroqSpeech
 from .personal import USER_PROFILE_ID, Personalizer
+from .places import PlaceStore, default_settings
 from .schemas import (
     AcceptedMessageRequest,
     AcceptedMessageResponse,
@@ -24,6 +25,8 @@ from .schemas import (
     HealthResponse,
     ModelInfo,
     PersonaSummary,
+    PlaceSettings,
+    PlaceSettingsRequest,
     ProfileRequest,
     ProfileResponse,
     SpeechAudio,
@@ -57,6 +60,10 @@ async def lifespan(app: FastAPI):
             app.state.personal = Personalizer(settings)
         except Exception as error:
             app.state.personal_error = f"{type(error).__name__}: {error}"
+    # Places are not part of the personal layer on purpose: choosing a setting by
+    # location has to keep working when personal context is off or no profile is
+    # picked, so this store stands on its own and never fails the app.
+    app.state.places = PlaceStore(settings.places_path)
     yield
 
 
@@ -240,6 +247,38 @@ async def accepted(request: AcceptedMessageRequest) -> AcceptedMessageResponse:
         request.persona, request.context, request.heard, request.message
     )
     return AcceptedMessageResponse(stored=stored, merged=merged, reason=reason)
+
+
+@app.get("/api/v1/places", response_model=PlaceSettings)
+async def read_places() -> PlaceSettings:
+    """The known places and whether location may choose between them.
+
+    Never an error. A first run, or a document that cannot be read, returns the
+    three shipped places with detection off -- which is exactly how the
+    interface behaved before places existed.
+    """
+    try:
+        return await asyncio.to_thread(app.state.places.load)
+    except Exception:
+        return default_settings()
+
+
+@app.post("/api/v1/places", response_model=PlaceSettings)
+async def write_places(request: PlaceSettingsRequest) -> PlaceSettings:
+    """Replace the whole document, and answer with what was actually stored.
+
+    One writer and one validation path. The built-ins are re-inserted and their
+    wording and context restored by `places.normalize`, so no request can leave
+    the speaker with fewer than the three places that ship, and the response is
+    the truth rather than an echo of what was asked for.
+    """
+    try:
+        return await asyncio.to_thread(
+            app.state.places.save,
+            PlaceSettings(auto_detect=request.auto_detect, places=request.places),
+        )
+    except Exception as error:
+        raise HTTPException(status_code=503, detail=f"Places could not be saved: {error}")
 
 
 @app.get("/api/v1/profile", response_model=ProfileResponse)

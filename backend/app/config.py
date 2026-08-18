@@ -39,6 +39,7 @@ class Settings:
     personal_specializations: bool
     persona_root: Path
     personal_root: Path
+    places_path: Path
     embedder_root: Path
     embedder_device: str
     embedder_max_tokens: int
@@ -141,6 +142,21 @@ def load_settings() -> Settings:
         ).expanduser(),
         personal_root=Path(
             os.getenv("ECHORA_PERSONAL_ROOT", str(PROJECT_ROOT / "data" / "personal"))
+        ).expanduser(),
+        # Places sit beside the live personal store because that directory is
+        # already gitignored and already the one thing a reset deletes. They are
+        # deliberately not inside a profile: location has to work when personal
+        # context is switched off or no profile is chosen.
+        places_path=Path(
+            os.getenv(
+                "ECHORA_PLACES_PATH",
+                str(
+                    Path(
+                        os.getenv("ECHORA_PERSONAL_ROOT", str(PROJECT_ROOT / "data" / "personal"))
+                    )
+                    / "settings.json"
+                ),
+            )
         ).expanduser(),
         embedder_root=Path(
             os.getenv("ECHORA_EMBEDDER_ROOT", str(PROJECT_ROOT / "models" / "echora-minilm-l6-v2"))

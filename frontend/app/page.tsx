@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 type Hypothesis = {
   id: string;
@@ -54,6 +54,26 @@ type SpeechAudio = {
 
 type CommunicationContext = "general" | "home" | "care" | "outdoors";
 
+// A place is a label with an optional location. It never introduces a new
+// setting: `context` is the built-in whose prior it borrows, so a custom place
+// behaves exactly as that built-in already does.
+type Place = {
+  id: string;
+  label: string;
+  context: CommunicationContext;
+  builtin: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  radius_m: number;
+  tagged_at: string | null;
+};
+
+type PlaceSettings = {
+  auto_detect: boolean;
+  places: Place[];
+  updated_at: string | null;
+};
+
 type Transcription = {
   request_id: string;
   backend: string;
@@ -87,7 +107,7 @@ type Health = {
 
 type Phase = "idle" | "recording" | "working" | "ready" | "error";
 type Stage = "idle" | "recording" | "working" | "choosing" | "composing" | "error";
-type Overlay = "evidence" | "about" | "persona" | null;
+type Overlay = "evidence" | "about" | "persona" | "settings" | null;
 
 const contexts: { value: CommunicationContext; label: string; hint: string }[] = [
   { value: "general", label: "General", hint: "No setting assumptions" },
@@ -130,6 +150,53 @@ function sameHealth(a: Health | null, b: Health) {
   );
 }
 
+// Mirrors `places.meters_between` on the server. Resolution happens here so the
+// speaker's coordinates never leave the browser -- only the borrowed setting is
+// sent, through the `context` field that already existed.
+function metersBetween(fromLat: number, fromLon: number, toLat: number, toLon: number) {
+  const rad = (value: number) => (value * Math.PI) / 180;
+  const inner =
+    Math.sin(rad(toLat - fromLat) / 2) ** 2 +
+    Math.cos(rad(fromLat)) * Math.cos(rad(toLat)) * Math.sin(rad(toLon - fromLon) / 2) ** 2;
+  return 2 * 6371008.8 * Math.asin(Math.min(1, Math.sqrt(inner)));
+}
+
+// The accuracy allowance matters: a browser fix indoors is routinely tens of
+// metres out, which would otherwise stop a correctly tagged home from matching
+// its own front room. Capped, so a hopeless fix cannot match half the city.
+function nearestPlace(places: Place[], latitude: number, longitude: number, accuracy = 0) {
+  const tolerance = Math.min(Math.max(accuracy, 0), 100);
+  let best: { place: Place; meters: number } | null = null;
+  for (const item of places) {
+    if (item.latitude === null || item.longitude === null) continue;
+    const meters = metersBetween(latitude, longitude, item.latitude, item.longitude);
+    if (meters > item.radius_m + tolerance) continue;
+    if (!best || meters < best.meters) best = { place: item, meters };
+  }
+  return best;
+}
+
+function isTagged(place: Place) {
+  return place.latitude !== null && place.longitude !== null;
+}
+
+function behaviourLabel(context: CommunicationContext) {
+  return contexts.find((item) => item.value === context)?.label || context;
+}
+
+// The idle screen cannot scroll, so the chip row is capped and the rest stays in
+// the settings sheet. The selected place is always one of the ones shown.
+const IDLE_CHIPS = 5;
+
+function idleChips(places: Place[], selected: string) {
+  if (places.length <= IDLE_CHIPS) return { shown: places, hidden: 0 };
+  const front = places.filter((item) => item.id === selected);
+  const kept = [...front, ...places.filter((item) => item.id !== selected)].slice(0, IDLE_CHIPS);
+  // Filtered back into stored order, so the row does not rearrange itself as
+  // the selection moves around.
+  return { shown: places.filter((item) => kept.includes(item)), hidden: places.length - kept.length };
+}
+
 function groupedWeight(result: Transcription, candidate: MessageCandidate) {
   return candidate.source_hypothesis_ids.reduce(
     (total, id) => total + (result.hypotheses.find((item) => item.id === id)?.search_weight || 0),
@@ -153,6 +220,11 @@ export default function Home() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [context, setContext] = useState<CommunicationContext>("general");
+  // "" is General: no place, no assumptions. Places are stored on this machine;
+  // the setting they resolve to is still session-only and never saved.
+  const [place, setPlace] = useState("");
+  const [placeSettings, setPlaceSettings] = useState<PlaceSettings | null>(null);
+  const [detected, setDetected] = useState<{ id: string; label: string; meters: number } | null>(null);
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [personas, setPersonas] = useState<PersonaSummary[]>([]);
   // "" means nobody in particular, which is exactly how Echora behaved before
@@ -172,6 +244,9 @@ export default function Home() {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const mountedRef = useRef(false);
   const overlayRef = useRef<Overlay>(null);
+  // Once the speaker has chosen a place by hand, detection stops overriding it
+  // for the rest of the session. A tap always outranks a guess.
+  const manualPlaceRef = useRef(false);
 
   // The stage is derived, not stored. The backend only fills recommended_message_id
   // when a single message survived the chain, so a confident result opens straight
@@ -201,6 +276,50 @@ export default function Home() {
       .then((list: PersonaSummary[]) => setPersonas(list))
       .catch(() => setPersonas([]));
   }, []);
+
+  useEffect(() => {
+    fetch(`${API}/api/v1/places`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: PlaceSettings | null) => setPlaceSettings(body))
+      .catch(() => setPlaceSettings(null));
+  }, []);
+
+  // Detection runs only while idle, so a reading can never land mid-utterance,
+  // and runs again each time the speaker comes back to the idle screen. Every
+  // failure -- permission refused, no fix, nothing tagged -- falls back to the
+  // chips below, which is exactly how this screen behaved before places existed.
+  useEffect(() => {
+    if (stage !== "idle") return;
+    if (!placeSettings?.auto_detect || manualPlaceRef.current) return;
+    if (!placeSettings.places.some(isTagged)) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    let cancelled = false;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (cancelled || manualPlaceRef.current) return;
+        const found = nearestPlace(
+          placeSettings.places,
+          position.coords.latitude,
+          position.coords.longitude,
+          position.coords.accuracy,
+        );
+        if (!found) {
+          setDetected(null);
+          return;
+        }
+        setDetected({ id: found.place.id, label: found.place.label, meters: Math.round(found.meters) });
+        setPlace(found.place.id);
+        setContext(found.place.context);
+      },
+      () => {
+        if (!cancelled) setDetected(null);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [placeSettings, stage]);
 
   useEffect(
     () => () => {
@@ -522,6 +641,16 @@ export default function Home() {
     void speak(message);
   }
 
+  // A tap is a decision, so it sticks for the session and clears the detected
+  // note rather than sitting underneath a line that contradicts it.
+  function pickPlace(next: string) {
+    manualPlaceRef.current = true;
+    setDetected(null);
+    setPlace(next);
+    const chosen = (placeSettings?.places || []).find((item) => item.id === next);
+    setContext(chosen ? chosen.context : "general");
+  }
+
   function reset() {
     stopSpeaking();
     setResult(null);
@@ -573,6 +702,9 @@ export default function Home() {
             <span>{active ? active.label.split(",")[0] : "No profile"}</span>
           </button>
         )}
+        <button className="bar-action" onClick={() => setOverlay("settings")}>
+          Places
+        </button>
         <button className="bar-action" onClick={() => setOverlay("about")}>
           About
         </button>
@@ -583,8 +715,11 @@ export default function Home() {
           <IdleStage
             modelReady={modelReady}
             detail={health?.detail}
-            context={context}
-            setContext={setContext}
+            place={place}
+            places={placeSettings?.places || []}
+            detected={detected}
+            onPickPlace={pickPlace}
+            onSettings={() => setOverlay("settings")}
             busy={busy}
             onRecord={startRecording}
             onPickFile={() => fileRef.current?.click()}
@@ -619,7 +754,7 @@ export default function Home() {
 
       <footer className="hint">
         <span>Your chosen message is spoken as soon as it is ready.</span>
-        <span>No history is saved after refresh</span>
+        <span>No conversation is saved after refresh</span>
       </footer>
 
       <input
@@ -641,7 +776,27 @@ export default function Home() {
           onPick={(next) => {
             setPersona(next);
             const picked = personas.find((item) => item.id === next);
-            if (picked && next) setContext(picked.context_default);
+            // A profile default is the weakest of the three signals: a tap and a
+            // detected place both outrank it.
+            if (!picked || !next || manualPlaceRef.current || detected) return;
+            const match = (placeSettings?.places || []).find((item) => item.context === picked.context_default);
+            setPlace(match ? match.id : "");
+            setContext(picked.context_default);
+          }}
+        />
+      </Sheet>
+
+      <Sheet open={overlay === "settings"} onClose={() => setOverlay(null)} title="Places">
+        <SettingsBody
+          settings={placeSettings}
+          onSaved={(next) => {
+            setPlaceSettings(next);
+            // A place that no longer exists cannot stay selected.
+            if (place && !next.places.some((item) => item.id === place)) {
+              setPlace("");
+              setContext("general");
+            }
+            if (!next.auto_detect) setDetected(null);
           }}
         />
       </Sheet>
@@ -656,7 +811,10 @@ export default function Home() {
             </li>
           ))}
         </ul>
-        <p className="sheet-note">Local-first assistive communication. No history is saved after refresh.</p>
+        <p className="sheet-note">
+          Local-first assistive communication. No conversation is saved after refresh. The places you name stay on
+          this machine.
+        </p>
       </Sheet>
     </main>
   );
@@ -665,20 +823,27 @@ export default function Home() {
 function IdleStage({
   modelReady,
   detail,
-  context,
-  setContext,
+  place,
+  places,
+  detected,
+  onPickPlace,
+  onSettings,
   busy,
   onRecord,
   onPickFile,
 }: {
   modelReady: boolean;
   detail?: string;
-  context: CommunicationContext;
-  setContext: Dispatch<SetStateAction<CommunicationContext>>;
+  place: string;
+  places: Place[];
+  detected: { id: string; label: string; meters: number } | null;
+  onPickPlace: (id: string) => void;
+  onSettings: () => void;
   busy: boolean;
   onRecord: () => void;
   onPickFile: () => void;
 }) {
+  const { shown, hidden } = idleChips(places, place);
   return (
     <section className="stage-idle">
       <button
@@ -700,19 +865,43 @@ function IdleStage({
       <fieldset className="context-chips" disabled={busy}>
         <legend>Where are you speaking?</legend>
         <div>
-          {contexts.map((option) => (
-            <label key={option.value} className={context === option.value ? "active" : ""} title={option.hint}>
+          <label className={place === "" ? "active" : ""} title={contexts[0].hint}>
+            <input
+              type="radio"
+              name="context"
+              value=""
+              checked={place === ""}
+              onChange={() => onPickPlace("")}
+            />
+            <span>{contexts[0].label}</span>
+          </label>
+          {shown.map((option) => (
+            <label
+              key={option.id}
+              className={place === option.id ? "active" : ""}
+              title={`Behaves as ${behaviourLabel(option.context)}`}
+            >
               <input
                 type="radio"
                 name="context"
-                value={option.value}
-                checked={context === option.value}
-                onChange={() => setContext(option.value)}
+                value={option.id}
+                checked={place === option.id}
+                onChange={() => onPickPlace(option.id)}
               />
               <span>{option.label}</span>
             </label>
           ))}
+          {hidden > 0 && (
+            <button type="button" className="chip-more" onClick={onSettings}>
+              {hidden} more…
+            </button>
+          )}
         </div>
+        {detected && (
+          <p className="detected-note">
+            Detected <b>{detected.label}</b> · {detected.meters} m away. Tap another if that is wrong.
+          </p>
+        )}
       </fieldset>
 
       <button className="text-button" onClick={onPickFile}>Choose an audio file</button>
@@ -1032,6 +1221,223 @@ function PersonaBody({
       </ul>
       {persona === "user" && <Onboarding />}
     </>
+  );
+}
+
+// Places, and the switch that lets location choose between them. Every change
+// sends the whole document and takes the server's answer back, so what is shown
+// is what was actually stored rather than what was asked for -- the built-ins
+// come back whatever the request said, and a silly radius comes back corrected.
+function SettingsBody({
+  settings,
+  onSaved,
+}: {
+  settings: PlaceSettings | null;
+  onSaved: (next: PlaceSettings) => void;
+}) {
+  const [status, setStatus] = useState("");
+  const [label, setLabel] = useState("");
+  const [behaviour, setBehaviour] = useState<CommunicationContext>("home");
+  const [busy, setBusy] = useState(false);
+
+  if (!settings) {
+    return <p className="sheet-note">Places are unavailable, so the setting stays yours to choose by hand.</p>;
+  }
+  // Bound to a const so the handlers below keep the narrowed type.
+  const doc = settings;
+
+  async function persist(auto_detect: boolean, places: Place[], note: string) {
+    setBusy(true);
+    setStatus("Saving…");
+    try {
+      const response = await fetch(`${API}/api/v1/places`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ auto_detect, places }),
+      });
+      if (!response.ok) throw new Error("save failed");
+      onSaved((await response.json()) as PlaceSettings);
+      setStatus(note);
+    } catch {
+      setStatus("That could not be saved.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Tagging asks the browser where it is once, right now, while the speaker is
+  // standing in the place they are naming. No address lookup, no map, nothing
+  // leaves this machine.
+  function tag(target: Place) {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setStatus("This browser cannot report a location.");
+      return;
+    }
+    setStatus(`Finding where you are…`);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        void persist(
+          doc.auto_detect,
+          doc.places.map((item) =>
+            item.id === target.id
+              ? {
+                  ...item,
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                  tagged_at: null,
+                }
+              : item,
+          ),
+          `${target.label} is now tagged here.`,
+        );
+      },
+      (error) => {
+        setStatus(
+          error.code === error.PERMISSION_DENIED
+            ? "Location permission was refused, so places stay yours to choose by hand."
+            : "Your location could not be found just now.",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  }
+
+  function clearTag(target: Place) {
+    void persist(
+      doc.auto_detect,
+      doc.places.map((item) =>
+        item.id === target.id ? { ...item, latitude: null, longitude: null, tagged_at: null } : item,
+      ),
+      `The location for ${target.label} was removed.`,
+    );
+  }
+
+  function remove(target: Place) {
+    void persist(
+      doc.auto_detect,
+      doc.places.filter((item) => item.id !== target.id),
+      `${target.label} was removed.`,
+    );
+  }
+
+  function add() {
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    setLabel("");
+    void persist(
+      doc.auto_detect,
+      [
+        ...doc.places,
+        {
+          id: "",
+          label: trimmed,
+          context: behaviour,
+          builtin: false,
+          latitude: null,
+          longitude: null,
+          radius_m: 150,
+          tagged_at: null,
+        },
+      ],
+      `${trimmed} was added. Tag it while you are there.`,
+    );
+  }
+
+  const tagged = doc.places.filter(isTagged).length;
+
+  return (
+    <div className="settings">
+      <p className="sheet-note">
+        A place is a name and, if you tag it, a location. It borrows the behaviour of one of the four settings — it
+        never changes how a message is worked out. The places you name stay on this machine.
+      </p>
+
+      <div className="settings-toggle">
+        <input
+          id="auto-detect"
+          type="checkbox"
+          checked={doc.auto_detect}
+          disabled={busy}
+          onChange={(event) =>
+            persist(
+              event.target.checked,
+              doc.places,
+              event.target.checked
+                ? tagged > 0
+                  ? "Echora will choose the setting from where you are, and say so."
+                  : "Turned on. Tag a place while you are there and it will start working."
+                : "Turned off. The setting stays yours to choose.",
+            )
+          }
+        />
+        <label htmlFor="auto-detect">
+          <b>Choose the setting from where I am</b>
+          <small>
+            {tagged > 0
+              ? `${tagged} of ${doc.places.length} places are tagged. Echora always shows which one it picked.`
+              : "Nothing is tagged yet, so this will do nothing until you tag a place."}
+          </small>
+        </label>
+      </div>
+
+      <ul className="settings-places">
+        {doc.places.map((item) => (
+          <li key={item.id}>
+            <span className="settings-place">
+              <b>{item.label}</b>
+              <small>
+                Behaves as {behaviourLabel(item.context)}
+                {isTagged(item) ? ` · tagged, within ${item.radius_m} m` : " · not tagged"}
+              </small>
+            </span>
+            <span className="settings-actions">
+              <button className="text-button" disabled={busy} onClick={() => tag(item)}>
+                {isTagged(item) ? "Retag here" : "Tag here"}
+              </button>
+              {isTagged(item) && (
+                <button className="text-button" disabled={busy} onClick={() => clearTag(item)}>
+                  Clear
+                </button>
+              )}
+              {!item.builtin && (
+                <button className="text-button" disabled={busy} onClick={() => remove(item)}>
+                  Remove
+                </button>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="settings-add">
+        <label htmlFor="place-label">Add a place</label>
+        <div className="onboarding-pair">
+          <input
+            id="place-label"
+            placeholder="Shopping centre"
+            value={label}
+            onChange={(event) => setLabel(event.target.value)}
+          />
+          <span aria-hidden="true">→</span>
+          <select
+            aria-label="Which setting it behaves as"
+            value={behaviour}
+            onChange={(event) => setBehaviour(event.target.value as CommunicationContext)}
+          >
+            {contexts.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button className="speak-button" disabled={busy || !label.trim()} onClick={add}>
+          Add place
+        </button>
+      </div>
+
+      {status && <p className="sheet-note" role="status">{status}</p>}
+    </div>
   );
 }
 
