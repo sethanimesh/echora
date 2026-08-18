@@ -23,6 +23,7 @@ from .schemas import (
     AcceptedMessageResponse,
     CommunicationContext,
     HealthResponse,
+    Listener,
     ModelInfo,
     PersonaSummary,
     PlaceSettings,
@@ -33,10 +34,12 @@ from .schemas import (
     SpeechRequest,
     Timing,
     TranscriptionResponse,
+    default_listener,
 )
 
 
 SUPPORTED_CONTEXTS: tuple[CommunicationContext, ...] = ("general", "home", "care", "outdoors")
+SUPPORTED_LISTENERS: tuple[Listener, ...] = ("familiar", "unfamiliar")
 
 
 @asynccontextmanager
@@ -122,6 +125,7 @@ async def model_info() -> ModelInfo:
         beams=settings.beams,
         literal_prompt=prompt,
         supported_contexts=list(SUPPORTED_CONTEXTS),
+        supported_listeners=list(SUPPORTED_LISTENERS),
         limitations=[
             "TORGO contains only eight dysarthric speakers in the evaluation design.",
             "Synthetic command compositions do not create new speaker acoustics.",
@@ -136,12 +140,22 @@ async def transcribe(
     audio: UploadFile = File(...),
     context: str = Form(default="general"),
     persona: str = Form(default=""),
+    listener: str = Form(default=""),
 ) -> TranscriptionResponse:
     settings = _settings()
     if context not in SUPPORTED_CONTEXTS:
         raise HTTPException(
             status_code=422,
             detail=f"Unsupported context. Choose one of: {', '.join(SUPPORTED_CONTEXTS)}",
+        )
+    # Empty means the caller has nothing to say about who is listening, which is
+    # the ordinary case for a plain setting with no place behind it. A value the
+    # server does not know is a different matter and is refused, exactly as an
+    # unknown setting is: the stance is part of the prompt.
+    if listener and listener not in SUPPORTED_LISTENERS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported listener. Choose one of: {', '.join(SUPPORTED_LISTENERS)}",
         )
     if app.state.asr is None:
         raise HTTPException(status_code=503, detail=app.state.asr_error or "ASR is unavailable")
@@ -162,16 +176,32 @@ async def transcribe(
     except Exception as error:
         raise HTTPException(status_code=503, detail=f"ASR failed: {type(error).__name__}: {error}") from error
     selected_context: CommunicationContext = context  # type: ignore[assignment]
+    # Who is listening, strongest claim first: what the caller sent (a place the
+    # speaker tapped, which is the only thing that knows the room they are
+    # actually in), then what the profile says it usually is for this setting,
+    # then the setting's own default. Every step falls back, so an absent or
+    # unloadable profile lands exactly where the setting alone would.
+    selected_listener: Listener = default_listener(selected_context)
+    if listener:
+        selected_listener = listener  # type: ignore[assignment]
+    elif persona and app.state.personal is not None:
+        declared = app.state.personal.listener_for(persona, selected_context)
+        if declared is not None:
+            selected_listener = declared
     # An unknown profile is a warning, never a rejection. Unlike the setting, it is
     # not part of the prompt, and a stale value in the interface must never stand
     # between the speaker and a spoken message.
     brief = None
     profile_warning: str | None = None
     if persona and app.state.personal is not None:
-        brief = await app.state.personal.brief(raw.hypotheses, selected_context, persona)
+        brief = await app.state.personal.brief(
+            raw.hypotheses, selected_context, persona, selected_listener
+        )
         if persona not in app.state.personal.known_ids():
             profile_warning = f"Unknown profile '{persona}'; this message was not personalized"
-    chain = await app.state.message_chain.run(raw.hypotheses, selected_context, brief=brief)
+    chain = await app.state.message_chain.run(
+        raw.hypotheses, selected_context, brief=brief, listener=selected_listener
+    )
     recommended = chain.ranker.selected_message_id
     warnings = list(chain.warnings)
     if profile_warning:
@@ -193,6 +223,7 @@ async def transcribe(
         model=raw.model,
         device=raw.device,
         context=selected_context,
+        listener=selected_listener,
         persona=persona or None,
         hypotheses=raw.hypotheses,
         audio_quality=raw.audio_quality,
@@ -244,7 +275,11 @@ async def accepted(request: AcceptedMessageRequest) -> AcceptedMessageResponse:
     if app.state.personal is None:
         return AcceptedMessageResponse(stored=False, reason="personal context is unavailable")
     stored, merged, reason = await app.state.personal.remember(
-        request.persona, request.context, request.heard, request.message
+        request.persona,
+        request.context,
+        request.heard,
+        request.message,
+        request.listener,
     )
     return AcceptedMessageResponse(stored=stored, merged=merged, reason=reason)
 

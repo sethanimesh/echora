@@ -70,7 +70,23 @@ test("places resolve to a built-in setting and never become one themselves", asy
   // The transcription request is untouched: still the setting, never a place id.
   assert.match(page, /form\.append\("context", context\)/);
   assert.doesNotMatch(page, /form\.append\("place"/);
-  assert.match(page, /setContext\(chosen \? chosen\.context : "general"\)/);
+  assert.match(page, /const nextContext: CommunicationContext = chosen \? chosen\.context : "general";/);
+});
+
+test("who is listening travels beside the setting, and is its own closed set", async () => {
+  const page = await readFile(new URL("app/page.tsx", root), "utf8");
+  // Two values, orthogonal to the four settings. A place says which one applies
+  // where; it still never becomes a setting itself.
+  assert.match(page, /type Listener = "familiar" \| "unfamiliar";/);
+  assert.match(page, /form\.append\("listener", listener\)/);
+  assert.doesNotMatch(page, /form\.append\("listener", place/);
+  // A place with nothing declared falls back to what the setting implies, so
+  // this layer is silent until a speaker says otherwise.
+  assert.match(page, /setListener\(chosen\?\.listener \?\? defaultListener\(nextContext\)\)/);
+  // Offered on the built-ins too: the shipped Outdoors has to be able to keep
+  // the familiar register for someone who never goes out alone.
+  assert.match(page, /function flipListener\(target: Place\)/);
+  assert.doesNotMatch(page, /item\.builtin && .{0,40}flipListener/);
 });
 
 test("location is resolved in the browser and never blocks speaking", async () => {

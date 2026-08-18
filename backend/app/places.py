@@ -32,6 +32,7 @@ from .schemas import (
     CommunicationContext,
     Place,
     PlaceSettings,
+    default_listener,
 )
 
 
@@ -59,7 +60,13 @@ def _now() -> str:
 
 def default_places() -> list[Place]:
     return [
-        Place(id=place_id, label=label, context=context, builtin=True)
+        Place(
+            id=place_id,
+            label=label,
+            context=context,
+            listener=default_listener(context),
+            builtin=True,
+        )
         for place_id, label, context in BUILTIN_PLACES
     ]
 
@@ -116,6 +123,12 @@ def normalize(incoming: PlaceSettings) -> PlaceSettings:
                     "builtin": False,
                 }
             )
+        # The listener is deliberately NOT in either update above. A built-in
+        # keeps its id, label and context whatever the request says, but who is
+        # there is the speaker's to declare even for the shipped Outdoors -- a
+        # speaker who only ever goes out with their daughter needs exactly that.
+        if place.listener is None:
+            place = place.model_copy(update={"listener": default_listener(place.context)})
         place = _with_location(place)
         if place.id in seen and not place.builtin:
             continue

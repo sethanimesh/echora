@@ -152,6 +152,7 @@ def summarize(profile: PersonaProfile, history_size: int, baseline: bool) -> Per
         blurb=profile.blurb,
         icon=profile.icon,
         context_default=profile.context_default,
+        listener_by_setting=dict(profile.listener_by_setting),
         lexicon_size=len(profile.lexicon),
         specialization_size=len(profile.specializations),
         history_size=history_size,

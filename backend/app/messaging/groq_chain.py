@@ -30,6 +30,7 @@ from ..config import Settings
 from ..schemas import (
     CommunicationContext,
     Hypothesis,
+    Listener,
     MessageCandidate,
     PersonalBrief,
     PersonalizationTrace,
@@ -50,12 +51,78 @@ from .alignment import (
 
 MAX_OPTIONS = 3
 
-CONTEXT_GUIDANCE: dict[CommunicationContext, str] = {
-    "general": "No specific setting is known; assume someone is there to help.",
-    "home": "The speaker is at home, talking to family or a carer in the house.",
-    "care": "The speaker is in a hospital or care setting, talking to a nurse or carer.",
-    "outdoors": "The speaker is outdoors, talking to whoever is out with them.",
+# The setting says where the speaker is. On its own that only ever told the model
+# which of the recognizer's words was likeliest -- it never changed what the
+# message does. But "washroom" at home is a need stated to someone who can act on
+# it, and "washroom" on a platform is a question put to someone who can only
+# answer. The act is what changes, and the variable that decides it is who is
+# listening, not where they are: two people can both be outdoors, one beside
+# their daughter and one alone among strangers.
+#
+# So guidance is keyed by the pair. The four familiar stances say what they always
+# said, with the act now stated rather than assumed. Only the unfamiliar one is
+# new behaviour.
+STANCE_GUIDANCE: dict[tuple[CommunicationContext, Listener], str] = {
+    ("general", "familiar"): (
+        "No specific setting is known; assume someone is there to help. "
+        "Say what the speaker needs, as a statement to that person."
+    ),
+    ("home", "familiar"): (
+        "The speaker is at home, talking to family or a carer in the house. "
+        "This listener knows them and can fetch and do things for them, so a need "
+        "is stated to them rather than asked of them."
+    ),
+    ("care", "familiar"): (
+        "The speaker is in a hospital or care setting, talking to a nurse or "
+        "carer. This listener is on duty and can act, so a need is stated to them "
+        "rather than asked of them."
+    ),
+    ("outdoors", "familiar"): (
+        "The speaker is out, with someone who knows them -- family, a friend, a "
+        "carer who came along. That person can fetch and do things for them, so a "
+        "need is stated to them exactly as it would be at home."
+    ),
+    ("outdoors", "unfamiliar"): (
+        "The speaker is out among people who do not know them. This listener "
+        "cannot fetch anything from their home and does not know their routine; "
+        "they can answer, point, or serve. So a need is put to them as a question "
+        "or a short request, not as a statement of what the speaker wants done: a "
+        'place is asked for ("washroom" -> "Where is the washroom?"), a thing is '
+        'asked for over a counter ("water" -> "Some water, please."), help is '
+        'asked for directly ("help" -> "Could you help me?"). The question word is '
+        "the form this act takes here, not new content the speaker did not supply. "
+        "Keep it SHORTER than you would at home, never longer: a stranger is "
+        "waiting, so the message carries the thing being asked for and nothing "
+        "else. No softening, no explaining, no apologising for needing it."
+    ),
+    # A stranger at home or on the ward is a visitor, a delivery, a nurse the
+    # speaker has not met. The setting still tells you what is around them; the
+    # listener still cannot be sent to their kitchen.
+    ("general", "unfamiliar"): (
+        "No specific setting is known, and the person listening does not know the "
+        "speaker. They can answer or pass something over, so put a need to them as "
+        "a question or a short request, and keep it brief."
+    ),
+    ("home", "unfamiliar"): (
+        "The speaker is at home but talking to someone who does not know them -- a "
+        "visitor, a delivery, a carer on their first day. They do not know where "
+        "anything is kept, so a need is put to them as a question or a short "
+        "request, and kept brief."
+    ),
+    ("care", "unfamiliar"): (
+        "The speaker is in a hospital or care setting, talking to someone who does "
+        "not know them -- a nurse on a new rota, someone passing. Put a need to "
+        "them as a question or a short request, and keep it brief."
+    ),
 }
+
+
+def stance_guidance(context: CommunicationContext, listener: Listener) -> str:
+    """The guidance for one stance. Falls back to the familiar reading of the setting."""
+    return STANCE_GUIDANCE.get(
+        (context, listener),
+        STANCE_GUIDANCE.get((context, "familiar"), STANCE_GUIDANCE[("general", "familiar")]),
+    )
 
 MESSAGE_SCHEMA = {
     "name": "echora_message",
@@ -97,15 +164,15 @@ GENUINE CHOICE -- two or more variants are real words that fit, and a listener w
 
 NO PLAUSIBLE READING -- no combination of the recognizer's own words forms something this speaker would say to the person with them. Set unclear=true and return the transcriptions as they are. Grammatical English is not the test, and neither is a topic you can imagine someone discussing: "help wash [your|two|stool|tooot] room" has no variant that makes a need, a symptom, an instruction or an answer this speaker would send -- they are not asking a nurse to go and wash the nurse's own room -- so it stays unclear instead of becoming a tidy sentence about cleaning a room. A reading that comes out as the listener's own business is a sign that words were misheard, not a message. Do NOT assemble a fluent sentence out of noise: inventing "I have a thin dog" from "fen tog / fend og / thin tog" is far worse than admitting the audio was not understood.
 
-For each option return the reading (the recognizer's own words, one chosen per position -- or none, where every variant of a position is noise -- never a word absent from that position's options) and the message -- what the speaker would have said to the person with them if their speech were clear. Short, natural, speakable, adult to adult; someone in pain or waiting for help says one clause, not a paragraph. Rephrase freely for natural English, but keep the act the words carry:
+For each option return the reading (the recognizer's own words, one chosen per position -- or none, where every variant of a position is noise -- never a word absent from that position's options) and the message -- what the speaker would have said to the person they are speaking to, if their speech were clear. Short, natural, speakable, adult to adult; someone in pain or waiting for help says one clause, not a paragraph. Rephrase freely for natural English, but keep the act the words carry. setting_guidance tells you who is listening and what form a message takes for them; where it disagrees with the three rules below, setting_guidance wins, because those rules describe someone who already knows this speaker and can act for them:
 - a body part or a sensation is a report on themselves: "leg pain" -> "My leg hurts." "cold" -> "I am cold."
 - a thing is a request for that thing: "blanket" -> "I need a blanket."
 - an action is asked of the listener, never announced as the speaker's own plan: "clean the room" -> "Please clean the room." "call the nurse" -> "Please call the nurse." Not "I need to clean the room", not "I am going to call the nurse."
-Supply nothing the speaker did not say: no reason, no apology, no explanation, no pleasantry. "Please" is the only word of politeness you may add.
+Supply nothing the speaker did not say: no reason, no apology, no explanation, no pleasantry. "Please" is the only word of politeness you may add. Putting a need to someone who does not know the speaker as a question is a change of form, not added content, so "where", "could" and "is there" are available for exactly that when setting_guidance calls for it -- and for nothing else.
 
 Never make a message vaguer to be safe, and never pad it to sound complete. If you resolve a position, keep that word: "I have pain" when they said "leg pain" drops the word that matters. Offering a real alternative is not vagueness -- dropping a word is, and adding one the speaker never asked for puts words in their mouth.
 
-The setting tells you which of the words the recognizer produced is most likely. It never lets you introduce a word no beam contains."""
+The setting tells you which of the words the recognizer produced is most likely, and what form the message takes for the person listening. It never lets you introduce a word no beam contains."""
 
 
 PERSONAL_MESSAGE_SCHEMA = {
@@ -158,7 +225,7 @@ known_words are people, places and things in this speaker's life. When a contest
 
 known_details are the speaker's own version of an ordinary thing. If your reading contains the anchor word, you may write say_instead in place of it -- copied exactly, not reworded -- and you must then list it under specializations with that anchor and its source. Never attach a detail to a word that is not in your reading, never invent a detail that is not listed, and never alter the wording you were given. An undeclared or altered detail is discarded and the plain wording is used instead.
 
-past_accepted_messages are messages this speaker settled on before, retrieved because they resemble this audio. They show you how this person phrases things and what they usually need. They are NOT evidence about what was said just now. Never take a word from them into your reading, and never answer with one of them because it looks close."""
+past_accepted_messages are messages this speaker settled on before, retrieved because they resemble this audio. They show you how this person phrases things and what they usually need. They are NOT evidence about what was said just now. Never take a word from them into your reading, and never answer with one of them because it looks close. Each one carries the setting and listener it was accepted under. Where those differ from this utterance's, the example still shows you the words this speaker uses -- it does not show you the form to use here. Follow setting_guidance for the form."""
 
 
 @dataclass
@@ -367,12 +434,13 @@ class GroqMessageChain:
         hypotheses: list[Hypothesis],
         context: CommunicationContext = "general",
         brief: PersonalBrief | None = None,
+        listener: Listener = "familiar",
     ) -> MessageChainResult:
         if not self.client:
             return _unavailable(hypotheses, "Groq is not configured; showing raw ASR candidates")
         started = time.perf_counter()
         try:
-            result = await asyncio.to_thread(self._compose, hypotheses, context, brief)
+            result = await asyncio.to_thread(self._compose, hypotheses, context, brief, listener)
         except Exception as error:
             result = _unavailable(
                 hypotheses,
@@ -388,6 +456,7 @@ class GroqMessageChain:
         hypotheses: list[Hypothesis],
         context: CommunicationContext,
         brief: PersonalBrief | None = None,
+        listener: Listener = "familiar",
     ) -> MessageChainResult:
         slots = _slot_alignment(hypotheses)
         # The evidence keys stay first and unchanged. Everything personal is
@@ -396,7 +465,7 @@ class GroqMessageChain:
         # byte-for-byte what it sent before this layer existed.
         payload = {
             "setting": context,
-            "setting_guidance": CONTEXT_GUIDANCE[context],
+            "setting_guidance": stance_guidance(context, listener),
             "alignment": _alignment_template(slots),
             "slot_options": _slot_options(slots),
             "transcriptions": [item.literal_text for item in hypotheses],
@@ -417,7 +486,12 @@ class GroqMessageChain:
                 ]
             if brief.examples:
                 payload["past_accepted_messages"] = [
-                    {"heard": example.heard, "message": example.message, "setting": example.context}
+                    {
+                        "heard": example.heard,
+                        "message": example.message,
+                        "setting": example.context,
+                        "listener": example.listener,
+                    }
                     for example in brief.examples
                 ]
         model, body = self._complete(payload, personalized)

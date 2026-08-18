@@ -18,7 +18,7 @@ from datetime import datetime
 import numpy as np
 
 from ..config import Settings
-from ..schemas import AcceptedMessage, CommunicationContext
+from ..schemas import AcceptedMessage, CommunicationContext, Listener
 from .retrieval import ExampleIndex, score
 
 
@@ -31,6 +31,19 @@ def merge_into(
     """Merge with the nearest entry above the threshold, else insert. True when merged."""
     if len(index):
         cosines = index.similarities(vector)
+        # Only entries accepted to the same kind of listener are candidates. A
+        # merge takes the longer wording and stamps the newcomer's setting over
+        # the old one, so without this guard "Where is the washroom?" could
+        # absorb "I want to use the washroom.", keep the home wording because it
+        # is longer, and relabel it -- and the speaker would be left with neither
+        # phrasing intact. Gating on the listener rather than the setting is
+        # deliberate: home and care are both familiar and should still fold
+        # together, so the store splits at worst in two, not in four.
+        cosines = np.where(
+            np.array([entry.listener == record.listener for entry in index.records]),
+            cosines,
+            -1.0,
+        )
         position = int(np.argmax(cosines))
         if float(cosines[position]) >= threshold:
             existing = index.records[position]
@@ -61,6 +74,7 @@ def prune(
     index: ExampleIndex,
     now: datetime,
     context: CommunicationContext,
+    listener: Listener,
     settings: Settings,
 ) -> int:
     """Drop the weakest entries once the store is over its cap. Returns how many went."""
@@ -69,7 +83,9 @@ def prune(
         return 0
     ranked = sorted(
         range(len(index)),
-        key=lambda position: score(index.records[position], 1.0, now, context, settings),
+        key=lambda position: score(
+            index.records[position], 1.0, now, context, listener, settings
+        ),
     )
     index.drop(set(ranked[:excess]))
     return excess

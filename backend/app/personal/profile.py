@@ -17,7 +17,14 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 from ..messaging.alignment import _tokens
-from ..schemas import CommunicationContext, PersonaKind
+from ..schemas import CommunicationContext, Listener, PersonaKind
+
+
+# An entry with no settings listed applies everywhere, which is what every entry
+# did before scoping existed. Listing settings narrows it: "Madras filter coffee"
+# is the right words at home and the wrong ones said across a counter.
+def _in_scope(settings: list[CommunicationContext], context: CommunicationContext) -> bool:
+    return not settings or context in settings
 
 
 class LexiconEntry(BaseModel):
@@ -29,6 +36,10 @@ class LexiconEntry(BaseModel):
     display: str
     kind: PersonaKind
     note: str = ""
+    settings: list[CommunicationContext] = Field(default_factory=list)
+
+    def applies_in(self, context: CommunicationContext) -> bool:
+        return _in_scope(self.settings, context)
 
 
 class SpecializationRule(BaseModel):
@@ -40,6 +51,10 @@ class SpecializationRule(BaseModel):
     surface: str
     kind: PersonaKind
     note: str = ""
+    settings: list[CommunicationContext] = Field(default_factory=list)
+
+    def applies_in(self, context: CommunicationContext) -> bool:
+        return _in_scope(self.settings, context)
 
 
 class PersonaProfile(BaseModel):
@@ -49,28 +64,43 @@ class PersonaProfile(BaseModel):
     icon: str = "circle"
     baseline: bool = True
     context_default: CommunicationContext = "general"
+    # What this speaker's settings usually mean for who is listening, where they
+    # differ from the default. A speaker who never goes out alone declares
+    # {"outdoors": "familiar"}; an absent setting takes the default.
+    listener_by_setting: dict[CommunicationContext, Listener] = Field(default_factory=dict)
     speaker_note: str = ""
     lexicon: list[LexiconEntry] = Field(default_factory=list)
     specializations: list[SpecializationRule] = Field(default_factory=list)
     created_at: str = ""
 
-    def heard_forms(self) -> dict[str, LexiconEntry]:
-        """Every spelling the recognizer might produce, mapped to its entry."""
+    def heard_forms(self, context: CommunicationContext | None = None) -> dict[str, LexiconEntry]:
+        """Every spelling the recognizer might produce, mapped to its entry.
+
+        Scoped to one setting when given a setting; otherwise the whole lexicon,
+        which is what the audit vocabulary wants.
+        """
         forms: dict[str, LexiconEntry] = {}
         for entry in self.lexicon:
+            if context is not None and not entry.applies_in(context):
+                continue
             for form in [entry.word, *entry.aliases]:
                 tokens = _tokens(form)
                 if len(tokens) == 1:
                     forms.setdefault(tokens[0], entry)
         return forms
 
-    def rule_for(self, anchor: str) -> SpecializationRule | None:
+    def rule_for(
+        self, anchor: str, context: CommunicationContext | None = None
+    ) -> SpecializationRule | None:
         tokens = _tokens(anchor)
         if len(tokens) != 1:
             return None
         for rule in self.specializations:
-            if _tokens(rule.anchor) == tokens:
-                return rule
+            if _tokens(rule.anchor) != tokens:
+                continue
+            if context is not None and not rule.applies_in(context):
+                return None
+            return rule
         return None
 
 

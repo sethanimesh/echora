@@ -24,6 +24,7 @@ type PersonaSummary = {
   blurb: string;
   icon: string;
   context_default: CommunicationContext;
+  listener_by_setting: Partial<Record<CommunicationContext, Listener>>;
   lexicon_size: number;
   specialization_size: number;
   history_size: number;
@@ -54,6 +55,22 @@ type SpeechAudio = {
 
 type CommunicationContext = "general" | "home" | "care" | "outdoors";
 
+// Who is listening. The setting says where the speaker is; this says whether the
+// person they are speaking to knows them, which is what decides whether a need
+// is stated or asked. Orthogonal to the four settings, never a fifth one.
+type Listener = "familiar" | "unfamiliar";
+
+const LISTENER_DEFAULTS: Record<CommunicationContext, Listener> = {
+  general: "familiar",
+  home: "familiar",
+  care: "familiar",
+  outdoors: "unfamiliar",
+};
+
+function defaultListener(context: CommunicationContext): Listener {
+  return LISTENER_DEFAULTS[context] ?? "familiar";
+}
+
 // A place is a label with an optional location. It never introduces a new
 // setting: `context` is the built-in whose prior it borrows, so a custom place
 // behaves exactly as that built-in already does.
@@ -61,6 +78,7 @@ type Place = {
   id: string;
   label: string;
   context: CommunicationContext;
+  listener: Listener | null;
   builtin: boolean;
   latitude: number | null;
   longitude: number | null;
@@ -220,6 +238,9 @@ export default function Home() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [context, setContext] = useState<CommunicationContext>("general");
+  // Set from whichever place is active. General has no place behind it, so it
+  // falls back to what the setting implies on its own.
+  const [listener, setListener] = useState<Listener>(defaultListener("general"));
   // "" is General: no place, no assumptions. Places are stored on this machine;
   // the setting they resolve to is still session-only and never saved.
   const [place, setPlace] = useState("");
@@ -310,6 +331,7 @@ export default function Home() {
         setDetected({ id: found.place.id, label: found.place.label, meters: Math.round(found.meters) });
         setPlace(found.place.id);
         setContext(found.place.context);
+        setListener(found.place.listener ?? defaultListener(found.place.context));
       },
       () => {
         if (!cancelled) setDetected(null);
@@ -556,6 +578,7 @@ export default function Home() {
     form.append("audio", blob, filename);
     form.append("context", context);
     form.append("persona", persona);
+    form.append("listener", listener);
     try {
       const response = await fetch(`${API}/api/v1/transcriptions`, { method: "POST", body: form });
       const body = await response.json();
@@ -601,6 +624,7 @@ export default function Home() {
       body: JSON.stringify({
         persona,
         context,
+        listener,
         heard: candidate.interpreted_intent,
         message: text,
       }),
@@ -648,7 +672,11 @@ export default function Home() {
     setDetected(null);
     setPlace(next);
     const chosen = (placeSettings?.places || []).find((item) => item.id === next);
-    setContext(chosen ? chosen.context : "general");
+    const nextContext: CommunicationContext = chosen ? chosen.context : "general";
+    setContext(nextContext);
+    // The place is the only thing that knows the room. A place with nothing
+    // declared, and plain General, both fall back to the setting's own default.
+    setListener(chosen?.listener ?? defaultListener(nextContext));
   }
 
   function reset() {
@@ -782,6 +810,13 @@ export default function Home() {
             const match = (placeSettings?.places || []).find((item) => item.context === picked.context_default);
             setPlace(match ? match.id : "");
             setContext(picked.context_default);
+            // A profile may say who it is usually with in a setting. Weakest
+            // claim of the three, same as the setting it arrives beside.
+            setListener(
+              picked.listener_by_setting?.[picked.context_default] ??
+                match?.listener ??
+                defaultListener(picked.context_default),
+            );
           }}
         />
       </Sheet>
@@ -1238,6 +1273,7 @@ function SettingsBody({
   const [status, setStatus] = useState("");
   const [label, setLabel] = useState("");
   const [behaviour, setBehaviour] = useState<CommunicationContext>("home");
+  const [company, setCompany] = useState<Listener>(defaultListener("home"));
   const [busy, setBusy] = useState(false);
 
   if (!settings) {
@@ -1312,6 +1348,18 @@ function SettingsBody({
     );
   }
 
+  function flipListener(target: Place) {
+    const next: Listener =
+      (target.listener ?? defaultListener(target.context)) === "familiar" ? "unfamiliar" : "familiar";
+    void persist(
+      doc.auto_detect,
+      doc.places.map((item) => (item.id === target.id ? { ...item, listener: next } : item)),
+      next === "familiar"
+        ? `Messages for ${target.label} will be said to someone who knows you.`
+        : `Messages for ${target.label} will be asked of someone who does not know you.`,
+    );
+  }
+
   function remove(target: Place) {
     void persist(
       doc.auto_detect,
@@ -1332,6 +1380,7 @@ function SettingsBody({
           id: "",
           label: trimmed,
           context: behaviour,
+          listener: company,
           builtin: false,
           latitude: null,
           longitude: null,
@@ -1349,7 +1398,9 @@ function SettingsBody({
     <div className="settings">
       <p className="sheet-note">
         A place is a name and, if you tag it, a location. It borrows the behaviour of one of the four settings — it
-        never changes how a message is worked out. The places you name stay on this machine.
+        never changes how a message is worked out. What it does say on its own account is whether the people there
+        know you: somewhere they do, “washroom” becomes “I need the washroom.”; somewhere they do not, it becomes
+        “Where is the washroom?”. The places you name stay on this machine.
       </p>
 
       <div className="settings-toggle">
@@ -1387,10 +1438,21 @@ function SettingsBody({
               <b>{item.label}</b>
               <small>
                 Behaves as {behaviourLabel(item.context)}
+                {(item.listener ?? defaultListener(item.context)) === "familiar"
+                  ? " · people here know me"
+                  : " · people here do not know me"}
                 {isTagged(item) ? ` · tagged, within ${item.radius_m} m` : " · not tagged"}
               </small>
             </span>
             <span className="settings-actions">
+              {/* Deliberately offered on the built-ins too: a speaker who only
+                  ever goes out with their daughter needs the shipped Outdoors
+                  to keep the familiar register. */}
+              <button className="text-button" disabled={busy} onClick={() => flipListener(item)}>
+                {(item.listener ?? defaultListener(item.context)) === "familiar"
+                  ? "They do not know me"
+                  : "They know me"}
+              </button>
               <button className="text-button" disabled={busy} onClick={() => tag(item)}>
                 {isTagged(item) ? "Retag here" : "Tag here"}
               </button>
@@ -1429,6 +1491,16 @@ function SettingsBody({
                 {option.label}
               </option>
             ))}
+          </select>
+        </div>
+        <div className="onboarding-pair">
+          <select
+            aria-label="Who is usually there"
+            value={company}
+            onChange={(event) => setCompany(event.target.value as Listener)}
+          >
+            <option value="familiar">People here know me</option>
+            <option value="unfamiliar">People here do not know me</option>
           </select>
         </div>
         <button className="speak-button" disabled={busy || !label.trim()} onClick={add}>

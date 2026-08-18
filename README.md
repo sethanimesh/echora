@@ -24,18 +24,18 @@ The existing `.env` is preserved. `GROQ_API_KEY` is the preferred key name; the 
 ## How the result is produced
 
 1. The browser records or uploads an utterance.
-2. The speaker chooses a session setting: General, Home, Hospital/care, or Outdoors.
+2. The speaker chooses a session setting: General, Home, Hospital/care, or Outdoors. Beside it travels one other value -- whether the person being spoken to knows them. A place says which applies where; Outdoors assumes strangers and everything else assumes someone familiar.
 3. The tuned Qwen model returns up to five immutable literal hypotheses.
 4. Groq groups hypotheses into grounded intents using the setting as a weak prior. A key term survives only if a strict majority of the grouped beams carry it, counted both by search weight and by beam count.
-5. A configurable evidence gate decides whether one intent is clear or multiple intents must be shown. An intent whose grouped beams disagree on competing content words is never cleared by a speech-act cue alone.
-6. A second Groq pass turns each displayed intent into a natural communication message.
-7. Deterministic grounding rejects wording that introduces unsupported substantive terms.
+5. The same call returns each intent already realized as a natural communication message. Who is listening decides its form: a need is stated to someone who can act on it and asked of someone who can only answer, so `washroom` becomes "I want to use the washroom." at home and "Where is the washroom?" among strangers.
+6. Deterministic grounding rejects a reading containing a word no beam produced, and drops any option carrying profile wording that nothing licenses.
+7. Whatever survives decides the screen: one message is clear and speaks itself, and anything else is shown as a choice.
 8. A single surviving message is spoken immediately with Groq TTS; when several remain, the speaker picks one and that tap speaks it.
 9. The message stays editable, and an edited version is spoken on request. If Groq speech is unavailable the browser voice takes over, so a message is never left unsaid.
 
 The displayed search weights are relative beam-search evidence, not calibrated confidence. Grammar repair never changes the stored literal transcript.
 
-The clarity gate uses relative beam margin, normalized entropy, grouped intent weight, semantic evidence strength, and explicit speech-act cues. Defaults are configured with `ECHORA_CLEAR_MARGIN`, `ECHORA_CLEAR_MAX_ENTROPY`, `ECHORA_CLEAR_INTENT_WEIGHT`, and `ECHORA_CLEAR_MODERATE_INTENT_WEIGHT`. These are decision rules, not confidence probabilities.
+Clear versus ambiguous is decided in code after the grounding filters have run, and the whole rule is whether exactly one message survived them. There is one Groq call, not two.
 
 ## Cloud inference
 

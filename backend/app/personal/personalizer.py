@@ -20,6 +20,7 @@ from ..schemas import (
     AcceptedMessage,
     CommunicationContext,
     Hypothesis,
+    Listener,
     PersonaSummary,
     PersonalBrief,
 )
@@ -94,6 +95,20 @@ class Personalizer:
         self.live.seed(shipped, self.baseline.history(profile_id))
         return self.live.profile(profile_id) or shipped
 
+    def listener_for(self, profile_id: str, context: CommunicationContext) -> Listener | None:
+        """What this profile says about who listens in this setting, or None to use the default.
+
+        Silent like everything else here: a profile that will not load simply has
+        no opinion, and the setting's own default stands.
+        """
+        try:
+            profile = self._resolve(profile_id)
+        except Exception:
+            return None
+        if profile is None:
+            return None
+        return profile.listener_by_setting.get(context)
+
     def _index(self, profile_id: str) -> ExampleIndex:
         cached = self._indexes.get(profile_id)
         if cached is not None:
@@ -125,10 +140,13 @@ class Personalizer:
         hypotheses: list[Hypothesis],
         context: CommunicationContext,
         profile_id: str,
+        listener: Listener = "familiar",
     ) -> PersonalBrief | None:
         try:
             async with self._lock:
-                return await asyncio.to_thread(self._brief, hypotheses, context, profile_id)
+                return await asyncio.to_thread(
+                    self._brief, hypotheses, context, profile_id, listener
+                )
         except Exception:
             # Deliberately silent. Personal context is worth having and never
             # worth failing a message over.
@@ -139,6 +157,7 @@ class Personalizer:
         hypotheses: list[Hypothesis],
         context: CommunicationContext,
         profile_id: str,
+        listener: Listener = "familiar",
     ) -> PersonalBrief | None:
         profile = self._resolve(profile_id)
         if profile is None:
@@ -152,15 +171,17 @@ class Personalizer:
         if text.strip():
             vector = self.embedder.encode(text, weights)
             examples = self._index(profile.id).search(
-                vector, context, datetime.now(timezone.utc), self.settings
+                vector, context, listener, datetime.now(timezone.utc), self.settings
             )
         brief = PersonalBrief(
             profile_id=profile.id,
             profile_label=profile.label,
             speaker_note=profile.speaker_note,
-            lexicon=lexicon_hints(profile, slots, self.settings.personal_max_hints),
+            lexicon=lexicon_hints(profile, slots, self.settings.personal_max_hints, context),
             specializations=(
-                specialization_offers(profile, slots, self.settings.personal_anchor_share)
+                specialization_offers(
+                    profile, slots, self.settings.personal_anchor_share, context
+                )
                 if self.settings.personal_specializations
                 else []
             ),
@@ -176,6 +197,7 @@ class Personalizer:
         context: CommunicationContext,
         heard: str,
         message: str,
+        listener: Listener = "familiar",
     ) -> tuple[bool, bool, str]:
         """Store an accepted message. Returns (stored, merged, reason)."""
         try:
@@ -190,6 +212,7 @@ class Personalizer:
         context: CommunicationContext,
         heard: str,
         message: str,
+        listener: Listener = "familiar",
     ) -> tuple[bool, bool, str]:
         profile = self._resolve(profile_id)
         if profile is None or not message.strip():
@@ -201,6 +224,7 @@ class Personalizer:
             heard=heard.strip(),
             message=message.strip(),
             context=context,
+            listener=listener,
             hour=now.hour,
             accepted_at=now.isoformat().replace("+00:00", "Z"),
             source="user",
@@ -208,7 +232,7 @@ class Personalizer:
         index = self._index(profile.id)
         vector = self.embedder.encode(index_text(record))
         merged, _ = merge_into(index, record, vector, self.settings.personal_merge_threshold)
-        prune(index, now, context, self.settings)
+        prune(index, now, context, listener, self.settings)
         self.live.save_history(profile.id, index.records)
         return True, merged, "merged into an existing message" if merged else "stored"
 

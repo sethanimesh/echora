@@ -9,6 +9,29 @@ from pydantic import BaseModel, Field
 CommunicationContext = Literal["general", "home", "care", "outdoors"]
 PersonaKind = Literal["person", "place", "object", "routine", "brand", "food"]
 
+# Who is listening. The setting says where the speaker is; this says whether the
+# person they are speaking to knows them, and that is what decides the act. A
+# familiar listener can fetch and do, so a need is stated to them. An unfamiliar
+# one can only answer, point or serve, so the same need is asked of them:
+# "washroom" is "I want to use the washroom." at home and "Where is the
+# washroom?" on a platform. Two values, orthogonal to the four settings -- a
+# place still borrows one of those four and never becomes a fifth.
+Listener = Literal["familiar", "unfamiliar"]
+
+# The listener a setting implies when nothing overrides it. Only `outdoors`
+# assumes strangers; everywhere else someone who knows the speaker is present,
+# which is what every setting assumed before this layer existed.
+LISTENER_DEFAULTS: dict[CommunicationContext, Listener] = {
+    "general": "familiar",
+    "home": "familiar",
+    "care": "familiar",
+    "outdoors": "unfamiliar",
+}
+
+
+def default_listener(context: CommunicationContext) -> Listener:
+    return LISTENER_DEFAULTS.get(context, "familiar")
+
 # A tagged place is matched by distance, so the radius is the whole match rule.
 # 150 m covers a house or a ward without swallowing the next street.
 DEFAULT_RADIUS_M = 150
@@ -90,6 +113,7 @@ class PersonalExample(BaseModel):
     heard: str
     message: str
     context: CommunicationContext
+    listener: Listener = "familiar"
     score: float
 
 
@@ -126,6 +150,7 @@ class PersonaSummary(BaseModel):
     blurb: str = ""
     icon: str = "circle"
     context_default: CommunicationContext = "general"
+    listener_by_setting: dict[CommunicationContext, Listener] = Field(default_factory=dict)
     lexicon_size: int = 0
     specialization_size: int = 0
     history_size: int = 0
@@ -138,13 +163,20 @@ class Place(BaseModel):
     A place is a label and an optional location. It never introduces a new
     context value: `context` is the built-in whose prior and retrieval pool the
     place borrows, so a custom place behaves exactly as that built-in already
-    does. `latitude`/`longitude` stay None until the speaker tags the place while
-    standing in it.
+    does. `listener` is the one thing a place says on its own account, and it is
+    orthogonal to the four: two places can both borrow `outdoors` and still meet
+    different people. `latitude`/`longitude` stay None until the speaker tags the
+    place while standing in it.
     """
 
     id: str
     label: str
     context: CommunicationContext
+    # Whether the people here know the speaker. Defaults from the borrowed
+    # context and is then the speaker's to set, including on the built-ins: a
+    # speaker who only ever goes out with their daughter needs the shipped
+    # Outdoors place to keep the familiar register.
+    listener: Listener | None = None
     builtin: bool = False
     latitude: float | None = Field(default=None, ge=-90.0, le=90.0)
     longitude: float | None = Field(default=None, ge=-180.0, le=180.0)
@@ -182,6 +214,9 @@ class AcceptedMessage(BaseModel):
     heard: str
     message: str
     context: CommunicationContext = "general"
+    # Defaulted rather than required so history written before this field
+    # existed still parses; every shipped row carries it explicitly.
+    listener: Listener = "familiar"
     hour: int = Field(default=12, ge=0, le=23)
     accepted_at: str
     uses: int = 1
@@ -191,6 +226,7 @@ class AcceptedMessage(BaseModel):
 class AcceptedMessageRequest(BaseModel):
     persona: str
     context: CommunicationContext = "general"
+    listener: Listener = "familiar"
     heard: str
     message: str
 
@@ -286,6 +322,7 @@ class TranscriptionResponse(BaseModel):
     model: str
     device: str
     context: CommunicationContext
+    listener: Listener = "familiar"
     persona: str | None = None
     hypotheses: list[Hypothesis]
     audio_quality: AudioQuality
@@ -327,6 +364,7 @@ class ModelInfo(BaseModel):
     beams: int
     literal_prompt: str
     supported_contexts: list[CommunicationContext]
+    supported_listeners: list[Listener]
     beam_weights_are_calibrated_confidence: bool = False
     semantic_repair_is_part_of_asr: bool = False
     limitations: list[str]

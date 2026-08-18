@@ -47,6 +47,7 @@ class Settings:
     personal_min_similarity: float
     personal_half_life_days: float
     personal_context_penalty: float
+    personal_listener_penalty: float
     personal_time_penalty: float
     personal_max_hints: int
     personal_merge_threshold: float
@@ -169,6 +170,10 @@ def load_settings() -> Settings:
         personal_min_similarity=_ranged("ECHORA_PERSONAL_MIN_SIMILARITY", "0.25", 0.0, 1.0),
         personal_half_life_days=_ranged("ECHORA_PERSONAL_HALF_LIFE_DAYS", "14", 0.5, 3650.0),
         personal_context_penalty=_ranged("ECHORA_PERSONAL_CONTEXT_PENALTY", "0.85", 0.1, 1.0),
+        # Harsher than the setting penalty on purpose. A differently-set example
+        # still shows the right shape; a differently-addressed one shows the
+        # wrong one, and shape is what a few-shot example teaches.
+        personal_listener_penalty=_ranged("ECHORA_PERSONAL_LISTENER_PENALTY", "0.5", 0.1, 1.0),
         personal_time_penalty=_ranged("ECHORA_PERSONAL_TIME_PENALTY", "0.95", 0.1, 1.0),
         personal_max_hints=int(_ranged("ECHORA_PERSONAL_MAX_HINTS", "8", 1, 32, int)),
         personal_merge_threshold=_ranged("ECHORA_PERSONAL_MERGE_THRESHOLD", "0.92", 0.5, 1.0),

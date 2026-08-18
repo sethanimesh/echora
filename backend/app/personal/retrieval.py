@@ -21,7 +21,7 @@ import numpy as np
 
 from ..config import Settings
 from ..messaging.alignment import EMPTY_SLOT
-from ..schemas import AcceptedMessage, CommunicationContext, PersonalExample
+from ..schemas import AcceptedMessage, CommunicationContext, Listener, PersonalExample
 
 
 def query_terms(slots: list[dict[str, object]]) -> tuple[str, dict[str, float]]:
@@ -75,23 +75,34 @@ def score(
     cosine: float,
     now: datetime,
     context: CommunicationContext,
+    listener: Listener,
     settings: Settings,
 ) -> float:
-    """Similarity, then the decays. Context and time are boosts, never filters.
+    """Similarity, then the decays. Context, listener and time are boosts, never filters.
 
     Filtering by setting would leave a small store with nothing to return, and
     `general` genuinely tells us nothing either way, so it stays neutral.
+
+    The listener is penalized harder than the setting, because the two mismatches
+    cost different things. A care example read at home is mildly off -- the words
+    are right and the shape is right. A home example read among strangers is
+    actively misleading, because its shape is the thing being copied: "I need the
+    toilet." is what a carer is told and exactly not what a stranger is asked. So
+    a different listener costs more than a different setting, and the two
+    multiply when both differ.
     """
     base = max(cosine, 0.0)
     if base <= 0.0:
         return 0.0
     same_context = record.context == context or "general" in (record.context, context)
+    same_listener = record.listener == listener
     same_time = _bucket(record.hour) == _bucket(now.hour)
     return (
         base
         * _recency(record, now, settings.personal_half_life_days)
         * _frequency(record)
         * (1.0 if same_context else settings.personal_context_penalty)
+        * (1.0 if same_listener else settings.personal_listener_penalty)
         * (1.0 if same_time else settings.personal_time_penalty)
     )
 
@@ -135,6 +146,7 @@ class ExampleIndex:
         self,
         vector: np.ndarray,
         context: CommunicationContext,
+        listener: Listener,
         now: datetime,
         settings: Settings,
     ) -> list[PersonalExample]:
@@ -148,7 +160,7 @@ class ExampleIndex:
             return []
         cosines = self.similarities(vector)
         scored = [
-            (score(record, float(cosine), now, context, settings), record)
+            (score(record, float(cosine), now, context, listener, settings), record)
             for record, cosine in zip(self.records, cosines, strict=True)
         ]
         scored = [item for item in scored if item[0] >= settings.personal_min_similarity]
@@ -158,6 +170,7 @@ class ExampleIndex:
                 heard=record.heard,
                 message=record.message,
                 context=record.context,
+                listener=record.listener,
                 score=round(value, 4),
             )
             for value, record in scored[: settings.personal_examples]

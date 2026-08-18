@@ -66,6 +66,7 @@ def score(case: dict, result) -> dict:
         "id": case["id"],
         "category": case["category"],
         "context": case["context"],
+        "listener": case.get("listener", "familiar"),
         "truth": case["truth"],
         "expect": case["expect"],
         "decision": decision,
@@ -105,7 +106,9 @@ async def main() -> None:
 
     async def one(case: dict, trial: int) -> dict:
         async with semaphore:
-            result = await chain.run(build(case), case["context"])
+            result = await chain.run(
+                build(case), case["context"], listener=case.get("listener", "familiar")
+            )
             row = score(case, result)
             row["trial"] = trial
             return row

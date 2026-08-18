@@ -347,7 +347,16 @@ BUNDLE = Path(__file__).resolve().parents[2] / "models" / "echora-minilm-l6-v2" 
 needs_encoder = pytest.mark.skipif(not BUNDLE.is_dir(), reason="embedding bundle not fetched")
 
 
-def message(text: str, *, heard: str = "", days: int = 1, hour: int = 12, context: str = "home", uses: int = 1):
+def message(
+    text: str,
+    *,
+    heard: str = "",
+    days: int = 1,
+    hour: int = 12,
+    context: str = "home",
+    listener: str = "familiar",
+    uses: int = 1,
+):
     from datetime import datetime, timedelta, timezone
 
     when = (datetime.now(timezone.utc) - timedelta(days=days)).replace(hour=hour)
@@ -357,6 +366,7 @@ def message(text: str, *, heard: str = "", days: int = 1, hour: int = 12, contex
         heard=heard or text.lower(),
         message=text,
         context=context,
+        listener=listener,
         hour=hour,
         accepted_at=when.isoformat().replace("+00:00", "Z"),
         uses=uses,
@@ -400,7 +410,7 @@ def test_a_store_below_the_cold_start_floor_offers_nothing() -> None:
         record = message(text)
         index.add(record, encoder.encode(index_text(record)))
     query = encoder.encode("cold")
-    assert index.search(query, "home", datetime.now(timezone.utc), settings) == []
+    assert index.search(query, "home", "familiar", datetime.now(timezone.utc), settings) == []
 
 
 @needs_encoder
@@ -422,7 +432,9 @@ def test_recency_separates_two_equally_similar_messages() -> None:
     ]
     for record in rows:
         index.add(record, encoder.encode(index_text(record)))
-    found = index.search(encoder.encode("coffee"), "home", datetime.now(timezone.utc), settings)
+    found = index.search(
+        encoder.encode("coffee"), "home", "familiar", datetime.now(timezone.utc), settings
+    )
     assert "Madras" in found[0].message
 
 
@@ -453,7 +465,203 @@ def test_saying_the_same_thing_again_merges_instead_of_growing_the_store() -> No
 
     settings = load_settings()
     capped = settings.__class__(**{**settings.__dict__, "personal_store_cap": 1})
-    dropped = prune(index, datetime.now(timezone.utc), "home", capped)
+    dropped = prune(index, datetime.now(timezone.utc), "home", "familiar", capped)
     assert dropped == 1
     # The frequent, recent message is the one that survives.
     assert index.records[0].message == "I would like some water."
+
+
+# --------------------------------------------------------------- the stance
+
+def test_a_setting_alone_decides_who_is_listening() -> None:
+    """No profile, no place: outdoors still means strangers and home still does not."""
+    from app.schemas import default_listener
+
+    assert default_listener("home") == "familiar"
+    assert default_listener("care") == "familiar"
+    assert default_listener("general") == "familiar"
+    assert default_listener("outdoors") == "unfamiliar"
+
+
+def test_the_same_word_asks_outdoors_and_states_it_at_home() -> None:
+    """The one sentence the model reads about the setting differs by listener."""
+    from app.messaging.groq_chain import stance_guidance
+
+    at_home = stance_guidance("home", "familiar")
+    among_strangers = stance_guidance("outdoors", "unfamiliar")
+    assert at_home != among_strangers
+    # The home reading tells the model to state a need; the stranger reading
+    # tells it to ask, and says the question word is form rather than content --
+    # without which the prompt's own "supply nothing they did not say" rule
+    # would rule the question form out.
+    assert "stated to them" in at_home
+    assert "Where is the washroom?" in among_strangers
+    assert "not new content" in among_strangers
+    # Shorter with a stranger, not longer. Politeness scaffolding is the wrong
+    # direction here.
+    assert "SHORTER" in among_strangers
+
+
+def test_a_familiar_listener_outdoors_keeps_the_home_register() -> None:
+    """Out with your daughter is not out among strangers."""
+    from app.messaging.groq_chain import stance_guidance
+
+    with_family = stance_guidance("outdoors", "familiar")
+    assert "stated to them exactly as it would be at home" in with_family
+    assert "Where is the washroom?" not in with_family
+
+
+def test_an_unknown_stance_falls_back_to_the_setting_rather_than_failing() -> None:
+    from app.messaging.groq_chain import stance_guidance
+
+    assert stance_guidance("home", "nonsense") == stance_guidance("home", "familiar")  # type: ignore[arg-type]
+
+
+def test_the_profile_says_who_it_is_usually_with_only_where_it_differs() -> None:
+    profile = parse_profile(
+        {
+            "id": "k",
+            "label": "K",
+            "context_default": "home",
+            "listener_by_setting": {"outdoors": "familiar"},
+        }
+    )
+    assert profile is not None
+    assert profile.listener_by_setting.get("outdoors") == "familiar"
+    # Silence everywhere else, so the setting's own default stands.
+    assert profile.listener_by_setting.get("home") is None
+
+
+# ------------------------------------------------------- details, by setting
+
+def test_a_detail_scoped_to_a_setting_is_not_offered_outside_it() -> None:
+    """"Madras filter coffee" is his words at home and unhelpful across a counter."""
+    profile = parse_profile(
+        {
+            "id": "k",
+            "label": "K",
+            "specializations": [
+                {
+                    "id": "k/detail/coffee",
+                    "anchor": "coffee",
+                    "plain": "coffee",
+                    "surface": "Madras filter coffee",
+                    "kind": "food",
+                    "settings": ["home", "care"],
+                }
+            ],
+        }
+    )
+    assert profile is not None
+    slots = _slot_alignment(weighted(("coffee please", 0.9), ("coffey please", 0.1)))
+    assert specialization_offers(profile, slots, 0.75, "home")
+    assert specialization_offers(profile, slots, 0.75, "outdoors") == []
+    # An unscoped rule is unchanged: it applies everywhere, as every rule did
+    # before scoping existed.
+    profile.specializations[0].settings = []
+    assert specialization_offers(profile, slots, 0.75, "outdoors")
+
+
+def test_a_scoped_out_detail_still_cannot_be_written_by_the_model() -> None:
+    """Scoping narrows what is offered. It must never widen what is accepted."""
+    from app.personal.personalizer import Personalizer
+
+    profile = parse_profile(
+        {
+            "id": "k",
+            "label": "K",
+            "specializations": [
+                {
+                    "id": "k/detail/coffee",
+                    "anchor": "coffee",
+                    "plain": "coffee",
+                    "surface": "Madras filter coffee",
+                    "kind": "food",
+                    "settings": ["home"],
+                }
+            ],
+        }
+    )
+    assert profile is not None
+    # The audit vocabulary is a rejection list, not an offer list, so the words
+    # a scoped-out detail would have licensed stay in it.
+    vocabulary = Personalizer._audit_vocabulary(None, profile)  # type: ignore[arg-type]
+    assert "madras" in vocabulary
+
+
+# ------------------------------------- retrieval and consolidation, by stance
+
+def test_a_home_example_is_penalized_harder_among_strangers_than_across_settings() -> None:
+    """The two mismatches cost different things, so they cannot share a penalty.
+
+    A care example read at home has the right shape and the wrong furniture. A
+    home example read among strangers has the wrong shape, and shape is what a
+    few-shot example teaches -- "I need the toilet." is what a carer is told and
+    exactly not what a stranger is asked.
+    """
+    from datetime import datetime, timezone
+
+    from app.personal.retrieval import score
+
+    settings = load_settings()
+    now = datetime.now(timezone.utc)
+    at_home = message("I need the toilet.", context="home", listener="familiar", hour=now.hour)
+
+    same = score(at_home, 0.9, now, "home", "familiar", settings)
+    other_setting = score(at_home, 0.9, now, "care", "familiar", settings)
+    other_listener = score(at_home, 0.9, now, "home", "unfamiliar", settings)
+    both = score(at_home, 0.9, now, "outdoors", "unfamiliar", settings)
+
+    assert same > other_setting > other_listener > both
+    # Still a boost and never a filter: the example survives, it just stops
+    # outranking a same-stance one.
+    assert both > 0.0
+
+
+def test_an_unfamiliar_acceptance_never_absorbs_the_familiar_one() -> None:
+    """The bug this guard exists for, with the merge forced to fire.
+
+    A merge takes the longer wording and stamps the newcomer's setting over the
+    old one. Without the guard, accepting "Where is the washroom?" outdoors
+    could swallow "I want to use the washroom.", keep the home wording because
+    it is longer, and relabel it outdoors -- leaving the speaker with neither
+    phrasing intact.
+    """
+    import numpy as np
+
+    from app.personal.consolidation import merge_into
+    from app.personal.retrieval import ExampleIndex
+
+    index = ExampleIndex(3)
+    # Identical vectors, so cosine is 1.0 and only the guard can stop the merge.
+    vector = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+    at_home = message("I want to use the washroom.", heard="washroom", listener="familiar")
+    index.add(at_home, vector)
+
+    outside = message("Where is the washroom?", heard="washroom", context="outdoors", listener="unfamiliar")
+    merged, _ = merge_into(index, outside, vector, 0.92)
+
+    assert merged is False
+    assert len(index.records) == 2
+    kept = {record.message: record for record in index.records}
+    assert kept["I want to use the washroom."].context == "home"
+    assert kept["I want to use the washroom."].listener == "familiar"
+    assert kept["Where is the washroom?"].listener == "unfamiliar"
+
+
+def test_two_familiar_settings_still_fold_together() -> None:
+    """Gating on the listener, not the setting, so the store splits in two at worst."""
+    import numpy as np
+
+    from app.personal.consolidation import merge_into
+    from app.personal.retrieval import ExampleIndex
+
+    index = ExampleIndex(3)
+    vector = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+    index.add(message("I need the toilet.", context="home", listener="familiar"), vector)
+    on_the_ward = message("I need the toilet.", context="care", listener="familiar")
+
+    merged, record = merge_into(index, on_the_ward, vector, 0.92)
+    assert merged is True
+    assert len(index.records) == 1
+    assert record.uses == 2

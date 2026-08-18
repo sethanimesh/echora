@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T00:00:00Z",
+  "generated_at": "2026-08-18T00:00:00Z",
   "count": 6,
   "note": "Demonstration speakers. Shipped read-only; live history lives under data/personal/.",
   "personas": [
@@ -10,7 +10,11 @@
       "context_default": "home",
       "lexicon_entries": 6,
       "specializations": 2,
-      "history_messages": 22
+      "history_messages": 22,
+      "unfamiliar_listener_messages": 0,
+      "listener_by_setting": {
+        "outdoors": "familiar"
+      }
     },
     {
       "id": "anya",
@@ -19,7 +23,8 @@
       "context_default": "home",
       "lexicon_entries": 8,
       "specializations": 4,
-      "history_messages": 34
+      "history_messages": 40,
+      "unfamiliar_listener_messages": 5
     },
     {
       "id": "vikram",
@@ -28,7 +33,8 @@
       "context_default": "care",
       "lexicon_entries": 9,
       "specializations": 4,
-      "history_messages": 34
+      "history_messages": 38,
+      "unfamiliar_listener_messages": 4
     },
     {
       "id": "grace",
@@ -37,7 +43,8 @@
       "context_default": "home",
       "lexicon_entries": 8,
       "specializations": 4,
-      "history_messages": 33
+      "history_messages": 37,
+      "unfamiliar_listener_messages": 4
     },
     {
       "id": "bea",
@@ -46,7 +53,8 @@
       "context_default": "care",
       "lexicon_entries": 7,
       "specializations": 4,
-      "history_messages": 33
+      "history_messages": 37,
+      "unfamiliar_listener_messages": 4
     },
     {
       "id": "tomas",
@@ -55,7 +63,8 @@
       "context_default": "general",
       "lexicon_entries": 8,
       "specializations": 4,
-      "history_messages": 34
+      "history_messages": 35,
+      "unfamiliar_listener_messages": 13
     }
   ]
 }

@@ -45,7 +45,10 @@ class FakeChain:
     def __init__(self, settings):
         pass
 
-    async def run(self, hypotheses, context="general", brief=None):
+    stances: list[tuple[str, str]] = []
+
+    async def run(self, hypotheses, context="general", brief=None, listener="familiar"):
+        FakeChain.stances.append((context, listener))
         return MessageChainResult(
             ranker=RankerDecision(
                 decision="selected",
@@ -94,7 +97,7 @@ class AmbiguousChain:
     def __init__(self, settings):
         pass
 
-    async def run(self, hypotheses, context="general", brief=None):
+    async def run(self, hypotheses, context="general", brief=None, listener="familiar"):
         messages = [_candidate("m1", "I would like some water."), _candidate("m2", "I would like to wait.")]
         return MessageChainResult(
             ranker=RankerDecision(
@@ -133,7 +136,9 @@ class FakePersonal:
     """Stands in for the personal layer so no test loads the real encoder weights."""
 
     briefs: list[tuple[str, str]] = []
+    stances: list[tuple[str, str]] = []
     remembered: list[tuple[str, str, str]] = []
+    declares: dict[str, str] = {}
 
     def __init__(self, settings):
         pass
@@ -144,21 +149,29 @@ class FakePersonal:
     def personas(self):
         return [PersonaSummary(id="krishnan", label="Krishnan", history_size=3)]
 
-    async def brief(self, hypotheses, context, profile_id):
+    def listener_for(self, profile_id, context):
+        return FakePersonal.declares.get(context)
+
+    async def brief(self, hypotheses, context, profile_id, listener="familiar"):
         FakePersonal.briefs.append((profile_id, context))
+        FakePersonal.stances.append((context, listener))
         if profile_id not in self.known_ids():
             return None
         return PersonalBrief(profile_id=profile_id, profile_label="Krishnan", speaker_note="note")
 
-    async def remember(self, profile_id, context, heard, message):
+    async def remember(self, profile_id, context, heard, message, listener="familiar"):
         FakePersonal.remembered.append((profile_id, heard, message))
+        FakePersonal.stances.append((context, listener))
         return True, False, "stored"
 
 
 def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersonal, places_path=None):
     FakeSpeech.spoken = []
+    FakeChain.stances = []
     FakePersonal.briefs = []
+    FakePersonal.stances = []
     FakePersonal.remembered = []
+    FakePersonal.declares = {}
     monkeypatch.setattr(main, "create_backend", lambda settings: FakeBackend())
     monkeypatch.setattr(main, "GroqMessageChain", chain)
     monkeypatch.setattr(main, "GroqSpeech", speech)
@@ -170,13 +183,15 @@ def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersona
     return TestClient(main.app)
 
 
-def _post(api, context: str | None = None, persona: str | None = None):
+def _post(api, context: str | None = None, persona: str | None = None, listener: str | None = None):
     audio = np.sin(np.linspace(0, 100, 8_000)).astype(np.float32) * 0.1
     form = {}
     if context:
         form["context"] = context
     if persona:
         form["persona"] = persona
+    if listener:
+        form["listener"] = listener
     return api.post(
         "/api/v1/transcriptions",
         files={"audio": ("voice.wav", encode_wav(audio), "audio/wav")},
@@ -475,3 +490,53 @@ def test_a_place_never_reaches_the_message_chain_as_a_setting(monkeypatch, tmp_p
         accepted = _post(api, context="outdoors")
         assert accepted.status_code == 200
         assert accepted.json()["context"] == "outdoors"
+
+
+def test_the_setting_alone_decides_who_is_listening(monkeypatch) -> None:
+    """No place, no profile: outdoors reaches the chain as strangers, home does not."""
+    with client(monkeypatch) as api:
+        assert _post(api, context="home").json()["listener"] == "familiar"
+        assert _post(api, context="outdoors").json()["listener"] == "unfamiliar"
+        assert ("outdoors", "unfamiliar") in FakeChain.stances
+
+
+def test_a_place_outranks_the_profile_and_the_profile_outranks_the_default(monkeypatch) -> None:
+    """Precedence mirrors the places layer: what the speaker tapped wins."""
+    with client(monkeypatch) as api:
+        # The profile says it is usually family out there.
+        FakePersonal.declares = {"outdoors": "familiar"}
+        assert _post(api, context="outdoors", persona="krishnan").json()["listener"] == "familiar"
+        # A place the speaker tapped says otherwise, and outranks it.
+        response = _post(api, context="outdoors", persona="krishnan", listener="unfamiliar")
+        assert response.json()["listener"] == "unfamiliar"
+        # With neither, the setting's own default stands.
+        FakePersonal.declares = {}
+        assert _post(api, context="outdoors", persona="krishnan").json()["listener"] == "unfamiliar"
+
+
+def test_an_unknown_listener_is_refused_but_an_absent_one_is_not(monkeypatch) -> None:
+    """The stance is part of the prompt, so a value the server does not know is a 422.
+
+    An empty field is a different thing: it means the caller has nothing to say
+    about who is listening, which is the ordinary case for a plain setting.
+    """
+    with client(monkeypatch) as api:
+        assert _post(api, context="home", listener="a-stranger").status_code == 422
+        assert _post(api, context="home").status_code == 200
+
+
+def test_the_stance_reaches_the_personal_layer_and_the_store(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        _post(api, context="outdoors", persona="krishnan")
+        assert ("outdoors", "unfamiliar") in FakePersonal.stances
+        api.post(
+            "/api/v1/accepted",
+            json={
+                "persona": "krishnan",
+                "context": "outdoors",
+                "listener": "unfamiliar",
+                "heard": "washroom",
+                "message": "Where is the washroom?",
+            },
+        )
+        assert ("outdoors", "unfamiliar") in FakePersonal.stances

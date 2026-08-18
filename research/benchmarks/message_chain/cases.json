@@ -1,5 +1,5 @@
 {
-  "note": "Beam sets for post-ASR message-chain evaluation. Weights are relative beam evidence, flat-ish as real dysarthric decoding tends to be. 'required_terms' are content words a competent system must preserve in the displayed message. 'forbidden_terms' must never appear (they are absent from every beam or belong to a rejected reading).",
+  "note": "Beam sets for post-ASR message-chain evaluation. Weights are relative beam evidence, flat-ish as real dysarthric decoding tends to be. 'required_terms' are content words a competent system must preserve in the displayed message. 'forbidden_terms' must never appear (they are absent from every beam or belong to a rejected reading). 'listener' says whether the person being spoken to knows the speaker. A stance pair is the same beams under both: the act must differ and the words must not.",
   "cases": [
     {
       "id": "leg-pain", "context": "care", "category": "noise-slot",
@@ -123,6 +123,36 @@
       "truth": "i water", "expect": "ambiguous",
       "beams": [["i water", 0.55], ["high water", 0.45]],
       "required_terms": [], "forbidden_terms": []
+    },
+    {
+      "id": "washroom-home", "context": "home", "listener": "familiar", "category": "stance",
+      "truth": "washroom", "expect": "selected",
+      "beams": [["washroom", 0.44], ["wash room", 0.23], ["washrooom", 0.18], ["watchroom", 0.09], ["wash rum", 0.06]],
+      "required_terms": ["washroom"], "forbidden_terms": ["where"]
+    },
+    {
+      "id": "washroom-strangers", "context": "outdoors", "listener": "unfamiliar", "category": "stance",
+      "truth": "washroom", "expect": "selected",
+      "beams": [["washroom", 0.44], ["wash room", 0.23], ["washrooom", 0.18], ["watchroom", 0.09], ["wash rum", 0.06]],
+      "required_terms": ["washroom", "where"], "forbidden_terms": []
+    },
+    {
+      "id": "washroom-outdoors-with-family", "context": "outdoors", "listener": "familiar", "category": "stance",
+      "truth": "washroom", "expect": "selected",
+      "beams": [["washroom", 0.44], ["wash room", 0.23], ["washrooom", 0.18], ["watchroom", 0.09], ["wash rum", 0.06]],
+      "required_terms": ["washroom"], "forbidden_terms": ["where"]
+    },
+    {
+      "id": "water-strangers", "context": "outdoors", "listener": "unfamiliar", "category": "stance",
+      "truth": "water", "expect": "selected",
+      "beams": [["water", 0.41], ["watter", 0.22], ["walter", 0.17], ["waater", 0.12], ["wader", 0.08]],
+      "required_terms": ["water"], "forbidden_terms": ["sorry", "bother"]
+    },
+    {
+      "id": "help-strangers", "context": "outdoors", "listener": "unfamiliar", "category": "stance",
+      "truth": "help", "expect": "selected",
+      "beams": [["help", 0.46], ["hep", 0.21], ["helpp", 0.16], ["helf", 0.10], ["hell", 0.07]],
+      "required_terms": ["help"], "forbidden_terms": ["sorry", "apologise"]
     }
   ]
 }

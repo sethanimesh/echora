@@ -10,7 +10,7 @@ out by the grounding check and take a working message down with it.
 from __future__ import annotations
 
 from ..messaging.alignment import settled_words
-from ..schemas import LexiconHint, SpecializationOffer
+from ..schemas import CommunicationContext, LexiconHint, SpecializationOffer
 from .profile import PersonaProfile
 
 
@@ -22,6 +22,7 @@ def lexicon_hints(
     profile: PersonaProfile,
     slots: list[dict[str, object]],
     limit: int,
+    context: CommunicationContext = "general",
 ) -> list[LexiconHint]:
     """Known words this utterance contains, contested positions first.
 
@@ -29,7 +30,7 @@ def lexicon_hints(
     that `marge` is a person it should expect beats confirming a word every beam
     already agreed on.
     """
-    forms = profile.heard_forms()
+    forms = profile.heard_forms(context)
     if not forms:
         return []
     contested: list[LexiconHint] = []
@@ -55,6 +56,7 @@ def specialization_offers(
     profile: PersonaProfile,
     slots: list[dict[str, object]],
     anchor_share: float,
+    context: CommunicationContext = "general",
 ) -> list[SpecializationOffer]:
     """Details whose anchor the beams overwhelmingly agreed on.
 
@@ -68,7 +70,7 @@ def specialization_offers(
     offers: list[SpecializationOffer] = []
     seen: set[str] = set()
     for word in sorted(settled_words(slots, anchor_share)):
-        rule = profile.rule_for(word)
+        rule = profile.rule_for(word, context)
         if rule is None or rule.id in seen:
             continue
         seen.add(rule.id)
