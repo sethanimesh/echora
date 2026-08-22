@@ -1,6 +1,54 @@
 "use client";
 
-import { ChangeEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, ReactNode, Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
+
+
+// three.js is by far the heaviest thing on this page, and the orb it draws is
+// decoration. Loading it separately keeps it out of the first paint, and means a
+// speaker on reduced motion -- who never mounts the orb -- never downloads it.
+const Orb = lazy(() => import("@/components/ui/orb").then((module) => ({ default: module.Orb })));
+
+/**
+ * The orb, sized in flow so the stage can lay out around it rather than having
+ * text guess where it landed. It is mounted per stage rather than once for the
+ * session: that costs a WebGL context on each entry, which is cheap next to the
+ * arithmetic of positioning an overlay against centred, variable-height content.
+ *
+ * `live` feeds it the real microphone level; without it the orb animates itself
+ * from its state, which is how the speaking side stays clear of the audio element.
+ */
+function StageOrb({
+  state,
+  ready,
+  live,
+  volumeRef,
+}: {
+  state: "listening" | "talking";
+  ready: boolean;
+  live?: boolean;
+  volumeRef: React.RefObject<number>;
+}) {
+  // The orb's body comes from its "out" channel. In manual mode that defaults to
+  // zero because nothing supplies it, and the sphere collapses into hard lobes --
+  // held steady here so the microphone only ever modulates a shape that is already
+  // whole. Auto mode supplies its own, so this is ignored there.
+  const bodyRef = useRef(0.45);
+  if (!ready) return null;
+  return (
+    <div className="orb-slot" aria-hidden="true">
+      <Suspense fallback={null}>
+        <Orb
+          agentState={state}
+          volumeMode={live ? "manual" : "auto"}
+          inputVolumeRef={volumeRef}
+          outputVolumeRef={bodyRef}
+          colors={ORB_COLORS}
+        />
+      </Suspense>
+    </div>
+  );
+}
+import { useHydrated, useReducedMotion } from "@/lib/browser";
 
 type Hypothesis = {
   id: string;
@@ -16,6 +64,22 @@ type Specialization = {
   source: string;
   kind: string;
   profile_id: string;
+};
+
+// What the personal layer offered and what survived it. Shown in the evidence
+// sheet because a detail that does not appear has several very different
+// reasons -- scoped out of this setting, refused after the fact, or never
+// offered because the recognizer was not sure enough of the word it rides on --
+// and none of them are visible in the message itself.
+type PersonalizationTrace = {
+  profile_id: string;
+  profile_label: string;
+  lexicon_hints: string[];
+  examples_used: number;
+  specializations_offered: number;
+  specializations_applied: number;
+  specializations_refused: number;
+  retrieval_seconds: number;
 };
 
 type PersonaSummary = {
@@ -71,6 +135,15 @@ function defaultListener(context: CommunicationContext): Listener {
   return LISTENER_DEFAULTS[context] ?? "familiar";
 }
 
+// What a setting falls back to when neither the place nor the profile has said
+// anything. Only ever used to describe that fallback in words -- the value the
+// request is actually made with is resolved on the server.
+function listenerLabel(context: CommunicationContext): string {
+  return defaultListener(context) === "familiar"
+    ? "people who know me"
+    : "people who do not know me";
+}
+
 // A place is a label with an optional location. It never introduces a new
 // setting: `context` is the built-in whose prior it borrows, so a custom place
 // behaves exactly as that built-in already does.
@@ -98,6 +171,10 @@ type Transcription = {
   model: string;
   device: string;
   context: CommunicationContext;
+  // What the server actually resolved, after the place → profile → default
+  // chain. Not the same as what the browser sent, which is why an accepted
+  // message is stamped from here rather than from local state.
+  listener: Listener;
   persona: string | null;
   hypotheses: Hypothesis[];
   ranker: {
@@ -105,6 +182,7 @@ type Transcription = {
     selected_message_id: string | null;
     reason: string;
     source: string;
+    personalization: PersonalizationTrace | null;
   };
   messages: MessageCandidate[];
   recommended_message_id: string | null;
@@ -149,6 +227,9 @@ const BAR_COUNT = 25;
 const SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 const MAX_SECONDS = 45;
 const bars = Array.from({ length: BAR_COUNT }, (_, index) => index);
+// The orb takes its colours as a prop rather than from CSS, so the two ends of
+// the palette are repeated here: --green and --coral.
+const ORB_COLORS: [string, string] = ["#1e5a4a", "#87aa75"];
 
 function formatBackend(value?: string) {
   if (value === "local") return "Local Mac";
@@ -238,9 +319,12 @@ export default function Home() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [context, setContext] = useState<CommunicationContext>("general");
-  // Set from whichever place is active. General has no place behind it, so it
-  // falls back to what the setting implies on its own.
-  const [listener, setListener] = useState<Listener>(defaultListener("general"));
+  // What the active place *declares*, and nothing more. `null` means it declares
+  // nothing, which is not the same as declaring the setting's default: the
+  // server reads an absent listener as permission to ask the profile what this
+  // setting usually means for this speaker before falling back to the default.
+  // The whole chain lives on the server, so this never tries to compute it.
+  const [listener, setListener] = useState<Listener | null>(null);
   // "" is General: no place, no assumptions. Places are stored on this machine;
   // the setting they resolve to is still session-only and never saved.
   const [place, setPlace] = useState("");
@@ -268,11 +352,23 @@ export default function Home() {
   // Once the speaker has chosen a place by hand, detection stops overriding it
   // for the rest of the session. A tap always outranks a guess.
   const manualPlaceRef = useRef(false);
+  // Read by the orb inside its own render loop. A ref, not state: the level
+  // changes 30 times a second and must never re-render the screen.
+  const inputVolumeRef = useRef(0);
 
   // The stage is derived, not stored. The backend only fills recommended_message_id
   // when a single message survived the chain, so a confident result opens straight
   // on "composing" and an ambiguous one opens on "choosing".
   const stage: Stage = phase === "ready" ? (selectedId ? "composing" : "choosing") : phase;
+
+  // The orb is WebGL, so it must never render on the server, and it is skipped
+  // outright under reduced motion -- that setting exists to stop exactly this kind
+  // of continuous movement, and skipping it also avoids loading three.js at all.
+  // The orb marks the two states where sound is actually moving: in, while the
+  // speaker talks, and out, while the message is spoken. Idle, working, choosing
+  // and error are waiting or reading, and it would only compete there.
+  const reducedMotion = useReducedMotion();
+  const orbReady = useHydrated() && !reducedMotion;
 
   useEffect(() => {
     const check = async () => {
@@ -331,7 +427,7 @@ export default function Home() {
         setDetected({ id: found.place.id, label: found.place.label, meters: Math.round(found.meters) });
         setPlace(found.place.id);
         setContext(found.place.context);
-        setListener(found.place.listener ?? defaultListener(found.place.context));
+        setListener(found.place.listener);
       },
       () => {
         if (!cancelled) setDetected(null);
@@ -405,13 +501,15 @@ export default function Home() {
     audioContextRef.current?.close().catch(() => undefined);
     timerRef.current = null;
     animationRef.current = null;
+    inputVolumeRef.current = 0;
     streamRef.current = null;
     audioContextRef.current = null;
   }
 
-  // Bar levels are written straight to the DOM as a scaleY factor. Routing them
-  // through state would re-render the whole screen 60 times a second, and animating
-  // `height` would force layout every frame; `transform` stays on the compositor.
+  // Bar levels are written straight to the DOM as a scaleY factor, and the orb's
+  // one input level goes to a ref beside them. Routing either through state would
+  // re-render the whole screen 30 times a second, and animating `height` would
+  // force layout every frame; `transform` stays on the compositor.
   function animateWaveform(stream: MediaStream) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const audio = new AudioContext();
@@ -430,11 +528,18 @@ export default function Home() {
       analyser.getByteFrequencyData(data);
       const node = waveRef.current;
       if (!node) return;
+      let sum = 0;
       for (let index = 0; index < BAR_COUNT; index += 1) {
         const target = Math.min(1, Math.max(0.14, (data[index * 2] / 255) * 1.35));
         level[index] += (target - level[index]) * 0.35; // easing lives here, not in CSS
         (node.children[index] as HTMLElement | undefined)?.style.setProperty("--l", level[index].toFixed(3));
+        sum += level[index];
       }
+      // One scalar for the orb, from the levels this loop already computed -- no
+      // second AudioContext. Damped hard: at full scale the orb swells into a
+      // shape behind the stage text and the reading suffers, and the bars already
+      // carry the live signal accurately, so this only has to breathe.
+      inputVolumeRef.current = Math.min(0.42, (sum / BAR_COUNT) * 0.42);
     };
     animationRef.current = requestAnimationFrame(draw);
   }
@@ -578,7 +683,9 @@ export default function Home() {
     form.append("audio", blob, filename);
     form.append("context", context);
     form.append("persona", persona);
-    form.append("listener", listener);
+    // Empty means "nothing declared here", not "familiar". The server treats it
+    // as permission to ask the profile before falling back to the setting.
+    form.append("listener", listener ?? "");
     try {
       const response = await fetch(`${API}/api/v1/transcriptions`, { method: "POST", body: form });
       const body = await response.json();
@@ -596,7 +703,7 @@ export default function Home() {
       // literal evidence is meant to protect the speaker from.
       if (initialMessage && next.ranker.decision === "selected") {
         void speak(initialMessage.corrected_text, next.speech);
-        remember(initialMessage, initialMessage.corrected_text);
+        remember(initialMessage, initialMessage.corrected_text, next);
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Something went wrong while transcribing");
@@ -616,15 +723,24 @@ export default function Home() {
   // A message the speaker settled on is what the personal layer learns from.
   // It is fire-and-forget: failing to remember something is never worth
   // interrupting someone mid-conversation for.
-  function remember(candidate: MessageCandidate, text: string) {
-    if (!persona) return;
+  function remember(candidate: MessageCandidate, text: string, from: Transcription | null = result) {
+    if (!persona || !from) return;
+    // An unavailable candidate is a raw beam with a label on it, not a message
+    // the assistant formed. Storing one would put unreviewed ASR into the pool
+    // this speaker's later messages are written from -- teaching the profile
+    // that they say "nead coffee" because that is what the recognizer typed.
+    if (candidate.repair_status === "unavailable") return;
     void fetch(`${API}/api/v1/accepted`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         persona,
-        context,
-        listener,
+        // Stamped from what the server resolved, not from local state. The two
+        // differ exactly when the profile decided the listener, and a record
+        // filed under the wrong stance is worse than no record: it is retrieved
+        // as an example of a shape this speaker never used.
+        context: from.context,
+        listener: from.listener,
         heard: candidate.interpreted_intent,
         message: text,
       }),
@@ -674,9 +790,11 @@ export default function Home() {
     const chosen = (placeSettings?.places || []).find((item) => item.id === next);
     const nextContext: CommunicationContext = chosen ? chosen.context : "general";
     setContext(nextContext);
-    // The place is the only thing that knows the room. A place with nothing
-    // declared, and plain General, both fall back to the setting's own default.
-    setListener(chosen?.listener ?? defaultListener(nextContext));
+    // Only what the place declares. A place that declares nothing, and plain
+    // General, both send no listener at all -- which is what lets the server
+    // reach the profile before falling back to the setting's own default.
+    // Filling in the default here would silently outrank the profile.
+    setListener(chosen?.listener ?? null);
   }
 
   function reset() {
@@ -738,7 +856,7 @@ export default function Home() {
         </button>
       </header>
 
-      <div className="stage" ref={stageRef}>
+      <div className="stage" data-stage={stage} ref={stageRef}>
         {stage === "idle" && (
           <IdleStage
             modelReady={modelReady}
@@ -754,7 +872,14 @@ export default function Home() {
           />
         )}
         {stage === "recording" && (
-          <RecordingStage elapsed={elapsed} waveRef={waveRef} onStop={stopRecording} onCancel={cancelRecording} />
+          <RecordingStage
+            elapsed={elapsed}
+            waveRef={waveRef}
+            orbReady={orbReady}
+            volumeRef={inputVolumeRef}
+            onStop={stopRecording}
+            onCancel={cancelRecording}
+          />
         )}
         {stage === "working" && <WorkingStage label={progressLabel} progress={progress} />}
         {stage === "choosing" && result && <ChooseStage result={result} onChoose={choose} />}
@@ -773,6 +898,8 @@ export default function Home() {
             onSpeak={speakMessage}
             onEvidence={() => setOverlay("evidence")}
             onRevert={revert}
+            orbReady={orbReady}
+            volumeRef={inputVolumeRef}
           />
         )}
         {stage === "error" && <ErrorStage message={error} onRetry={reset} />}
@@ -810,13 +937,12 @@ export default function Home() {
             const match = (placeSettings?.places || []).find((item) => item.context === picked.context_default);
             setPlace(match ? match.id : "");
             setContext(picked.context_default);
-            // A profile may say who it is usually with in a setting. Weakest
-            // claim of the three, same as the setting it arrives beside.
-            setListener(
-              picked.listener_by_setting?.[picked.context_default] ??
-                match?.listener ??
-                defaultListener(picked.context_default),
-            );
+            // Still only what the place declares. What the profile says about
+            // this setting is the server's to apply, and applying it here as
+            // well would pin it to the profile's *default* setting -- so a
+            // speaker who declares a listener for outdoors while living at home
+            // would never have that declaration read at all.
+            setListener(match?.listener ?? null);
           }}
         />
       </Sheet>
@@ -881,19 +1007,24 @@ function IdleStage({
   const { shown, hidden } = idleChips(places, place);
   return (
     <section className="stage-idle">
-      <button
-        className="mic-button"
-        onClick={onRecord}
-        disabled={!modelReady}
-        aria-label="Start recording"
-        data-autofocus
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <rect x="9" y="2" width="6" height="11" rx="3" />
-          <path d="M5 11a7 7 0 0 0 14 0" />
-          <path d="M12 18v3" />
-        </svg>
-      </button>
+      {/* The bloom is a wrapper, not a layer on the button: anything that gives the
+          button a stacking context traps a negative z-index child above its own
+          background, and the halo ends up painted across the glyph. */}
+      <div className="mic-wrap">
+        <button
+          className="mic-button"
+          onClick={onRecord}
+          disabled={!modelReady}
+          aria-label="Start recording"
+          data-autofocus
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <rect x="9" y="2" width="6" height="11" rx="3" />
+            <path d="M5 11a7 7 0 0 0 14 0" />
+            <path d="M12 18v3" />
+          </svg>
+        </button>
+      </div>
       <strong className="stage-title">{modelReady ? "Tap to speak" : detail || "Waiting for the speech model"}</strong>
       <span className="stage-hint">Take your time. Pauses are welcome.</span>
 
@@ -947,16 +1078,24 @@ function IdleStage({
 function RecordingStage({
   elapsed,
   waveRef,
+  orbReady,
+  volumeRef,
   onStop,
   onCancel,
 }: {
   elapsed: number;
   waveRef: React.RefObject<HTMLDivElement | null>;
+  orbReady: boolean;
+  volumeRef: React.RefObject<number>;
   onStop: () => void;
   onCancel: () => void;
 }) {
   return (
     <section className="stage-recording">
+      {/* Both, deliberately. The orb is presence; the bars are evidence that a
+          quiet voice is actually reaching the microphone, which is information a
+          speaker with difficult speech needs and a glowing shape cannot give. */}
+      <StageOrb state="listening" ready={orbReady} live volumeRef={volumeRef} />
       <div className="recording-label"><span className="recording-dot" />Listening · {elapsed}s</div>
       <div className="waveform" ref={waveRef} aria-label="Live microphone level">
         {bars.map((index) => <i key={index} />)}
@@ -1027,6 +1166,8 @@ function ComposeStage({
   onSpeak,
   onEvidence,
   onRevert,
+  orbReady,
+  volumeRef,
 }: {
   result: Transcription;
   selectedId: string | null;
@@ -1041,12 +1182,17 @@ function ComposeStage({
   onSpeak: () => void;
   onEvidence: () => void;
   onRevert: (candidate: MessageCandidate) => void;
+  orbReady: boolean;
+  volumeRef: React.RefObject<number>;
 }) {
   const multiple = result.messages.length > 1;
   const current = result.messages.find((candidate) => candidate.message_id === selectedId) || null;
   const details = current?.specializations || [];
   return (
-    <section className="stage-composing">
+    <section className="stage-composing" data-speaking={speaking}>
+      {/* Only while the message is actually being spoken. It leaves as soon as the
+          voice stops, so the orb always means sound is moving right now. */}
+      {speaking && <StageOrb state="talking" ready={orbReady} volumeRef={volumeRef} />}
       {multiple && (
         <div className="pills" role="group" aria-label="Message options">
           {result.messages.map((candidate) => (
@@ -1127,6 +1273,7 @@ function ErrorStage({ message, onRetry }: { message: string; onRetry: () => void
 }
 
 function EvidenceBody({ result }: { result: Transcription }) {
+  const trace = result.ranker.personalization;
   return (
     <>
       <div className="evidence-list">
@@ -1138,6 +1285,44 @@ function EvidenceBody({ result }: { result: Transcription }) {
         ))}
       </div>
       <p className="sheet-note">Search weights compare only these beam hypotheses. They are not calibrated confidence.</p>
+
+      {/* The stance the message was actually written under. It is worth showing
+          because it is not always the one the screen implies: a place may
+          declare nothing and let the speaker's profile decide. */}
+      <h3 className="sheet-subhead">What this message was written for</h3>
+      <div className="evidence-option">
+        <span className="intent-label">Setting</span>
+        <span className="intent-text">{behaviourLabel(result.context)}</span>
+        <span className="intent-label">Listener</span>
+        <span className="intent-text">
+          {result.listener === "familiar"
+            ? "someone who knows the speaker — a need is stated to them"
+            : "someone who does not know the speaker — a need is asked of them, and kept short"}
+        </span>
+      </div>
+
+      {/* A detail that did not appear looks identical to one that was never
+          declared. These three counts are the difference: offered=0 means the
+          recognizer was not sure enough of the word it rides on, or the detail
+          is scoped out of this setting; refused>0 means it was written and then
+          taken back out because nothing licensed it. */}
+      {trace && (
+        <>
+          <h3 className="sheet-subhead">What {trace.profile_label.split(",")[0]}’s profile contributed</h3>
+          <div className="evidence-option">
+            <span className="intent-label">Known words the recognizer produced</span>
+            <span className="intent-text">{trace.lexicon_hints.join(" · ") || "none in this utterance"}</span>
+            <span className="intent-label">Personal details</span>
+            <span className="intent-text">
+              {trace.specializations_offered === 0
+                ? "none offered — either scoped out of this setting, or the word one rides on was not settled enough in the beams"
+                : `${trace.specializations_offered} offered · ${trace.specializations_applied} used · ${trace.specializations_refused} refused`}
+            </span>
+            <span className="intent-label">Past accepted messages used as examples</span>
+            <span className="intent-text">{trace.examples_used}</span>
+          </div>
+        </>
+      )}
 
       <h3 className="sheet-subhead">How each option was formed</h3>
       {result.messages.map((candidate, index) => (
@@ -1273,7 +1458,9 @@ function SettingsBody({
   const [status, setStatus] = useState("");
   const [label, setLabel] = useState("");
   const [behaviour, setBehaviour] = useState<CommunicationContext>("home");
-  const [company, setCompany] = useState<Listener>(defaultListener("home"));
+  // Null by default: a new place says nothing about who is there until the
+  // speaker says so, and the setting plus their profile take it from there.
+  const [company, setCompany] = useState<Listener | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (!settings) {
@@ -1348,15 +1535,18 @@ function SettingsBody({
     );
   }
 
-  function flipListener(target: Place) {
-    const next: Listener =
-      (target.listener ?? defaultListener(target.context)) === "familiar" ? "unfamiliar" : "familiar";
+  // Three states, not two. "Leave it to me" is the absence of a declaration, and
+  // it is the only one of the three that lets a profile be heard -- so it has to
+  // be a value the speaker can choose and see, not an invisible default.
+  function setPlaceListener(target: Place, next: Listener | null) {
     void persist(
       doc.auto_detect,
       doc.places.map((item) => (item.id === target.id ? { ...item, listener: next } : item)),
       next === "familiar"
         ? `Messages for ${target.label} will be said to someone who knows you.`
-        : `Messages for ${target.label} will be asked of someone who does not know you.`,
+        : next === "unfamiliar"
+          ? `Messages for ${target.label} will be asked of someone who does not know you.`
+          : `${target.label} will follow whoever is speaking, then ${listenerLabel(target.context)}.`,
     );
   }
 
@@ -1400,7 +1590,8 @@ function SettingsBody({
         A place is a name and, if you tag it, a location. It borrows the behaviour of one of the four settings — it
         never changes how a message is worked out. What it does say on its own account is whether the people there
         know you: somewhere they do, “washroom” becomes “I need the washroom.”; somewhere they do not, it becomes
-        “Where is the washroom?”. The places you name stay on this machine.
+        “Where is the washroom?”. Leave that to whoever is speaking and their own profile decides it instead, which
+        is what a speaker who never goes out alone wants. The places you name stay on this machine.
       </p>
 
       <div className="settings-toggle">
@@ -1438,9 +1629,11 @@ function SettingsBody({
               <b>{item.label}</b>
               <small>
                 Behaves as {behaviourLabel(item.context)}
-                {(item.listener ?? defaultListener(item.context)) === "familiar"
+                {item.listener === "familiar"
                   ? " · people here know me"
-                  : " · people here do not know me"}
+                  : item.listener === "unfamiliar"
+                    ? " · people here do not know me"
+                    : ` · whoever is speaking decides, then ${listenerLabel(item.context)}`}
                 {isTagged(item) ? ` · tagged, within ${item.radius_m} m` : " · not tagged"}
               </small>
             </span>
@@ -1448,11 +1641,18 @@ function SettingsBody({
               {/* Deliberately offered on the built-ins too: a speaker who only
                   ever goes out with their daughter needs the shipped Outdoors
                   to keep the familiar register. */}
-              <button className="text-button" disabled={busy} onClick={() => flipListener(item)}>
-                {(item.listener ?? defaultListener(item.context)) === "familiar"
-                  ? "They do not know me"
-                  : "They know me"}
-              </button>
+              <select
+                aria-label={`Who is usually at ${item.label}`}
+                disabled={busy}
+                value={item.listener ?? ""}
+                onChange={(event) =>
+                  setPlaceListener(item, (event.target.value || null) as Listener | null)
+                }
+              >
+                <option value="">Leave it to whoever is speaking</option>
+                <option value="familiar">People here know me</option>
+                <option value="unfamiliar">People here do not know me</option>
+              </select>
               <button className="text-button" disabled={busy} onClick={() => tag(item)}>
                 {isTagged(item) ? "Retag here" : "Tag here"}
               </button>
@@ -1496,9 +1696,10 @@ function SettingsBody({
         <div className="onboarding-pair">
           <select
             aria-label="Who is usually there"
-            value={company}
-            onChange={(event) => setCompany(event.target.value as Listener)}
+            value={company ?? ""}
+            onChange={(event) => setCompany((event.target.value || null) as Listener | null)}
           >
+            <option value="">Leave it to whoever is speaking</option>
             <option value="familiar">People here know me</option>
             <option value="unfamiliar">People here do not know me</option>
           </select>
