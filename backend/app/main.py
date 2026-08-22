@@ -34,7 +34,7 @@ from .schemas import (
     SpeechRequest,
     Timing,
     TranscriptionResponse,
-    default_listener,
+    resolve_listener,
 )
 
 
@@ -181,13 +181,14 @@ async def transcribe(
     # actually in), then what the profile says it usually is for this setting,
     # then the setting's own default. Every step falls back, so an absent or
     # unloadable profile lands exactly where the setting alone would.
-    selected_listener: Listener = default_listener(selected_context)
-    if listener:
-        selected_listener = listener  # type: ignore[assignment]
-    elif persona and app.state.personal is not None:
-        declared = app.state.personal.listener_for(persona, selected_context)
-        if declared is not None:
-            selected_listener = declared
+    by_profile = (
+        app.state.personal.listener_for(persona, selected_context)
+        if persona and app.state.personal is not None
+        else None
+    )
+    selected_listener: Listener = resolve_listener(
+        selected_context, listener or None, by_profile  # type: ignore[arg-type]
+    )
     # An unknown profile is a warning, never a rejection. Unlike the setting, it is
     # not part of the prompt, and a stale value in the interface must never stand
     # between the speaker and a spoken message.

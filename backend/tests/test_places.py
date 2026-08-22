@@ -243,3 +243,49 @@ def test_reading_the_document_does_not_look_like_an_edit(tmp_path: Path) -> None
     stored = store.save(default_settings())
     assert store.load().updated_at == stored.updated_at == store.load().updated_at
     assert store.save(default_settings()).updated_at != stored.updated_at
+
+
+# ------------------------------------------------- abstaining from the listener
+
+
+def test_a_shipped_place_declares_no_listener_so_the_profile_can_be_heard() -> None:
+    """`None` and "the setting's own default" are not the same claim.
+
+    A place that declares a listener outranks the speaker's profile. If the
+    shipped places arrived already stamped with their setting's default, every
+    one of them would look like a declaration and the middle rung of the
+    precedence chain -- what the profile says this setting usually means -- could
+    never be reached.
+    """
+    for place in default_settings().places:
+        assert place.listener is None
+
+
+def test_a_declared_listener_survives_the_round_trip_on_a_builtin() -> None:
+    """The one thing a speaker may change about a built-in still sticks."""
+    stored = normalize(_settings(Place(id="outdoors", label="Outdoors", context="outdoors", listener="familiar")))
+    assert _by_id(stored, "outdoors").listener == "familiar"
+
+
+def test_a_builtin_repeating_its_own_default_is_read_back_as_no_declaration() -> None:
+    """Saying what the setting already says is not a declaration.
+
+    This is also the migration: a document written before a place could abstain
+    stamped every built-in with its default, which would otherwise mask a
+    profile forever. Behaviour is unchanged for a speaker with no profile,
+    because the chain ends on that same default.
+    """
+    stored = normalize(
+        _settings(
+            Place(id="outdoors", label="Outdoors", context="outdoors", listener="unfamiliar"),
+            Place(id="home", label="Home", context="home", listener="familiar"),
+        )
+    )
+    assert _by_id(stored, "outdoors").listener is None
+    assert _by_id(stored, "home").listener is None
+
+
+def test_a_custom_place_keeps_a_listener_that_matches_its_default() -> None:
+    """Only the built-ins are migrated: a custom place means what it says."""
+    stored = normalize(_settings(Place(id="", label="Chemist", context="outdoors", listener="unfamiliar")))
+    assert _by_id(stored, "chemist").listener == "unfamiliar"

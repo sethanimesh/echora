@@ -32,6 +32,26 @@ LISTENER_DEFAULTS: dict[CommunicationContext, Listener] = {
 def default_listener(context: CommunicationContext) -> Listener:
     return LISTENER_DEFAULTS.get(context, "familiar")
 
+
+def resolve_listener(
+    context: CommunicationContext,
+    declared: Listener | None = None,
+    by_profile: Listener | None = None,
+) -> Listener:
+    """Who is listening, strongest claim first.
+
+    `declared` is what the place the speaker tapped says -- the only thing that
+    knows the room they are actually in. `by_profile` is what their profile says
+    this setting usually means for them. Neither is required, and the setting's
+    own default ends the chain, so a speaker with no profile and no places lands
+    exactly where the setting alone always put them.
+
+    It lives here, as one expression, because every caller that recomputes it
+    gets a chance to disagree -- and a caller that fills in the default in place
+    of an absent `declared` silently deletes the middle rung.
+    """
+    return declared or by_profile or default_listener(context)
+
 # A tagged place is matched by distance, so the radius is the whole match rule.
 # 150 m covers a house or a ward without swallowing the next street.
 DEFAULT_RADIUS_M = 150

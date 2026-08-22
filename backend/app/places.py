@@ -59,14 +59,17 @@ def _now() -> str:
 
 
 def default_places() -> list[Place]:
+    """The three shipped places, declaring nothing about who is there.
+
+    `listener=None` is not the same as `listener=default_listener(context)`, and
+    the difference is the whole middle rung of the precedence chain. A place that
+    declares a listener outranks the speaker's profile; a place that declares
+    nothing lets the profile speak, and only then falls to the setting's own
+    default. Stamping the default here would make every shipped place look like a
+    declaration, and a profile could never be heard.
+    """
     return [
-        Place(
-            id=place_id,
-            label=label,
-            context=context,
-            listener=default_listener(context),
-            builtin=True,
-        )
+        Place(id=place_id, label=label, context=context, listener=None, builtin=True)
         for place_id, label, context in BUILTIN_PLACES
     ]
 
@@ -127,8 +130,16 @@ def normalize(incoming: PlaceSettings) -> PlaceSettings:
         # keeps its id, label and context whatever the request says, but who is
         # there is the speaker's to declare even for the shipped Outdoors -- a
         # speaker who only ever goes out with their daughter needs exactly that.
-        if place.listener is None:
-            place = place.model_copy(update={"listener": default_listener(place.context)})
+        #
+        # None is preserved rather than filled in. It means "this place says
+        # nothing", which is what lets the profile be consulted before the
+        # setting's default. A built-in that merely repeats its own setting's
+        # default has said nothing either, so it is read back as no declaration:
+        # that keeps behaviour identical for a speaker with no profile, and stops
+        # a document written before abstention existed from permanently masking
+        # one. To make a built-in differ from its setting, set the other value.
+        if place.builtin and place.listener == default_listener(place.context):
+            place = place.model_copy(update={"listener": None})
         place = _with_location(place)
         if place.id in seen and not place.builtin:
             continue
