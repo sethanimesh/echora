@@ -24,6 +24,9 @@ data/personal/**
 *.tar.bz2
 *.tar.gz
 
+# Audio the roleplay voice lane synthesizes with `say`, cached between runs.
+scripts/.roleplay-clips/
+
 # Secrets. The example file is the only env file that belongs in the repo.
 .env
 .env.*
