@@ -665,3 +665,88 @@ def test_two_familiar_settings_still_fold_together() -> None:
     assert merged is True
     assert len(index.records) == 1
     assert record.uses == 2
+
+
+# ----------------------------------------- the stance the store actually keeps
+
+
+def _personalizer(tmp_path: Path):
+    """A real Personalizer over a throwaway store, seeded from the shipped baselines."""
+    from dataclasses import replace
+
+    from app.personal.personalizer import Personalizer
+
+    return Personalizer(replace(load_settings(), personal_root=tmp_path / "personal"))
+
+
+@pytest.mark.asyncio
+async def test_the_listener_reaches_the_record_that_is_stored(tmp_path: Path) -> None:
+    """The guard above is only ever exercised if the listener survives the trip.
+
+    `remember` takes a listener and `_remember` stamps it on the record, and
+    between them sits the thread hand-off. Losing it there marks every accepted
+    message `familiar`, which is silent, invisible in the interface, and undoes
+    both the consolidation guard and the retrieval penalty at once.
+    """
+    personal = _personalizer(tmp_path)
+    stored, _, _ = await personal.remember(
+        "grace", "outdoors", "washroom", "Where is the washroom?", "unfamiliar"
+    )
+
+    assert stored is True
+    written = personal.live.history("grace")[-1]
+    assert written.message == "Where is the washroom?"
+    assert written.context == "outdoors"
+    assert written.listener == "unfamiliar"
+
+
+@pytest.mark.asyncio
+async def test_the_two_washroom_wordings_survive_each_other_through_the_store(
+    tmp_path: Path,
+) -> None:
+    """The same guard, reached the way the application reaches it.
+
+    Accepting both wordings for the same word is the ordinary case -- one at
+    home, one on a platform -- and the store has to keep both. With the listener
+    dropped they share a stance, the longer home wording wins the merge, and the
+    speaker is left with "I want to use the washroom." labelled outdoors.
+    """
+    personal = _personalizer(tmp_path)
+    await personal.remember("grace", "home", "washroom", "I want to use the washroom.", "familiar")
+    await personal.remember("grace", "outdoors", "washroom", "Where is the washroom?", "unfamiliar")
+
+    kept = {record.message: record for record in personal.live.history("grace")}
+    assert "I want to use the washroom." in kept
+    assert "Where is the washroom?" in kept
+    assert kept["I want to use the washroom."].listener == "familiar"
+    assert kept["Where is the washroom?"].listener == "unfamiliar"
+
+
+def test_every_spelling_of_a_known_name_is_named_not_just_the_first() -> None:
+    """Two carers whose names collide are two options, and the profile knows it.
+
+    Reporting one hint per entry leaves the aliases unexplained. The model then
+    reads `dorn` as a third person and offers "Dawn." and "Dorn." side by side --
+    asking the speaker to choose between two spellings of the same carer, which
+    is exactly the choice the profile exists to remove.
+    """
+    grace = BaselineStore(PERSONAS).profile("grace")
+    assert grace is not None
+    slots = _slot_alignment(
+        weighted(("donna", 0.38), ("dawn", 0.34), ("dorn", 0.16), ("danna", 0.12))
+    )
+
+    told = {hint.word: hint.display for hint in lexicon_hints(grace, slots, 8, "home")}
+
+    assert told == {"donna": "Donna", "dawn": "Dawn", "dorn": "Dawn", "danna": "Donna"}
+
+
+def test_a_known_word_in_two_positions_is_still_mentioned_once() -> None:
+    """Deduplication moved to the spelling, so a repeat must not double up."""
+    grace = BaselineStore(PERSONAS).profile("grace")
+    assert grace is not None
+    slots = _slot_alignment(weighted(("dawn dawn", 0.8), ("dawn don", 0.2)))
+
+    words = [hint.word for hint in lexicon_hints(grace, slots, 8, "home")]
+
+    assert sorted(words) == ["dawn", "don"]

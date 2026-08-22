@@ -29,6 +29,13 @@ def lexicon_hints(
     A contested position is where the prior does real work -- telling the model
     that `marge` is a person it should expect beats confirming a word every beam
     already agreed on.
+
+    Every spelling that matched gets its own hint, including several that lead to
+    the same person. Reporting one hint per entry looks tidier and throws away
+    the answer: with beams `donna | dawn | dorn | danna`, naming only `donna` and
+    `dawn` leaves `dorn` an unexplained third word, and the speaker is asked to
+    choose between "Dawn." and "Dorn." -- two spellings of the same carer. The
+    profile already knows they are one person; this is what says so.
     """
     forms = profile.heard_forms(context)
     if not forms:
@@ -39,9 +46,9 @@ def lexicon_hints(
     for slot in slots:
         for word in _slot_words(slot):
             entry = forms.get(word)
-            if entry is None or entry.id in seen:
+            if entry is None or word in seen:
                 continue
-            seen.add(entry.id)
+            seen.add(word)
             hint = LexiconHint(
                 word=word,
                 display=entry.display,

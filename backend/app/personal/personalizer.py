@@ -199,10 +199,20 @@ class Personalizer:
         message: str,
         listener: Listener = "familiar",
     ) -> tuple[bool, bool, str]:
-        """Store an accepted message. Returns (stored, merged, reason)."""
+        """Store an accepted message. Returns (stored, merged, reason).
+
+        The listener travels the whole way down. It is not decoration on the
+        record: consolidation merges only within a listener, and retrieval
+        penalises a mismatched one harder than a mismatched setting. Dropping it
+        here silently stamps every message `familiar`, which lets "Where is the
+        washroom?" be absorbed by "I want to use the washroom." -- exactly the
+        merge the guard exists to prevent.
+        """
         try:
             async with self._lock:
-                return await asyncio.to_thread(self._remember, profile_id, context, heard, message)
+                return await asyncio.to_thread(
+                    self._remember, profile_id, context, heard, message, listener
+                )
         except Exception as error:
             return False, False, f"not stored ({type(error).__name__})"
 
