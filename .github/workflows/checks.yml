@@ -35,10 +35,15 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: backend/requirements*.txt
+      - name: Install audio decoder
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends ffmpeg
       - name: Install CPU runtime and test dependencies
         run: |
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r backend/requirements-dev.txt
+          python -m pip install Pillow==12.3.0 opencv-python-headless==5.0.0.93
       - name: Isolated contracts and research tests
         run: python scripts/check_unified.py research/benchmarks/tests research/training/tests
 
