@@ -1,0 +1,7 @@
+# Preserve vendored runtime bytes and exclude them from project language statistics.
+frontend/public/accessibility/** -text -whitespace linguist-vendored
+frontend/components/echora/organic-sphere/*.glsl -whitespace linguist-vendored
+
+# Saved experiment evidence is data rather than application source.
+research/benchmarks/results/** linguist-generated
+research/training/results/** linguist-generated

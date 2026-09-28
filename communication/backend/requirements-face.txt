@@ -1,0 +1,5 @@
+# Optional local facial-expression runtime; main/cloud dependencies stay separate.
+numpy==2.5.2
+onnxruntime==1.29.0
+opencv-python-headless==5.0.0.93
+pillow==12.3.0

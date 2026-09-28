@@ -1,0 +1,15 @@
+{
+  "source": "Archive/Echora 2.0/echora",
+  "sha256_originals": {
+    "core/model.py": "d2fa73530737f5cdd44a3d820117c6a53ab09746f6b80abfe06175837a20caff",
+    "detect/segment.py": "5ce62ecb4c303de8b499f567d713b0f206a6441109fe55201d6424a2da1a7697",
+    "detect/spans.py": "a28935b3fba8036450ffa0c320001c5592297e9de7286d2ab5106d28a389e73d",
+    "classify/lexical.py": "6fdfe42466bb43dc455bdf0443899f60901a1400a6f6c1f549295c470b2be8d0",
+    "classify/port.py": "505e424316e9d195e5b117321cc50c16a6ab8b016717a092c141c024810842e9",
+    "classify/prompt.py": "e655babc9c9c39cd8289ed3e988d26aa58804c52fef87260d55ea6f71ecc5008",
+    "translit/transliterator.py": "10c0362fe72981f62f17ca81e26a239cde9a164e679d6bc68b989041acddd246",
+    "tts/normalize.py": "cae5c8af710b2227412f4a41a6265f9107aae1417707f95dc98507aba5ef1d3f",
+    "data/hi_roman2dev.json": "4d929c7831d0dd8a867b04938c9527a63b4e418fd09831fe68e0aeed165bdf2e",
+    "pipeline.py": "72c9808178f91f82a22a660da63cbd383ca059cd598da5dcfdd441cc0daffeca"
+  }
+}

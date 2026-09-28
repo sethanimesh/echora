@@ -1,6 +1,6 @@
 # Echora Qwen3-ASR command-v3
 
-This is the complete inference bundle selected by the command-v3 experiment. It contains the official Qwen3-ASR 1.7B foundation, the final epoch-7 adapter, its exact training/inference configuration, and the protected-test report.
+This directory defines the inference bundle selected by the command-v3 experiment. Git includes identity metadata, checksums, training/inference configuration and the protected-test report. The official Qwen3-ASR 1.7B foundation and epoch-7 adapter weights must be provisioned separately; see [reproducibility](../../docs/reproducibility.md#model-bundle).
 
 ## Contents
 

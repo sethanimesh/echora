@@ -8,7 +8,7 @@ rest of the pipeline reason about evidence instead of about sentences.
 
 This lives apart from the Groq chain because the personal layer needs the same
 alignment -- to decide which of a speaker's known words the recognizer actually
-produced, and which retrieval query the beam set implies -- and reaching across
+produced and which anchored details are safe to apply -- and reaching across
 packages for a private name is how modules quietly grow into each other.
 """
 
@@ -129,6 +129,16 @@ def _grounded_reading(reading: str, slots: list[dict[str, object]]) -> list[str]
         if all(word in allowed for word, allowed in zip(words, options, strict=True)):
             return words
         return None
-    vocabulary = {word for allowed in options for word in allowed}
-    kept = [word for word in words if word in vocabulary]
-    return kept or None
+    # Never silently remove an unsupported word while keeping the message the
+    # model wrote for it. Only ordered omissions of genuinely uncertain slots
+    # are allowed; a stable word cannot disappear from a generated reading.
+    positions = {0}
+    for slot, allowed in zip(slots, options, strict=True):
+        next_positions = set()
+        for position in positions:
+            if position < len(words) and words[position] in allowed:
+                next_positions.add(position + 1)
+            if not slot["stable"]:
+                next_positions.add(position)
+        positions = next_positions
+    return words if len(words) in positions else None

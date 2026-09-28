@@ -1,86 +1,110 @@
 # Echora
 
-Echora is a local-first communication assistant for people whose speech is difficult to understand. It keeps literal ASR evidence visible, proposes a small number of message candidates, and speaks the one the speaker has settled on.
+**A communication assistant that keeps uncertain speech evidence visible while helping a speaker choose and say a message.**
 
-## Quick start on this Mac
+Echora explores communication support for people with difficult-to-understand speech, including stroke survivors. It combines an adapted speech recognizer, constrained message composition, optional personal context, and web/native clients. Its central engineering problem is preserving the speaker's words when a fluent rewrite could conceal a recognition error.
 
-The verified Qwen3-ASR foundation and tuned adapter are already stored under `models/echora-qwen3-asr-command-v3`.
+This is a personal research and application prototype. It contains measured ASR experiments and tested interaction contracts; it does not establish clinical benefit or accessibility suitability for an individual.
 
-```bash
+[Architecture](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Decisions](docs/adr/README.md) · [Run locally](docs/reproducibility.md) · [Failures](docs/failure-analysis.md)
+
+## Why this is difficult
+
+- **The right words may be missing.** Multiple decoder hypotheses expose alternatives but cannot recover a phrase absent from every beam.
+- **Fluency can hide mistakes.** Generated wording must retain literal sources and meaningful alternatives, including negation, names, and quantities.
+- **Context can contradict current speech.** Habitual preferences are weak, scoped evidence; explicit current words take precedence.
+- **Late responses can speak an old message.** Edits, Stop, new work, and context changes must revoke pending playback across both clients.
+- **Small datasets limit conclusions.** Speaker holdouts, repeated prompts, synthetic commands, and ordinary-speech retention measure different things.
+
+## Evidence at a glance
+
+These are separate experiments, not one leaderboard. WER is word error rate; lower is better.
+
+| Experiment | Baseline | Result | Interpretation |
+| --- | --- | --- | --- |
+| Foundation screen, 400 utterances / eight speakers | Parakeet: 45.83% speaker-macro WER | Qwen: 41.90% | Supported foundation selection; not final validation |
+| Command-v3 protected composed-command test | Previous adapter: 72.58% WER | v3: 51.58% | Controlled compositions, not naturally spoken commands |
+| Command-v3 normal-speech retention | 5.23% WER | 5.23% | Retention on this test |
+| Three personal recordings | Previous adapter: 22.22% WER | v3: 44.44% | A real regression |
+| Later verifier, M04 | ASR: 52.62% WER | Fusion: 52.33% | Paired interval crosses zero; improvement not established |
+
+The separate five-beam command diagnostic finds the exact reference somewhere in the beams for **36.46%** of utterances. This is oracle coverage, not automatic-selection accuracy. The learned verifier's acceptance audit failed its minimum evidence requirement, so **learned automatic selection remains disabled**. [Sources and protocol differences →](docs/evaluation.md)
+
+## Interface
+
+![Echora connected interface](assets/screenshots/main-interface.png)
+
+*Actual application capture with an isolated demonstration store and cloud keys disabled. The recognizer selector exposes the chosen route; recording and typed input are distinct actions. [Typed-message view and walkthrough](docs/demo.md).*
+
+## How it works
+
+```mermaid
+flowchart LR
+    Input[Speech, typing, or phrase] --> Evidence[Literal evidence with provenance]
+    Evidence --> Decision[Verification or labelled legacy decision]
+    Profile[Scoped profile context] --> Decision
+    Evidence --> Compose[One grounded wording pass]
+    Decision --> Compose
+    Compose --> UI[Editable message and alternatives]
+    Evidence --> UI
+    UI --> Revision[Current revision speech authorization]
+    Revision --> Voice[Device or selected provider speech]
+    UI --> Remember[Explicit Remember action]
+    Remember --> Profile
+```
+
+The local adapted English route separates acoustic verification from generated-candidate count. Missing or insufficiently validated verifier artifacts request a choice. A resolved completed suggestion may speak automatically; choosing an alternative speaks those exact displayed words. Internal confirmation binds playback to the current revision without adding a user step. Stop, edits, and new work invalidate it; restoring a session never replays old speech.
+
+All distinct literal beams remain selectable. A visible follow-up reference lasts at most ten minutes in the same context. Only **Remember this message** persists exact wording to the selected profile. Remembered wording is not acoustic training truth.
+
+The web client includes Hindi/Hinglish wording, delivery controls, and optional experimental camera/gaze features. Expo shares the backend lifecycle with fewer optional controls. [Interaction and data boundaries →](docs/architecture.md)
+
+## Inspect or run
+
+Recompute the foundation comparison from checked-in predictions and summarize saved adapter results without models, keys, or audio:
+
+```sh
+git clone https://github.com/sethanimesh/echora.git
+cd echora
+python3 scripts/reproduce_results.py
+```
+
+This verifies saved evidence; it does not rerun inference or training. For the application, use an Apple Silicon Mac, Python 3.12–3.14, Node 22.13+, FFmpeg, and the verified model bundle:
+
+```sh
+cp .env.example .env
+# Provision the model bundle and provider settings; see the guide below.
 ./scripts/setup_local.sh
 ./scripts/dev.sh
 ```
 
-Open <http://localhost:3000>. The backend API and interactive documentation are at <http://localhost:8000/docs>.
+Open `http://localhost:3000`; the shared API runs on 8000. **Weights, recordings, and private profiles are excluded from Git.** Setup verifies the bundle but does not download it. [Complete prerequisites and reproduction boundaries →](docs/reproducibility.md)
 
-With the applications running, repeat the three-clip acceptance check in another terminal:
+[Demo walkthrough](docs/demo.md) covers typed input, editing, speech and Stop. Automated checks do not establish audible speech quality, microphone recognition, or gaze accuracy.
 
-```bash
-.venv/bin/python scripts/acceptance_local.py
-```
+## Tests
 
-The existing `.env` is preserved. `GROQ_API_KEY` is the preferred key name; the legacy `GROQ` variable also works. If no Groq key is configured, literal ASR continues to work and the UI displays all raw candidates.
-
-## How the result is produced
-
-1. The browser records or uploads an utterance.
-2. The speaker chooses a session setting: General, Home, Hospital/care, or Outdoors. Beside it travels one other value -- whether the person being spoken to knows them. A place says which applies where; Outdoors assumes strangers and everything else assumes someone familiar.
-3. The tuned Qwen model returns up to five immutable literal hypotheses.
-4. Groq groups hypotheses into grounded intents using the setting as a weak prior. A key term survives only if a strict majority of the grouped beams carry it, counted both by search weight and by beam count.
-5. The same call returns each intent already realized as a natural communication message. Who is listening decides its form: a need is stated to someone who can act on it and asked of someone who can only answer, so `washroom` becomes "I want to use the washroom." at home and "Where is the washroom?" among strangers.
-6. Deterministic grounding rejects a reading containing a word no beam produced, and drops any option carrying profile wording that nothing licenses.
-7. Whatever survives decides the screen: one message is clear and speaks itself, and anything else is shown as a choice.
-8. A single surviving message is spoken immediately with Groq TTS; when several remain, the speaker picks one and that tap speaks it.
-9. The message stays editable, and an edited version is spoken on request. If Groq speech is unavailable the browser voice takes over, so a message is never left unsaid.
-
-The displayed search weights are relative beam-search evidence, not calibrated confidence. Grammar repair never changes the stored literal transcript.
-
-Clear versus ambiguous is decided in code after the grounding filters have run, and the whole rule is whether exactly one message survived them. There is one Groq call, not two.
-
-## Cloud inference
-
-- A persistent GPU Pod workflow is documented in `deploy/runpod/pod/README.md`.
-- A scale-to-zero queue worker is documented in `deploy/runpod/serverless/README.md`.
-
-Change `ECHORA_ASR_BACKEND` in `.env` to `pod` or `runpod` after configuring the corresponding variables. Backend selection is explicit; Echora never silently changes models or compute backends.
-
-## Repository map
-
-- `backend/` — FastAPI, local/remote ASR backends, Groq prompt chain, and tests.
-- `frontend/` — accessible React communication interface.
-- `models/` — verified, inference-only model bundle.
-- `deploy/` — RunPod Pod and Serverless deployment packages.
-- `research/` — historical benchmarks, training recipes, decisions, and tests.
-- `data/` — local raw and derived datasets.
-- `docs/` — architecture and operational details.
-
-## Personal context
-
-Choosing a profile lets Echora use what it knows about one speaker. It does two separate things, kept
-apart because they carry different risk:
-
-- A **disambiguation prior**: words from the speaker's life help choose between the variants the
-  recognizer produced. `[marge|march|large]` resolves to Marge when Marge is their carer. This can
-  never introduce a word no beam contained.
-- An **anchored specialization**: the speaker's own version of an ordinary thing, so `coffee` becomes
-  `Madras filter coffee`. This one adds words, so it is applied only when the profile declared that
-  exact wording, the anchor survives the grounding check, and the anchor sits in a position every beam
-  agreed on. It is marked in the interface and reverts in one tap.
-
-Past accepted messages are retrieved as few-shot examples by a small local encoder. The query is the
-share-weighted union of all five beams rather than the leading one, since the literal is in the top
-five only about a third of the time. Storing a message merges it into the nearest existing entry, so
-saying the same thing forty times leaves one entry with a count rather than forty rows.
-
-`data/personas/` ships six demonstration speakers and is never written to; a profile is copied into
-the gitignored `data/personal/` on first use. Fetch the encoder once with `./scripts/fetch_embedder.sh`,
-or set `ECHORA_PERSONAL_ENABLED=false`. Whatever goes wrong in this layer, the message chain still runs.
-
-No accounts or database are used, and nothing leaves the machine except the one Groq request.
-
-## Verify the repository
-
-```bash
-.venv/bin/pytest -q
+```sh
+.venv/bin/python scripts/check_unified.py research/benchmarks/tests research/training/tests
 npm --prefix frontend test
+npm --prefix frontend run typecheck
+npm --prefix frontend run build
+npm --prefix mobile test
 ```
+
+The Python runner isolates personal storage and blocks external connections. CI is configured to run these contracts and client checks without provider credentials. [Testing scope →](docs/reproducibility.md#testing)
+
+## Repository guide
+
+| Area | Purpose |
+| --- | --- |
+| [backend/](backend/) | Recognition, grounding, verification and native bridge |
+| [communication/backend/](communication/backend/) | Shared lifecycle, profiles, language and delivery |
+| [frontend/](frontend/) / [mobile/](mobile/) | Web and Expo clients |
+| [research/](research/) | Training, baselines, benchmarks and saved results |
+| [models/](models/) | Artifact identities, configurations, checksums and reports |
+| [docs/README.md](docs/README.md) | Methodology, decisions, failures and open questions |
+
+Groq, Fish, optional Gemini, and remote recognition receive the inputs required by their selected features. Profiles use local SQLite. Tagged coordinates are stored through the local API and matched in the client. This is a local-first application with optional cloud providers. [Configuration and data →](docs/local-development.md#configuration-and-data)
+
+See the [development record](docs/development-history.md) for the preserved chronology and [contributions](docs/contributions.md) for upstream components and attribution boundaries.

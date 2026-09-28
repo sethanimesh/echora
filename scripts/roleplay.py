@@ -132,7 +132,7 @@ PLATFORM = beams(
 SCENES: list[Scene] = [
     # -------------------------------------------------- Play One, Grace Okonkwo
     _s("One:I", "grace", "home", "washroom", WASHROOM, "a statement: the carer can be sent"),
-    _s("One:I", "grace", "home", "tea", TEA, "the Lipton detail, marked and revertible"),
+    _s("One:I", "grace", "home", "tea", TEA, "GENERIC. Donna knows which tea, so the detail is scoped away from home"),
     _s("One:I", "grace", "home", "soup", SOUP, "the egusi detail: scoped `home`, and this is home"),
     _s("One:I", "grace", "home", "cream", CREAM, "the blue tub detail: scoped `home, care`"),
     _s("One:I", "grace", "home", "buzzer", BUZZER, "lexicon only, no detail to apply"),
@@ -147,7 +147,7 @@ SCENES: list[Scene] = [
         watch="The prior chooses among the recognizer's words. It cannot add one.",
     ),
     _s("One:II", "grace", "care", "washroom", WASHROOM, "unchanged: care is familiar too"),
-    _s("One:II", "grace", "care", "tea", TEA, "still specialized: `home, care` covers the ward"),
+    _s("One:II", "grace", "care", "tea", TEA, "SPECIFIC. A rotating ward rota does not know which tea"),
     _s("One:II", "grace", "care", "soup", SOUP, "plain soup. Scoped `home`, so no egusi on the ward"),
     _s("One:II", "grace", "care", "cream", CREAM, "still specialized"),
     _s(
@@ -157,7 +157,11 @@ SCENES: list[Scene] = [
     ),
     _s("One:III", "grace", "outdoors", "washroom", WASHROOM, "a question, and no longer"),
     _s("One:III", "grace", "outdoors", "help", HELP, "asked directly, no preamble"),
-    _s("One:III", "grace", "outdoors", "tea", TEA, "scoped out AND flipped to a counter request"),
+    _s(
+        "One:III", "grace", "outdoors", "tea", TEA,
+        "SPECIFIC and a counter request: the stranger needs the words most",
+        watch="Shorter than at home in words, and carrying more information. Not a contradiction.",
+    ),
     _s("One:III", "grace", "outdoors", "water", WATER, "over a counter, not a statement of want"),
     _s(
         "One:IV", "grace", "outdoors", "washroom", WASHROOM,
@@ -166,9 +170,8 @@ SCENES: list[Scene] = [
     ),
     _s(
         "One:IV", "grace", "outdoors", "tea", TEA,
-        "the detail stays away: still scoped `home, care`",
+        "same detail as III, stated rather than asked. The setting keeps it, the listener sets the act",
         declared="familiar",
-        watch="Judge this act on washroom. A bare noun carries no act for the listener to flip.",
     ),
     # ------------------------------------------------------- Play Two, Tomás
     _s("Two:I", "tomas", "home", "I need my tablet", TABLET, "the baclofen detail: scoped `home, care`"),
@@ -185,8 +188,7 @@ SCENES: list[Scene] = [
     _s("Two:III", "tomas", "outdoors", "which platform, Cascais", PLATFORM, "the Cascais detail survives: unscoped"),
     _s(
         "Two:III", "tomas", "outdoors", "coffee", COFFEE,
-        "detail kept, act flipped -- but see the Cascais row, which is the reliable one",
-        watch="offered=1 applied=0 refused=1 here means the model chose brevity, not a scoping failure.",
+        "detail kept deterministically and the act flipped to a compact request",
     ),
     _s("Two:III", "tomas", "outdoors", "washroom", WASHROOM, "asked, not stated"),
     _s("Two:III", "tomas", "outdoors", "I need my tablet", TABLET, "detail dropped: `home, care` does not cover this"),
@@ -310,7 +312,7 @@ def _report(
     if trace:
         print(
             f"  personal offered={trace.specializations_offered} applied={trace.specializations_applied} "
-            f"refused={trace.specializations_refused} hints={trace.lexicon_hints} examples={trace.examples_used}"
+            f"hints={trace.lexicon_hints}"
         )
     print(f"  expected {scene.expect}")
     if scene.watch:

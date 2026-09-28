@@ -1,47 +1,71 @@
-# Application architecture
+# Unified application architecture
 
-The browser sends one completed recording to the local FastAPI API. FastAPI normalizes it to 16 kHz mono audio and invokes exactly one configured ASR backend: local MPS, a persistent Pod, or RunPod Serverless.
+`app.main` is the single composition root. Its lifespan loads the configured recognition runtime once and attaches that runtime to `communication.backend.app`. The communication service runs inside the same process. `scripts/dev.sh` serves that API on 8000 and the React/Vinext web app on 3000, with an API proxy. An optional independent loopback gaze service uses 8767.
 
-The ASR worker returns literal hypotheses only. The local API then runs a contextual Groq interpreter -- one call, not two. Alongside the beams it receives a slot alignment that aligns them position by position, so stable words and unresolved words are separated before any judgement is made, plus the per-term share of search weight and of beams. It groups supporting hypothesis IDs, assigns a constrained speech act, and extracts key terms that must occur in the cited literal evidence. A key term is retained only when it holds a strict majority of the grouped beams by both search weight and beam count, so grouping more beams no longer discards the words that distinguish them. General, Home, Hospital/care, and Outdoors are session-only settings and are treated as weak priors. Beside the setting travels one other closed value: whether the person being spoken to knows the speaker. That is what decides the act rather than the words -- a familiar listener can fetch and do, so a need is stated to them, while an unfamiliar one can only answer, so the same need is asked. It is two values, orthogonal to the four settings and never a fifth one; Outdoors defaults to unfamiliar and everything else to familiar. A place declares which applies where, a profile may say what a setting usually means for that speaker, and the setting's own default stands when neither does. The setting reaches the model through one guidance sentence keyed by the pair, and the evidence keys around it are unchanged. The speaker reaches them through named places, which resolve to one of those four and never extend the set: a place the speaker adds declares which of the four it borrows, so its prior and its retrieval pool are that built-in's. Places, and the switch that lets location choose between them, persist in `data/personal/settings.json`; the setting a given utterance was spoken in is still session-only.
+## Input, evidence, and wording
 
-That one call returns both parts of every option: the reading, which is the recognizer's own words with one chosen per position, and the message, which is that reading realized as natural communication wording. Clear versus ambiguous is then decided in code, after the grounding filters have dropped what they drop: one surviving message is a clear interpretation, and anything else exposes up to three alternatives. A deterministic lexical grounding check rejects a reading containing a word no beam produced, and a separate audit drops any option carrying profile wording that neither a beam nor a licensed detail explains. The original ASR hypotheses are never mutated. The search features are relative evidence, not calibrated confidence.
+Recordings select either the adapted recognizer or Whisper. Adapted recognition returns every literal hypothesis and its genuine search scores. Whisper returns one literal transcript without fabricated beam scores. Typed and phrase input have user provenance. Recognition evidence is retained separately from suggested and edited text.
 
-The UI primarily shows post-chain communication suggestions and keeps literal evidence expandable and attached to every option. A suggested message is editable and is never treated as an ASR evaluation result. Once the speaker has settled on a message it is spoken without a further confirmation step: an unambiguous result is synthesized during the transcription request and plays on arrival, and choosing among ambiguous options speaks the chosen one. Groq TTS failures fall back to the browser's own voice rather than surfacing an error.
+`communication/backend/recognition.py` bridges adapted evidence to the existing grounded composition chain. Local five-beam recognition optionally scores frozen audio features with a separate audio–text verifier and retrieves profile-scoped context before bounded fusion. The job's `ranking` and `retrieval` traces remain separate from immutable `evidence`. The learned route constrains composition to complete permitted beams; it never gives a mixed reading an acoustic score. Other routes expose honest unsupported diagnostics and retain their legacy decisions. Each candidate carries its reading, display text, source literal text and IDs, optional approved detail expansions, and plain wording. All distinct literal beams remain selectable outside the three-option expansion limit.
 
-When a profile is selected, a personal brief is assembled before the Groq call and appended after the
-evidence keys, so the model reads what was heard before it reads anything about who was speaking. The
-brief carries three things: known words, restricted to entries the beams actually produced and to the
-settings that entry applies in; declared details, restricted to anchors sitting in a stable slot and
-likewise to their own settings; and up to four past accepted messages retrieved by cosine over a
-local mean-pooled encoder, scored down by age, mismatched setting, mismatched listener and mismatched
-time of day. The listener penalty is the harshest of those, because an example addressed to a
-different kind of person is not merely less relevant -- its shape is wrong, and shape is what a
-few-shot example teaches. An un-personalized request sends a byte-identical payload to the one sent
-before this layer existed.
+Grounding preserves meaningful alternatives, including negation. Bounded checks cover unsupported body parts, laterality, substances, drugs, quantities and negation. These checks are not a general proof of semantic fidelity, and translation does not have the same English vocabulary guard. Legacy recognition routes retain their existing surviving-candidate playback rule; learned verification uses the independent decision described below.
 
-The grounding check on the reading is unchanged. Specializations are audited beside it: a declared
-detail survives only if the profile declared that exact wording, its source matches, its anchor is in
-the reading and in a stable slot, and the wording appears in the message. A refused detail is stripped
-back to the plain wording rather than failing the message. Separately, any profile word that no beam
-produced and no licensed detail explains rejects the option outright, which closes a gap the reading
-check cannot see: a message may legitimately contain words no beam carried, so `Marge` could otherwise
-reach the speaker's mouth from a reading of `march`. The plain wording is derived in code by
-substituting each applied surface back, so reverting is mechanical rather than promised.
+```mermaid
+flowchart TD
+    Audio[Recording] --> Qwen[Frozen Qwen recognizer]
+    Qwen --> Evidence[Immutable literal beams and search scores]
+    Qwen --> Features[Ordered frozen audio features]
+    Features --> Scorer[Audio-text scorer]
+    Evidence --> Scorer
+    Evidence --> Retrieval[Retrieve separately for each literal]
+    Profile[Active speaker sources and explicit memories] --> Retrieval
+    Scorer --> Fusion[Bounded adaptive fusion and calibration]
+    Retrieval --> Fusion
+    Evidence --> Fusion
+    Fusion --> Decision[Resolved or clarification decision]
+    Decision --> Compose[One grounded composition call]
+    Retrieval --> Compose
+    Compose --> Display[Editable wording and contextual additions]
+    Evidence --> Choices[All literal alternatives]
+    Choices --> Choice[Explicit user choice]
+    Choice --> Authorization[Current revision speech authorization]
+    Display --> Authorization
+    Decision --> Authorization
+    Authorization --> Speech[Speech synthesis and playback]
+    Display --> Remember[Explicit Remember action]
+    Remember --> Profile
+```
 
-Accepted messages are consolidated on write: an acceptance merges into the nearest entry above a
-similarity threshold *that was accepted to the same kind of listener*, taking its count up and its
-vector toward the new phrasing, and the store is bounded by the same score retrieval ranks with. The
-listener gate is what lets per-place phrasing accumulate at all -- a merge takes the longer wording
-and stamps the newcomer's setting over the old one, so without it a stranger-facing message would
-quietly absorb the one it was meant to sit beside. Shipped personas are read-only; a profile is copied
-into a gitignored live store on first use. Every failure in this layer returns nothing and is silent.
+## Message lifecycle and speech
 
-Remote GPU workers never receive the Groq key and never perform semantic repair. They expose the same raw-ASR schema as the local engine.
+Each session owns one current job. A job has a stable ID, increasing revision, original input, evidence, candidates, editable text, frozen context, optional clarification, and prepared/confirmed speech. Mutations require the current revision. New jobs and cancellation invalidate work and audio from earlier jobs.
 
-Location, when the speaker turns it on, only chooses among places they tagged themselves. A place is tagged by
-standing in it and asking the browser once for its coordinates -- there is no address lookup, no map provider, and
-no outbound request. Matching runs in the browser against a radius, widened by the reported accuracy of the fix
-because an indoor reading is routinely tens of metres out, so coordinates never reach the API and the transcription
-request is unchanged: it still carries only the borrowed context. Detection is confined to the idle screen, names
-the place it picked, and yields permanently to a tap. Every failure -- permission refused, no fix, nothing tagged,
-an unreadable document -- leaves the speaker choosing by hand, exactly as before the layer existed.
+The user selected immediate speech: a resolved completed recommendation is marked for speech; tapping an alternative marks that selected revision. On the verification route, the machine decision and recommended candidate ID control arrival speech independently of candidate count. A single generated option cannot override unresolved acoustic evidence, and a failed selected expansion cannot be replaced by a rival. Missing or unvalidated artifacts leave learned resolution disabled. Unresolved clarification and failed raw recognition arrival remain silent. An explicit selection of a raw alternative speaks those literal words without another wording call. Manual edits require Speak. The autoplay configuration can suppress arrival speech while leaving explicit actions working.
+
+Confirmation is internal authorization for exact text, pronunciation and delivery, not another required user-facing approval step. The web client only auto-speaks a revision associated with an active local operation; restored sessions and event reconnections do not replay results. Cancellation guards cover preparation, synthesis, and device playback callbacks. The native client uses the same revision contract. Profile, recipient and conversation-reference changes revoke a machine decision made under the old context; an explicit user choice remains a separate authorization. Web events revoke pending playback, and the native client observes cross-session invalidation on a 500 ms polling interval subject to network delay.
+
+Stopping a request revokes its result immediately. A PyTorch worker already running keeps the model lock until it finishes, so later recordings cannot overlap that model call. Unused MPS buffers are released after local recognition; this housekeeping does not change audio, decoding settings or evidence.
+
+Display text and pronunciation text remain separate. Device and Fish speech are available on web; native retains Groq and device speech. Cloud provider limits cannot truncate the displayed message silently. Groq's 200-character bound falls back to the full message through device speech. Optional voice/facial suggestions affect delivery, not literal evidence or message meaning.
+
+## Context, profiles, and short follow-ups
+
+A single versioned SQLite profile store combines lexicon entries, scoped specializations, audiences, styles, protected names, use/ask rules, language preferences, and saved exact-message cues. Migration prefixes source IDs and inserts missing profiles without overwriting edits or deleting source stores. The native profile adapter preserves fields its UI cannot edit.
+
+Each job freezes profile data/revision, setting, place, and audience. Adapted recognition resolves listeners in order: explicit audience, place declaration, profile setting default, setting default. Missing declarations remain missing. Scenarios such as café and shopping coexist with the recognizer's four broad settings. Explicit qualifiers, negation, and clarification answers outrank habitual details.
+
+The last approved message is kept in session memory for at most 600 seconds and can supply an antecedent only for narrow follow-ups in the same context. It is visible and can be cleared. Profile revision, scope, place/audience and explicit independent-message choices constrain reuse. Restart or session expiry clears it.
+
+Persistent retrieval is a separate, explicitly controlled store in the same SQLite database. Profile sources and chunked MiniLM embeddings are scoped by speaker and source revision. Only Remember stores the exact displayed message; internal speech confirmation is not storage consent. A separate memory revision prevents saves from invalidating profile editors. Deletion cascades vectors and invalidates dependent jobs, prepared audio and temporary references. Remembered messages never become acoustic training labels. The first semantic index is English-only; other language records remain manageable without automatic translation. See [verification and memory](verification-and-memory.md).
+
+Named places remain in the local JSON settings store. Tagged coordinates are sent to that local API for storage; client-side location matching chooses among those saved places. Coordinates are not included in recognition/composition requests.
+
+## Clients and boundaries
+
+Browser communication routes use a loopback host/origin boundary, an HTTP-only session cookie and an application header on mutations. The native bridge under `/api/v1/communication` translates an opaque session header into the same in-process workflow and bounds accepted origins. A native device needs a deliberately LAN-bound backend. This remains a personal development application, not a production multi-user service.
+
+Legacy `/api/v1` recognition/profile routes remain for compatibility and research tooling. Both current clients use the shared communication lifecycle. Remote GPU workers still only return raw ASR and do not receive the wording provider key.
+
+The root `.env` configures providers. Text/audio required by an explicitly used cloud feature goes to that provider. The optional gaze service processes browser frames locally in memory. Web accessibility and delivery controls share camera ownership; those browser features have not been ported to Expo.
+
+The reusable `echora` language package imports the one core under `communication.backend.hinglish_core`. CLI and optional Haystack integrations are retained separately from the communication app's runtime path.

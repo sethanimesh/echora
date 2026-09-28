@@ -40,18 +40,7 @@ class Settings:
     persona_root: Path
     personal_root: Path
     places_path: Path
-    embedder_root: Path
-    embedder_device: str
-    embedder_max_tokens: int
-    personal_examples: int
-    personal_min_similarity: float
-    personal_half_life_days: float
-    personal_context_penalty: float
-    personal_listener_penalty: float
-    personal_time_penalty: float
     personal_max_hints: int
-    personal_merge_threshold: float
-    personal_store_cap: int
     personal_anchor_share: float
 
     @property
@@ -121,7 +110,7 @@ def load_settings() -> Settings:
             )
         ).expanduser(),
         beams=beams,
-        max_audio_seconds=float(os.getenv("ECHORA_MAX_AUDIO_SECONDS", "45")),
+        max_audio_seconds=float(os.getenv("ECHORA_MAX_AUDIO_SECONDS", "60")),
         max_upload_bytes=int(os.getenv("ECHORA_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024))),
         groq_api_key=os.getenv("GROQ_API_KEY") or os.getenv("GROQ") or None,
         groq_models=groq_models,
@@ -159,25 +148,7 @@ def load_settings() -> Settings:
                 ),
             )
         ).expanduser(),
-        embedder_root=Path(
-            os.getenv("ECHORA_EMBEDDER_ROOT", str(PROJECT_ROOT / "models" / "echora-minilm-l6-v2"))
-        ).expanduser(),
-        # CPU on purpose: the 1.7B recognizer owns MPS, and a 22M encoder is a few
-        # milliseconds on CPU, so queueing behind it would only add latency.
-        embedder_device=os.getenv("ECHORA_EMBEDDER_DEVICE", "cpu").strip().lower(),
-        embedder_max_tokens=int(_ranged("ECHORA_EMBEDDER_MAX_TOKENS", "128", 16, 512, int)),
-        personal_examples=int(_ranged("ECHORA_PERSONAL_EXAMPLES", "4", 1, 8, int)),
-        personal_min_similarity=_ranged("ECHORA_PERSONAL_MIN_SIMILARITY", "0.25", 0.0, 1.0),
-        personal_half_life_days=_ranged("ECHORA_PERSONAL_HALF_LIFE_DAYS", "14", 0.5, 3650.0),
-        personal_context_penalty=_ranged("ECHORA_PERSONAL_CONTEXT_PENALTY", "0.85", 0.1, 1.0),
-        # Harsher than the setting penalty on purpose. A differently-set example
-        # still shows the right shape; a differently-addressed one shows the
-        # wrong one, and shape is what a few-shot example teaches.
-        personal_listener_penalty=_ranged("ECHORA_PERSONAL_LISTENER_PENALTY", "0.5", 0.1, 1.0),
-        personal_time_penalty=_ranged("ECHORA_PERSONAL_TIME_PENALTY", "0.95", 0.1, 1.0),
         personal_max_hints=int(_ranged("ECHORA_PERSONAL_MAX_HINTS", "8", 1, 32, int)),
-        personal_merge_threshold=_ranged("ECHORA_PERSONAL_MERGE_THRESHOLD", "0.92", 0.5, 1.0),
-        personal_store_cap=int(_ranged("ECHORA_PERSONAL_STORE_CAP", "400", 20, 20000, int)),
         # A detail may only ride on a word the beams overwhelmingly agreed on.
         personal_anchor_share=_ranged("ECHORA_PERSONAL_ANCHOR_SHARE", "0.75", 0.5, 1.0),
     )

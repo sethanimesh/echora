@@ -28,14 +28,14 @@ _DIRECTION = re.compile(r"\[[^\]]*\]")
 
 
 def _speakable(text: str) -> str:
-    """Strip anything the model would swallow as a direction, then bound length."""
-    cleaned = " ".join(_DIRECTION.sub(" ", text).split())
-    if len(cleaned) <= MAX_SPEECH_CHARS:
-        return cleaned
-    # Cut on a word boundary so the voice does not stop mid-word.
-    head = cleaned[:MAX_SPEECH_CHARS]
-    spaced, _, _ = head.rpartition(" ")
-    return (spaced or head).rstrip()
+    """Use device speech when this provider cannot say the complete text."""
+    # Brackets are literal user words, not permission to remove content or
+    # introduce provider directions. Returning empty invokes the full-text
+    # device fallback in both clients.
+    if "[" in text or "]" in text:
+        return ""
+    cleaned = " ".join(text.split())
+    return cleaned if len(cleaned) <= MAX_SPEECH_CHARS else ""
 
 
 class GroqSpeech:

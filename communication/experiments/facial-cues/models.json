@@ -1,0 +1,34 @@
+{
+  "emotiefflib_revision": "520a051c64cd191521e5934655314e769a319684",
+  "opencv_zoo_revision": "47534e27c9851bb1128ccc0102f1145e27f23f98",
+  "files": [
+    {
+      "name": "enet_b0_8_best_afew.onnx",
+      "url": "https://raw.githubusercontent.com/sb-ai-lab/EmotiEffLib/520a051c64cd191521e5934655314e769a319684/models/affectnet_emotions/onnx/enet_b0_8_best_afew.onnx",
+      "bytes": 16039595,
+      "sha256": "7aa2ea31c1311f4f8aa9d3fdb085d418dd4e7a48c4b9ed41df8c044f91d0213f",
+      "model": true
+    },
+    {
+      "name": "face_detection_yunet_2026may.onnx",
+      "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/face_detection_yunet_2026may.onnx",
+      "bytes": 229738,
+      "sha256": "ebafce4e3c118d6554634be5c27ab333b4c047a9a8c3faf1d7cf93101c22f0f0",
+      "model": true
+    },
+    {
+      "name": "LICENSE-EmotiEffLib.txt",
+      "url": "https://raw.githubusercontent.com/sb-ai-lab/EmotiEffLib/520a051c64cd191521e5934655314e769a319684/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "model": false
+    },
+    {
+      "name": "LICENSE-YuNet.txt",
+      "url": "https://raw.githubusercontent.com/opencv/opencv_zoo/47534e27c9851bb1128ccc0102f1145e27f23f98/models/face_detection_yunet/LICENSE",
+      "bytes": 1085,
+      "sha256": "c83b8120c50ccbd4c4f96edf53141bdd566ebb8f8e9227e415326aa1b1aba958",
+      "model": false
+    }
+  ]
+}

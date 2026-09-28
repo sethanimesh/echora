@@ -59,14 +59,13 @@ def _attach(speech: GroqSpeech, client) -> None:
 def test_a_vocal_direction_is_never_left_in_the_text() -> None:
     # Orpheus reads "[cheerful]" as an instruction rather than speaking it, so a
     # bracket that survived from ASR would silently change how the voice sounds.
-    assert _speakable("Please [cheerful] help me.") == "Please help me."
+    assert _speakable("Please [cheerful] help me.") == ""
     assert _speakable("  I  want   water. ") == "I want water."
 
 
-def test_long_text_is_cut_on_a_word_boundary() -> None:
+def test_long_text_uses_full_text_device_fallback() -> None:
     spoken = _speakable("word " * 80)
-    assert len(spoken) <= MAX_SPEECH_CHARS
-    assert spoken.endswith("word")
+    assert spoken == ""
 
 
 @pytest.mark.parametrize("text", ["", "   ", "[only a direction]"])

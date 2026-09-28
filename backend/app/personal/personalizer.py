@@ -1,8 +1,8 @@
 """The one entry point the request path touches, and the one that never raises.
 
 This follows the policy `messaging/speech.py` set: personal context is an
-enhancement and must never be a dependency. Whatever goes wrong in here -- a
-missing bundle, an unreadable profile, an encoder fault -- the answer is None,
+enhancement and must never be a dependency. Whatever goes wrong in here -- an
+unreadable profile or malformed rule -- the answer is None,
 and the message chain runs exactly as it did before this layer existed. A
 speaker waiting to be heard is not helped by an error.
 """
@@ -10,39 +10,36 @@ speaker waiting to be heard is not helped by an error.
 from __future__ import annotations
 
 import asyncio
-import time
-import uuid
-from datetime import datetime, timezone
 
 from ..config import Settings
 from ..messaging.alignment import _slot_alignment, _tokens
 from ..schemas import (
-    AcceptedMessage,
     CommunicationContext,
+    CommunicationRegister,
     Hypothesis,
     Listener,
     PersonaSummary,
     PersonalBrief,
+    ResolvedAudience,
+    resolve_listener,
 )
-from .consolidation import merge_into, prune
-from .embedder import Embedder
 from .lexicon import lexicon_hints, specialization_offers
-from .profile import LexiconEntry, PersonaProfile, SpecializationRule, valid_rule
-from .retrieval import ExampleIndex, index_text, query_terms
+from .profile import (
+    LexiconEntry,
+    PersonaProfile,
+    SpecializationRule,
+    UserProfileInput,
+    parse_profile,
+    valid_rule,
+)
 from .store import USER_PROFILE_ID, BaselineStore, LiveStore, summarize
 
 
 class Personalizer:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        # Eager, like the recognizer: a bundle that will not load should fail now,
-        # where lifespan records it, not on the first utterance.
-        self.embedder = Embedder(
-            settings.embedder_root, settings.embedder_device, settings.embedder_max_tokens
-        )
         self.baseline = BaselineStore(settings.persona_root)
         self.live = LiveStore(settings.personal_root)
-        self._indexes: dict[str, ExampleIndex] = {}
         self._lock = asyncio.Lock()
 
     # ------------------------------------------------------------------ profiles
@@ -54,21 +51,9 @@ class Personalizer:
         summaries: list[PersonaSummary] = []
         for profile_id, profile in sorted(self.baseline.profiles().items()):
             live = self.live.profile(profile_id)
-            summaries.append(
-                summarize(
-                    live or profile,
-                    len(self.live.history(profile_id) if live else self.baseline.history(profile_id)),
-                    baseline=live is None,
-                )
-            )
+            summaries.append(summarize(live or profile, baseline=live is None))
         user = self.live.profile(USER_PROFILE_ID)
-        summaries.append(
-            summarize(
-                user or self._empty_user(),
-                len(self.live.history(USER_PROFILE_ID)),
-                baseline=user is None,
-            )
-        )
+        summaries.append(summarize(user or self._empty_user(), baseline=user is None))
         return summaries
 
     def _empty_user(self) -> PersonaProfile:
@@ -92,7 +77,7 @@ class Personalizer:
         shipped = self.baseline.profile(profile_id)
         if shipped is None:
             return None
-        self.live.seed(shipped, self.baseline.history(profile_id))
+        self.live.seed(shipped)
         return self.live.profile(profile_id) or shipped
 
     def listener_for(self, profile_id: str, context: CommunicationContext) -> Listener | None:
@@ -109,15 +94,63 @@ class Personalizer:
             return None
         return profile.listener_by_setting.get(context)
 
-    def _index(self, profile_id: str) -> ExampleIndex:
-        cached = self._indexes.get(profile_id)
-        if cached is not None:
-            return cached
-        index = ExampleIndex(self.embedder.dimension)
-        for record in self.live.history(profile_id):
-            index.add(record, self.embedder.encode(index_text(record)))
-        self._indexes[profile_id] = index
-        return index
+    def resolve_audience(
+        self,
+        profile_id: str,
+        context: CommunicationContext,
+        audience_id: str = "",
+        declared: Listener | None = None,
+    ) -> ResolvedAudience:
+        """Resolve one visible, frozen audience without ever guessing a person."""
+        try:
+            profile = self._resolve(profile_id) if profile_id else None
+        except Exception:
+            profile = None
+        audience = profile.audience(audience_id) if profile is not None and audience_id else None
+        by_profile = profile.listener_by_setting.get(context) if profile is not None else None
+        listener = resolve_listener(
+            context,
+            by_audience=audience.listener if audience is not None else None,
+            declared=declared,
+            by_profile=by_profile,
+        )
+        if audience is not None:
+            register = audience.register_for(context)
+            style_source = (
+                "audience_setting" if context in audience.style_by_setting else "audience"
+            )
+            return ResolvedAudience(
+                audience_id=audience.id,
+                audience_label=audience.label,
+                audience_kind=audience.kind,
+                listener=listener,
+                style=register,
+                listener_source="audience",
+                style_source=style_source,
+            )
+        if declared is not None:
+            listener_source = "place"
+        elif by_profile is not None:
+            listener_source = "profile"
+        else:
+            listener_source = "setting"
+        if profile is not None:
+            register = profile.register_for(context)
+            style_source = (
+                "profile_setting" if context in profile.style_by_setting else "profile"
+            )
+        else:
+            register = CommunicationRegister()
+            style_source = "default"
+        return ResolvedAudience(
+            audience_label=(
+                "Someone who knows you" if listener == "familiar" else "Someone new"
+            ),
+            listener=listener,
+            style=register,
+            listener_source=listener_source,
+            style_source=style_source,
+        )
 
     def _audit_vocabulary(self, profile: PersonaProfile) -> list[str]:
         """Every content word this profile could contribute, for the post-hoc check.
@@ -141,11 +174,12 @@ class Personalizer:
         context: CommunicationContext,
         profile_id: str,
         listener: Listener = "familiar",
+        audience_id: str = "",
     ) -> PersonalBrief | None:
         try:
             async with self._lock:
                 return await asyncio.to_thread(
-                    self._brief, hypotheses, context, profile_id, listener
+                    self._brief, hypotheses, context, profile_id, listener, audience_id
                 )
         except Exception:
             # Deliberately silent. Personal context is worth having and never
@@ -158,6 +192,7 @@ class Personalizer:
         context: CommunicationContext,
         profile_id: str,
         listener: Listener = "familiar",
+        audience_id: str = "",
     ) -> PersonalBrief | None:
         profile = self._resolve(profile_id)
         if profile is None:
@@ -165,86 +200,26 @@ class Personalizer:
         slots = _slot_alignment(hypotheses)
         if not slots:
             return None
-        started = time.perf_counter()
-        text, weights = query_terms(slots)
-        examples = []
-        if text.strip():
-            vector = self.embedder.encode(text, weights)
-            examples = self._index(profile.id).search(
-                vector, context, listener, datetime.now(timezone.utc), self.settings
+        audience = profile.audience(audience_id) if audience_id else None
+        offers = (
+            specialization_offers(
+                profile, slots, self.settings.personal_anchor_share, context
             )
+            if self.settings.personal_specializations
+            else []
+        )
+        if audience is not None and audience.known_detail_ids:
+            known = set(audience.known_detail_ids)
+            offers = [offer for offer in offers if offer.source not in known]
         brief = PersonalBrief(
             profile_id=profile.id,
             profile_label=profile.label,
             speaker_note=profile.speaker_note,
             lexicon=lexicon_hints(profile, slots, self.settings.personal_max_hints, context),
-            specializations=(
-                specialization_offers(
-                    profile, slots, self.settings.personal_anchor_share, context
-                )
-                if self.settings.personal_specializations
-                else []
-            ),
-            examples=examples,
+            specializations=offers,
             audit_vocabulary=self._audit_vocabulary(profile),
-            retrieval_seconds=round(time.perf_counter() - started, 3),
         )
         return None if brief.is_empty() else brief
-
-    async def remember(
-        self,
-        profile_id: str,
-        context: CommunicationContext,
-        heard: str,
-        message: str,
-        listener: Listener = "familiar",
-    ) -> tuple[bool, bool, str]:
-        """Store an accepted message. Returns (stored, merged, reason).
-
-        The listener travels the whole way down. It is not decoration on the
-        record: consolidation merges only within a listener, and retrieval
-        penalises a mismatched one harder than a mismatched setting. Dropping it
-        here silently stamps every message `familiar`, which lets "Where is the
-        washroom?" be absorbed by "I want to use the washroom." -- exactly the
-        merge the guard exists to prevent.
-        """
-        try:
-            async with self._lock:
-                return await asyncio.to_thread(
-                    self._remember, profile_id, context, heard, message, listener
-                )
-        except Exception as error:
-            return False, False, f"not stored ({type(error).__name__})"
-
-    def _remember(
-        self,
-        profile_id: str,
-        context: CommunicationContext,
-        heard: str,
-        message: str,
-        listener: Listener = "familiar",
-    ) -> tuple[bool, bool, str]:
-        profile = self._resolve(profile_id)
-        if profile is None or not message.strip():
-            return False, False, "no such profile"
-        now = datetime.now(timezone.utc)
-        record = AcceptedMessage(
-            id=f"{profile.id}-{uuid.uuid4().hex[:12]}",
-            profile_id=profile.id,
-            heard=heard.strip(),
-            message=message.strip(),
-            context=context,
-            listener=listener,
-            hour=now.hour,
-            accepted_at=now.isoformat().replace("+00:00", "Z"),
-            source="user",
-        )
-        index = self._index(profile.id)
-        vector = self.embedder.encode(index_text(record))
-        merged, _ = merge_into(index, record, vector, self.settings.personal_merge_threshold)
-        prune(index, now, context, listener, self.settings)
-        self.live.save_history(profile.id, index.records)
-        return True, merged, "merged into an existing message" if merged else "stored"
 
     # ------------------------------------------------------------------ onboarding
 
@@ -306,5 +281,47 @@ class Personalizer:
             update={"lexicon": lexicon, "specializations": rules, "baseline": False}
         )
         self.live.save_profile(profile)
-        self._indexes.pop(USER_PROFILE_ID, None)
+        return profile, refused
+
+    def save_user_document(
+        self, request: UserProfileInput
+    ) -> tuple[PersonaProfile, list[str]]:
+        """Replace the reviewed document atomically, retaining only valid details."""
+        existing = self.live.profile(USER_PROFILE_ID) or self._empty_user()
+        rules: list[SpecializationRule] = []
+        refused: list[str] = []
+        for rule in request.specializations:
+            if valid_rule(rule):
+                rules.append(rule)
+            else:
+                refused.append(f"{rule.plain} -> {rule.surface}")
+        detail_ids = {rule.id for rule in rules}
+        audiences = [
+            audience.model_copy(
+                update={
+                    "known_detail_ids": [
+                        item for item in audience.known_detail_ids if item in detail_ids
+                    ]
+                }
+            )
+            for audience in request.audiences
+        ]
+        candidate = existing.model_copy(
+            update={
+                "label": request.label.strip() or "You",
+                "blurb": request.blurb.strip(),
+                "context_default": request.context_default,
+                "listener_by_setting": dict(request.listener_by_setting),
+                "style": request.style,
+                "style_by_setting": dict(request.style_by_setting),
+                "lexicon": list(request.lexicon),
+                "specializations": rules,
+                "audiences": audiences,
+                "baseline": False,
+            }
+        )
+        profile = parse_profile(candidate.model_dump())
+        if profile is None:
+            raise ValueError("the profile document could not be validated")
+        self.live.save_profile(profile)
         return profile, refused

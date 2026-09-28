@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Echora",
+    "slug": "echora-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "echora",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f5f0e7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.animesh.echora",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "Echora connects to the speech model running on your Mac over your local network.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#f5f0e7"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Echora to hear the message you want to communicate."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Echora to match your current location to a place saved in your local Echora service. Coordinates never enter a speech request."
+        }
+      ]
+    ]
+  }
+}

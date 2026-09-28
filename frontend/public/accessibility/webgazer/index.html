@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Echora gaze choices</title><link rel="stylesheet" href="board.css"></head>
+<body>
+<header><div><strong>Eye gaze · WebGazer trial</strong><p id="status" role="status">Loading local gaze controls…</p></div><button id="stop">Stop camera</button></header>
+<section id="intro" class="card" hidden><h1>Choose with your eyes</h1><p>Keep your head comfortably still and follow each dot. We’ll then check four large choices. A helper can start calibration for you.</p><p>Your camera stays on this device. Nothing is spoken from this screen.</p><button id="start">Start calibration</button></section>
+<div id="dot" aria-hidden="true" hidden><span></span></div>
+<section id="board" aria-label="Gaze choices" hidden>
+<button data-choice="water"><span aria-hidden="true">💧</span>Water</button><button data-choice="help"><span aria-hidden="true">🤝</span>Help</button><button data-choice="yes"><span aria-hidden="true">✓</span>Yes</button><button data-choice="no"><span aria-hidden="true">✕</span>No</button>
+</section>
+<section id="result" class="card" hidden><h1 id="result-title"></h1><p id="scores"></p><p id="explanation"></p><div class="actions"><button id="enable" hidden>Enable gaze choices</button><button id="retry">Recalibrate</button></div></section>
+<div id="pointer" aria-hidden="true" hidden></div><footer id="hint">Local processing · No saved camera frames or calibration</footer>
+<script src="webgazer.js"></script><script type="module" src="board.mjs"></script>
+</body></html>

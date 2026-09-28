@@ -1,0 +1,24 @@
+{
+  "package": "webgazer@3.5.3",
+  "source": "https://github.com/brownhci/WebGazer",
+  "adaptations": [
+    "Allow numeric loopback in the legacy secure-origin warning.",
+    "Omit unavailable source-map reference."
+  ],
+  "files": {
+    "webgazer.js": "d49aadf83860add284ca76bcbdbbe530e97d8394a8c7ddbc676ff519dba1c543",
+    "LICENSE.md": "b13be3f2b49a9fc6efb72a7201061e4b77da4a2dfb2c2b0e89d625295c4398f6",
+    "mediapipe/face_mesh/face_mesh.binarypb": "139546bf05aebb33e2611b6b945f3a1629c316ca924e33cec1547c85ddef9f53",
+    "mediapipe/face_mesh/face_mesh_solution_wasm_bin.wasm": "54522fa25c505bf094242f969b4e4919125eb0dadccb568f2af171bbd65865f9",
+    "mediapipe/face_mesh/face_mesh_solution_simd_wasm_bin.wasm": "fb9e9cfe8b83a914e40eab2efd3b0d92a61f82a7c968589f223ab2a7e331d314",
+    "mediapipe/face_mesh/face_mesh_solution_wasm_bin.js": "68dcacddb41013a2e23860565e0e1103c7f6865c722d3bfccdf6f9f7cc717fdf",
+    "mediapipe/face_mesh/face_mesh.js": "a1c69dd75610526040494cd5fdc5ce0882f520184632ab3bf08d5ae6889fe7b0",
+    "mediapipe/face_mesh/README.md": "454445fb86946504e5f9e43ca9fd2650ebaa77b50328f0cfd4a953f04a12601d",
+    "mediapipe/face_mesh/package.json": "26d9334f6076a587092ee7a42d1575dff02b5462e99c7e64a79eda620c2623e8",
+    "mediapipe/face_mesh/face_mesh_solution_simd_wasm_bin.data": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mediapipe/face_mesh/face_mesh_solution_packed_assets_loader.js": "fd8614e85cf1f7ecf8ea371ec088ae0e85941cd6155e8b80330175e8129b58af",
+    "mediapipe/face_mesh/face_mesh_solution_simd_wasm_bin.js": "e331fd5b355adcf08b92b74417e9437d5877d2a9acace8cac1d6c678785b3f57",
+    "mediapipe/face_mesh/index.d.ts": "0746fb8d6216b06a23bd560093952065ef3a2c6087d9520b6342d810744e3196",
+    "mediapipe/face_mesh/face_mesh_solution_packed_assets.data": "dbe5905c582c0462cdaea17e7e6ecea92edaa8cccc515c5e2e7291f2cbb5fb99"
+  }
+}

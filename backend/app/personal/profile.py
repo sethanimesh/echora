@@ -17,7 +17,13 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 from ..messaging.alignment import _tokens
-from ..schemas import CommunicationContext, Listener, PersonaKind
+from ..schemas import (
+    AudienceKind,
+    CommunicationContext,
+    CommunicationRegister,
+    Listener,
+    PersonaKind,
+)
 
 
 # An entry with no settings listed applies everywhere, which is what every entry
@@ -57,6 +63,32 @@ class SpecializationRule(BaseModel):
         return _in_scope(self.settings, context)
 
 
+class AudienceProfile(BaseModel):
+    """One explicitly selectable person, role, or generic audience."""
+
+    id: str
+    label: str
+    kind: AudienceKind = "person"
+    relationship: str = ""
+    icon: str = ""
+    listener: Listener
+    style: CommunicationRegister = Field(default_factory=CommunicationRegister)
+    # Tone can vary by the four contexts without sending a named place to the
+    # server. Exact named places only decide whether this icon is offered in the
+    # browser; their identifiers never leave it with the audio request.
+    style_by_setting: dict[CommunicationContext, CommunicationRegister] = Field(
+        default_factory=dict
+    )
+    visible_in_settings: list[CommunicationContext] = Field(default_factory=list)
+    visible_in_places: list[str] = Field(default_factory=list)
+    # A selected audience can suppress details it already knows. Empty means no
+    # such suppression, preserving the pre-audience specialization behaviour.
+    known_detail_ids: list[str] = Field(default_factory=list)
+
+    def register_for(self, context: CommunicationContext) -> CommunicationRegister:
+        return self.style_by_setting.get(context, self.style)
+
+
 class PersonaProfile(BaseModel):
     id: str
     label: str
@@ -68,10 +100,21 @@ class PersonaProfile(BaseModel):
     # differ from the default. A speaker who never goes out alone declares
     # {"outdoors": "familiar"}; an absent setting takes the default.
     listener_by_setting: dict[CommunicationContext, Listener] = Field(default_factory=dict)
+    style: CommunicationRegister = Field(default_factory=CommunicationRegister)
+    style_by_setting: dict[CommunicationContext, CommunicationRegister] = Field(
+        default_factory=dict
+    )
     speaker_note: str = ""
     lexicon: list[LexiconEntry] = Field(default_factory=list)
     specializations: list[SpecializationRule] = Field(default_factory=list)
+    audiences: list[AudienceProfile] = Field(default_factory=list)
     created_at: str = ""
+
+    def audience(self, audience_id: str) -> AudienceProfile | None:
+        return next((item for item in self.audiences if item.id == audience_id), None)
+
+    def register_for(self, context: CommunicationContext) -> CommunicationRegister:
+        return self.style_by_setting.get(context, self.style)
 
     def heard_forms(self, context: CommunicationContext | None = None) -> dict[str, LexiconEntry]:
         """Every spelling the recognizer might produce, mapped to its entry.
@@ -102,6 +145,27 @@ class PersonaProfile(BaseModel):
                 return None
             return rule
         return None
+
+
+class UserProfileInput(BaseModel):
+    """The complete speaker-reviewed document accepted by the writable endpoint."""
+
+    label: str = "You"
+    blurb: str = "Your own profile."
+    context_default: CommunicationContext = "general"
+    listener_by_setting: dict[CommunicationContext, Listener] = Field(default_factory=dict)
+    style: CommunicationRegister = Field(default_factory=CommunicationRegister)
+    style_by_setting: dict[CommunicationContext, CommunicationRegister] = Field(
+        default_factory=dict
+    )
+    lexicon: list[LexiconEntry] = Field(default_factory=list)
+    specializations: list[SpecializationRule] = Field(default_factory=list)
+    audiences: list[AudienceProfile] = Field(default_factory=list)
+
+
+class UserProfileSaveResponse(BaseModel):
+    profile: PersonaProfile
+    refused: list[str] = Field(default_factory=list)
 
 
 def _is_subsequence(inner: list[str], outer: list[str]) -> bool:
@@ -147,4 +211,11 @@ def parse_profile(raw: dict) -> PersonaProfile | None:
         if anchor not in seen:
             seen.add(anchor)
             unique.append(rule)
-    return profile.model_copy(update={"specializations": unique})
+    audience_ids: set[str] = set()
+    audiences: list[AudienceProfile] = []
+    for audience in profile.audiences:
+        if not audience.id.strip() or audience.id in audience_ids:
+            continue
+        audience_ids.add(audience.id)
+        audiences.append(audience)
+    return profile.model_copy(update={"specializations": unique, "audiences": audiences})

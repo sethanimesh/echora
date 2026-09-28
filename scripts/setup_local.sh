@@ -15,7 +15,8 @@ fi
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
 .venv/bin/python -m pip install -r backend/requirements-dev.txt
-npm --prefix frontend install
+npm --prefix frontend ci
+.venv/bin/python scripts/import_profiles.py --apply
 
 cd models/echora-qwen3-asr-command-v3
 shasum -a 256 -c CHECKSUMS.sha256

@@ -35,9 +35,7 @@ see Reproducibility below.
 
 ## Intended use
 
-Assistive communication **with a human confirmation step**. In Echora the speaker approves
-a message before it is spoken or copied. The model is never the final authority on what was
-said.
+Assistive communication with visible alternatives and user control. In the current app, a resolved completed suggestion may speak on arrival; choosing an alternative speaks the selected words. Confirmation is internal revision-bound authorization, not an additional user step. The local learned verification route currently requests a choice because its acceptance audit failed. See [current architecture](../../docs/architecture.md).
 
 ## Out of scope
 
@@ -156,13 +154,11 @@ Decode with 5 beams and return all hypotheses with their sequence scores.
 
 ## Ethical considerations
 
-Trained on identifiable dysarthric speakers from a licensed research corpus, which is why
-this repository is private.
+Trained on dysarthric speech from a research corpus. Recordings and local personal stores are excluded from this source repository.
 
 Misrecognition in assistive communication carries real cost. A wrong word presented
 confidently is worse than a visible uncertainty — which is why this model returns hypotheses
-rather than an answer, and why the surrounding application requires the speaker to confirm a
-message before it is spoken.
+rather than an answer. The current application preserves alternatives and revision-bound speech authorization; see the interaction policy above.
 
 ## Limitations, in short
 

@@ -1,0 +1,20 @@
+{
+  "run_id": "acoustic-verification-v1",
+  "seed": 20260928,
+  "maximum_audio_seconds": 45,
+  "beams": 5,
+  "control_train_limit": 800,
+  "normal_train_limit": 800,
+  "maximum_epochs": 20,
+  "minimum_epochs": 5,
+  "patience": 3,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.01,
+  "gradient_accumulation": 8,
+  "checkpoint_every_steps": 50,
+  "maximum_negatives": 8,
+  "acceptance_threshold": 0.95,
+  "minimum_calibration_groups_per_class": 10,
+  "minimum_audit_accepted_groups": 20,
+  "scorer": {"input_size": 2048, "dimension": 192, "heads": 4, "layers": 2, "feedforward": 384, "dropout": 0.1}
+}

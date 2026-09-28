@@ -17,6 +17,10 @@ PersonaKind = Literal["person", "place", "object", "routine", "brand", "food"]
 # washroom?" on a platform. Two values, orthogonal to the four settings -- a
 # place still borrows one of those four and never becomes a fifth.
 Listener = Literal["familiar", "unfamiliar"]
+AudienceKind = Literal["person", "role", "generic"]
+RegisterBrevity = Literal["short", "natural", "complete"]
+RegisterCourtesy = Literal["plain", "please"]
+RegisterFormality = Literal["informal", "neutral", "formal"]
 
 # The listener a setting implies when nothing overrides it. Only `outdoors`
 # assumes strangers; everywhere else someone who knows the speaker is present,
@@ -35,22 +39,56 @@ def default_listener(context: CommunicationContext) -> Listener:
 
 def resolve_listener(
     context: CommunicationContext,
+    by_audience: Listener | None = None,
     declared: Listener | None = None,
     by_profile: Listener | None = None,
 ) -> Listener:
     """Who is listening, strongest claim first.
 
-    `declared` is what the place the speaker tapped says -- the only thing that
-    knows the room they are actually in. `by_profile` is what their profile says
-    this setting usually means for them. Neither is required, and the setting's
-    own default ends the chain, so a speaker with no profile and no places lands
-    exactly where the setting alone always put them.
+    `by_audience` is a person or audience the speaker explicitly tapped for this
+    session. It is the strongest claim because it identifies who is actually in
+    front of them. `declared` is what the selected place says when no audience
+    was chosen. `by_profile` is what their profile says this setting usually
+    means. None is required, and the setting default ends the chain.
 
     It lives here, as one expression, because every caller that recomputes it
     gets a chance to disagree -- and a caller that fills in the default in place
     of an absent `declared` silently deletes the middle rung.
     """
-    return declared or by_profile or default_listener(context)
+    return by_audience or declared or by_profile or default_listener(context)
+
+
+class CommunicationRegister(BaseModel):
+    """Bounded wording choices; never a licence to invent social content."""
+
+    brevity: RegisterBrevity = "natural"
+    courtesy: RegisterCourtesy = "plain"
+    formality: RegisterFormality = "neutral"
+
+
+DEFAULT_REGISTER = CommunicationRegister()
+
+
+class ResolvedAudience(BaseModel):
+    """The frozen audience/register snapshot used for one utterance."""
+
+    audience_id: str | None = None
+    audience_label: str
+    audience_kind: AudienceKind = "generic"
+    listener: Listener
+    style: CommunicationRegister = Field(default_factory=CommunicationRegister)
+    listener_source: Literal["audience", "place", "profile", "setting"]
+    style_source: Literal[
+        "audience_setting", "audience", "profile_setting", "profile", "default"
+    ]
+
+
+class AudienceResolutionRequest(BaseModel):
+    context: CommunicationContext = "general"
+    persona: str = ""
+    audience: str = ""
+    # Null is the selected place abstaining, exactly as in transcription.
+    declared_listener: Listener | None = None
 
 # A tagged place is matched by distance, so the radius is the whole match rule.
 # 150 m covers a house or a ward without swallowing the next street.
@@ -100,16 +138,13 @@ class Specialization(BaseModel):
 
 
 class PersonalizationTrace(BaseModel):
-    """What the personal layer offered and what survived, so refusals are observable."""
+    """What explicit profile context was eligible and deterministically applied."""
 
     profile_id: str
     profile_label: str
     lexicon_hints: list[str] = Field(default_factory=list)
-    examples_used: int = 0
     specializations_offered: int = 0
     specializations_applied: int = 0
-    specializations_refused: int = 0
-    retrieval_seconds: float = 0.0
 
 
 class LexiconHint(BaseModel):
@@ -123,18 +158,13 @@ class LexiconHint(BaseModel):
 
 class SpecializationOffer(BaseModel):
     anchor: str
+    # Recognizer spellings that contributed to the same declared anchor. These
+    # are explicit conservative equivalences, not free-form fuzzy matching.
+    matches: list[str] = Field(default_factory=list)
     plain: str
     surface: str
     source: str
     kind: PersonaKind
-
-
-class PersonalExample(BaseModel):
-    heard: str
-    message: str
-    context: CommunicationContext
-    listener: Listener = "familiar"
-    score: float
 
 
 class PersonalBrief(BaseModel):
@@ -145,21 +175,19 @@ class PersonalBrief(BaseModel):
     speaker_note: str = ""
     lexicon: list[LexiconHint] = Field(default_factory=list)
     specializations: list[SpecializationOffer] = Field(default_factory=list)
-    examples: list[PersonalExample] = Field(default_factory=list)
     # Every content word this profile could supply, used only to audit the
     # finished message. Deliberately wider than `lexicon`, which lists just the
     # words this utterance actually contained: the word that needs catching is
     # the one the recognizer never produced, so it is never a hint.
     audit_vocabulary: list[str] = Field(default_factory=list)
-    retrieval_seconds: float = 0.0
 
     def is_empty(self) -> bool:
-        return not (self.lexicon or self.specializations or self.examples)
+        return not (self.speaker_note or self.lexicon or self.specializations)
 
     def offer(self, anchor: str) -> SpecializationOffer | None:
         lowered = anchor.strip().lower()
         for candidate in self.specializations:
-            if candidate.anchor.lower() == lowered:
+            if candidate.anchor.lower() == lowered or lowered in candidate.matches:
                 return candidate
         return None
 
@@ -173,7 +201,7 @@ class PersonaSummary(BaseModel):
     listener_by_setting: dict[CommunicationContext, Listener] = Field(default_factory=dict)
     lexicon_size: int = 0
     specialization_size: int = 0
-    history_size: int = 0
+    audience_size: int = 0
     baseline: bool = True
 
 
@@ -181,7 +209,7 @@ class Place(BaseModel):
     """A named place that resolves to one of the four communication contexts.
 
     A place is a label and an optional location. It never introduces a new
-    context value: `context` is the built-in whose prior and retrieval pool the
+    context value: `context` is the built-in whose prior and specialization scope the
     place borrows, so a custom place behaves exactly as that built-in already
     does. `listener` is the one thing a place says on its own account, and it is
     orthogonal to the four: two places can both borrow `outdoors` and still meet
@@ -226,31 +254,6 @@ class PlaceSettingsRequest(BaseModel):
     places: list[Place] = Field(default_factory=list)
 
 
-class AcceptedMessage(BaseModel):
-    """One message the speaker settled on, stored so later utterances can learn from it."""
-
-    id: str
-    profile_id: str
-    heard: str
-    message: str
-    context: CommunicationContext = "general"
-    # Defaulted rather than required so history written before this field
-    # existed still parses; every shipped row carries it explicitly.
-    listener: Listener = "familiar"
-    hour: int = Field(default=12, ge=0, le=23)
-    accepted_at: str
-    uses: int = 1
-    source: Literal["baseline", "user"] = "user"
-
-
-class AcceptedMessageRequest(BaseModel):
-    persona: str
-    context: CommunicationContext = "general"
-    listener: Listener = "familiar"
-    heard: str
-    message: str
-
-
 class ProfileDetailInput(BaseModel):
     """One "I have a particular version of this" pair from the onboarding form."""
 
@@ -259,7 +262,7 @@ class ProfileDetailInput(BaseModel):
 
 
 class ProfileRequest(BaseModel):
-    """The short onboarding form. Everything else is learned from accepted messages."""
+    """The short onboarding form for explicit speaker-controlled context."""
 
     people: list[str] = Field(default_factory=list)
     places: list[str] = Field(default_factory=list)
@@ -273,12 +276,6 @@ class ProfileResponse(BaseModel):
     specialization_size: int = 0
     refused: list[str] = Field(default_factory=list)
     reason: str = ""
-
-
-class AcceptedMessageResponse(BaseModel):
-    stored: bool
-    merged: bool = False
-    reason: str
 
 
 class RankerDecision(BaseModel):
@@ -312,6 +309,10 @@ class MessageCandidate(BaseModel):
     # wording, derived in code. None when there is nothing to revert, so the
     # interface asks a null check rather than comparing two strings.
     plain_text: str | None = None
+    # Retrieved sources are references considered by the one composition pass;
+    # additions list only exact, reversible profile wording actually applied.
+    retrieved_sources: list[dict] = Field(default_factory=list)
+    contextual_additions: list[dict] = Field(default_factory=list)
 
 
 class SpeechAudio(BaseModel):
@@ -343,6 +344,7 @@ class TranscriptionResponse(BaseModel):
     device: str
     context: CommunicationContext
     listener: Listener = "familiar"
+    audience: ResolvedAudience
     persona: str | None = None
     hypotheses: list[Hypothesis]
     audio_quality: AudioQuality

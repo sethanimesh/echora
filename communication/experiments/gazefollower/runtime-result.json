@@ -1,0 +1,10 @@
+{
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "python": "3.11.15",
+  "camera_used": false,
+  "accuracy_tested": false,
+  "feature_count": 258,
+  "median_inference_ms": 5.73,
+  "features_change_with_input": true,
+  "no_face_blocks_prediction": true
+}

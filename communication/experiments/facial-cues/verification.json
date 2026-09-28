@@ -1,0 +1,69 @@
+{
+  "test": "synthetic speech + three blank JPEGs; no user camera",
+  "statuses": [
+    "transcribing",
+    "analyzing_delivery",
+    "review"
+  ],
+  "elapsed_seconds": 5.897,
+  "transcription_preserved": true,
+  "voice": {
+    "id": "7cb8cd43937efd30e8e8ec6c",
+    "revision": 2,
+    "state": "ready",
+    "audio_status": "single_speaker",
+    "prompt_version": "delivery-2.1",
+    "cue": "steady",
+    "tone": "neutral",
+    "pace": "standard",
+    "rate": 1.0,
+    "model": "gemini-2.5-flash",
+    "elapsed_ms": 5625
+  },
+  "face": {
+    "id": "7cb8cd43937efd30e8e8ec6c",
+    "revision": 2,
+    "state": "ready",
+    "visibility": "no_face",
+    "cue": "unclear",
+    "tone": null,
+    "model": "gemini-2.5-flash",
+    "elapsed_ms": 5091,
+    "comparison": {
+      "local": {
+        "state": "ready",
+        "visibility": "no_face",
+        "cue": "unclear",
+        "tone": null,
+        "frames": [
+          {
+            "visibility": "no_face",
+            "cue": "unclear"
+          },
+          {
+            "visibility": "no_face",
+            "cue": "unclear"
+          },
+          {
+            "visibility": "no_face",
+            "cue": "unclear"
+          }
+        ],
+        "model": "EmotiEffLib/enet_b0_8_best_afew",
+        "elapsed_ms": 69,
+        "policy": "local-face-1"
+      },
+      "gemini": {
+        "state": "ready",
+        "visibility": "no_face",
+        "cue": "unclear",
+        "tone": null,
+        "model": "gemini-2.5-flash",
+        "elapsed_ms": 5091
+      },
+      "agreement": "not_comparable",
+      "selected": "gemini",
+      "policy": "paired-face-1"
+    }
+  }
+}

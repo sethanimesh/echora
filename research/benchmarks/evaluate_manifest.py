@@ -21,6 +21,8 @@ from metrics import aggregate, score
 
 
 RUNNERS = {
+    "echora_v3": "run_echora_v3",
+    "gemini": "run_gemini",
     "parakeet": "run_parakeet",
     "parakeet_ctc": "run_parakeet_ctc",
     "parakeet_tdt_1_1b": "run_parakeet_tdt_1_1b",

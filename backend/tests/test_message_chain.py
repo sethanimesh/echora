@@ -144,8 +144,8 @@ def test_every_ungrounded_option_falls_back_to_raw_beams() -> None:
     assert [item.corrected_text for item in result.messages][0] == "leg pain"
 
 
-def test_a_reading_contained_by_another_is_not_an_alternative() -> None:
-    """Offering "pain" beside "leg pain" is a choice between a message and a worse one."""
+def test_distinct_readings_are_not_discarded_by_word_set_containment() -> None:
+    """Containment cannot prove two proposed readings mean the same thing."""
     chain, _ = chain_with(
         {
             "options": [
@@ -157,8 +157,8 @@ def test_a_reading_contained_by_another_is_not_an_alternative() -> None:
         }
     )
     result = chain._compose(leg_pain_beams(), "care")
-    assert [item.corrected_text for item in result.messages] == ["My leg hurts."]
-    assert result.ranker.decision == "selected"
+    assert [item.corrected_text for item in result.messages] == ["My leg hurts.", "I have pain."]
+    assert result.ranker.decision == "ambiguous"
 
 
 def test_options_are_capped_and_deduped() -> None:
@@ -248,7 +248,7 @@ async def test_every_model_exhausted_says_so_and_shows_raw_beams() -> None:
     assert result.ranker.source == "unavailable"
     assert "daily usage limit" in result.ranker.reason
     assert set(scripted.tried) == set(settings.groq_models)
-    assert [item.repair_status for item in result.messages] == ["unavailable"] * 3
+    assert [item.repair_status for item in result.messages] == ["unavailable"] * len(leg_pain_beams())
 
 
 def test_a_daily_cap_is_distinguished_from_a_per_minute_throttle() -> None:

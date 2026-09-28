@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-08-18T00:00:00Z",
   "count": 6,
-  "note": "Demonstration speakers. Shipped read-only; live history lives under data/personal/.",
+  "note": "Demonstration speakers. Shipped read-only; conversation history is not stored.",
   "personas": [
     {
       "id": "krishnan",
@@ -10,8 +10,6 @@
       "context_default": "home",
       "lexicon_entries": 6,
       "specializations": 2,
-      "history_messages": 22,
-      "unfamiliar_listener_messages": 0,
       "listener_by_setting": {
         "outdoors": "familiar"
       }
@@ -22,9 +20,7 @@
       "icon": "bloom",
       "context_default": "home",
       "lexicon_entries": 8,
-      "specializations": 4,
-      "history_messages": 40,
-      "unfamiliar_listener_messages": 5
+      "specializations": 4
     },
     {
       "id": "vikram",
@@ -32,9 +28,7 @@
       "icon": "ridge",
       "context_default": "care",
       "lexicon_entries": 9,
-      "specializations": 4,
-      "history_messages": 38,
-      "unfamiliar_listener_messages": 4
+      "specializations": 4
     },
     {
       "id": "grace",
@@ -42,9 +36,7 @@
       "icon": "tide",
       "context_default": "home",
       "lexicon_entries": 8,
-      "specializations": 4,
-      "history_messages": 37,
-      "unfamiliar_listener_messages": 4
+      "specializations": 4
     },
     {
       "id": "bea",
@@ -52,9 +44,7 @@
       "icon": "wave",
       "context_default": "care",
       "lexicon_entries": 7,
-      "specializations": 4,
-      "history_messages": 37,
-      "unfamiliar_listener_messages": 4
+      "specializations": 4
     },
     {
       "id": "tomas",
@@ -62,9 +52,7 @@
       "icon": "chevron",
       "context_default": "general",
       "lexicon_entries": 8,
-      "specializations": 4,
-      "history_messages": 35,
-      "unfamiliar_listener_messages": 13
+      "specializations": 4
     }
   ]
 }

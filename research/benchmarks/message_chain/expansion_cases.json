@@ -1,0 +1,236 @@
+{
+  "version": 2,
+  "description": "Frozen English wording fixtures, independent of TORGO test labels. References are acceptable examples, not the only valid wording. Edit distance is an effort proxy. Proper names use exact protected spelling; intent anchors are case insensitive.",
+  "cases": [
+    {
+      "id": "negated-action",
+      "literal": "do not close the window",
+      "references": [
+        "Please do not close the window.",
+        "Do not close the window."
+      ],
+      "context": "home",
+      "distractor": "Please close the window.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "quantity",
+      "literal": "two cups of water",
+      "references": [
+        "Please bring me two cups of water.",
+        "I would like two cups of water."
+      ],
+      "context": "home",
+      "distractor": "Please bring one cup of water.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "recipient",
+      "literal": "Maya bring water",
+      "references": [
+        "Maya, please bring me water.",
+        "Maya, please bring water."
+      ],
+      "context": "home",
+      "distractor": "Kiran, please bring me water.",
+      "protected_exact": [
+        "Maya"
+      ],
+      "intent_anchors": []
+    },
+    {
+      "id": "laterality",
+      "literal": "my left arm hurts",
+      "references": [
+        "My left arm hurts."
+      ],
+      "context": "care",
+      "distractor": "My right leg hurts.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "already-completed",
+      "literal": "I already had my medicine",
+      "references": [
+        "I already had my medicine.",
+        "I have already taken my medicine."
+      ],
+      "context": "care",
+      "distractor": "Please bring me my medicine.",
+      "protected_exact": [],
+      "intent_anchors": [
+        "already"
+      ]
+    },
+    {
+      "id": "refusal",
+      "literal": "I do not want tea",
+      "references": [
+        "I do not want tea.",
+        "I don't want tea."
+      ],
+      "context": "home",
+      "distractor": "I would like tea.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "brand",
+      "literal": "bring Dove soap",
+      "references": [
+        "Please bring me Dove soap.",
+        "Please bring Dove soap."
+      ],
+      "context": "home",
+      "distractor": "Please bring Dettol soap.",
+      "protected_exact": [
+        "Dove"
+      ],
+      "intent_anchors": []
+    },
+    {
+      "id": "time",
+      "literal": "call Maya at 5",
+      "references": [
+        "Please call Maya at 5.",
+        "Call Maya at 5."
+      ],
+      "context": "home",
+      "distractor": "Please call Kiran at 6.",
+      "protected_exact": [
+        "Maya"
+      ],
+      "intent_anchors": []
+    },
+    {
+      "id": "statement",
+      "literal": "I have tea",
+      "references": [
+        "I have tea."
+      ],
+      "forbidden": [
+        "bring",
+        "get",
+        "want"
+      ],
+      "context": "home",
+      "distractor": "Please bring me tea.",
+      "protected_exact": [],
+      "intent_anchors": [
+        "have"
+      ]
+    },
+    {
+      "id": "explicit-detail",
+      "literal": "tea without milk",
+      "references": [
+        "Please bring me tea without milk.",
+        "I would like tea without milk."
+      ],
+      "context": "home",
+      "distractor": "Please bring tea with milk.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "question",
+      "literal": "where is the washroom",
+      "references": [
+        "Where is the washroom?"
+      ],
+      "context": "outdoors",
+      "distractor": "I want to use the washroom.",
+      "protected_exact": [],
+      "intent_anchors": [
+        "where"
+      ]
+    },
+    {
+      "id": "order",
+      "literal": "first water then medicine",
+      "references": [
+        "Please bring water first, then medicine.",
+        "First water, then medicine."
+      ],
+      "context": "care",
+      "distractor": "Please bring medicine first, then water.",
+      "protected_exact": [],
+      "intent_anchors": [
+        "first",
+        "then"
+      ]
+    },
+    {
+      "id": "approved-tea",
+      "literal": "tea",
+      "references": [
+        "I want tea.",
+        "Please bring me tea."
+      ],
+      "personal_references": [
+        "I want Lipton green tea.",
+        "Please bring me Lipton green tea."
+      ],
+      "detail": {
+        "anchor": "tea",
+        "plain": "tea",
+        "surface": "Lipton green tea"
+      },
+      "context": "home",
+      "distractor": "Lipton green tea",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "approved-blanket",
+      "literal": "blanket",
+      "references": [
+        "I want a blanket.",
+        "Please bring me a blanket."
+      ],
+      "personal_references": [
+        "I want the blue blanket.",
+        "Please bring me the blue blanket."
+      ],
+      "detail": {
+        "anchor": "blanket",
+        "plain": "the blanket",
+        "surface": "the blue blanket"
+      },
+      "context": "home",
+      "distractor": "the blue blanket",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "new-person",
+      "literal": "water",
+      "references": [
+        "I want water.",
+        "Please bring me water."
+      ],
+      "forbidden": [
+        "Kiran"
+      ],
+      "context": "home",
+      "distractor": "Kiran, please bring me water.",
+      "protected_exact": [],
+      "intent_anchors": []
+    },
+    {
+      "id": "explicit-negation-over-memory",
+      "literal": "no coffee",
+      "references": [
+        "I do not want coffee.",
+        "No coffee, please."
+      ],
+      "context": "home",
+      "distractor": "I would like Madras filter coffee with sugar.",
+      "protected_exact": [],
+      "intent_anchors": []
+    }
+  ]
+}

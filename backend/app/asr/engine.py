@@ -227,3 +227,21 @@ class QwenCommandEngine:
             audio_quality=audio_quality(audio),
             decode_seconds=round(time.perf_counter() - started, 3),
         )
+
+    def extract_features(self, audio: np.ndarray) -> torch.Tensor:
+        """Return ordered frozen acoustic frames, independently of decoder text.
+
+        Callers use the backend's existing inference lock. No beam, generated
+        token, decoder score, model parameter, or generation setting is changed.
+        These features are ephemeral at runtime; research caching is explicit.
+        """
+        inputs = self.processor.apply_transcription_request(
+            audio=[audio], language=["English"], prompt=self.prompt
+        ).to(self.model.device, self.model.dtype)
+        with torch.inference_mode():
+            features = self.model.model.get_audio_features(
+                inputs["input_features"], inputs["input_features_mask"], return_dict=True
+            ).pooler_output
+        if features.ndim != 2 or features.shape[1] != 2048 or not torch.isfinite(features).all():
+            raise RuntimeError("Unexpected frozen Qwen audio feature shape or values")
+        return features.detach().float().cpu().contiguous()

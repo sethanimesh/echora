@@ -1,0 +1,31 @@
+{
+  "source": "Echora 2.0/echora (workspace snapshot 2026-09-28)",
+  "shared_core": "communication/backend/hinglish_core",
+  "shared_logic": "AST-equivalent after import renaming; pipeline differs only by Config/from_config; lexicon SHA-256 equal",
+  "compatibility_modules": [
+    "core/model.py",
+    "detect/segment.py",
+    "detect/spans.py",
+    "classify/lexical.py",
+    "classify/port.py",
+    "classify/prompt.py",
+    "translit/transliterator.py",
+    "tts/normalize.py"
+  ],
+  "retained_original_sha256": {
+    "config.py": "483fc50f53d3e89c44bc64a19f5abd9a550de92fd654fb5987994e88a9073a72",
+    "cli.py": "5da4307ac60cd11c3a9368bf16032c0f2de9617bdfb520aef8408f07af303f01",
+    "classify/groq_classifier.py": "35f34e2a6c574932ce429e3dd89d0b62b25cc7c2237243f388e4ab7baf91e337",
+    "classify/ollama_classifier.py": "455c7f6a4a4708f0b7d93d7a0e546615905e6fd2ee6bad43038f38d5eb5a1884",
+    "tts/fish_audio.py": "5f71f1b9bd587ef5531cad6682540f2c063a980d4a6fb9a04d08876f82ff03b3",
+    "tts/__init__.py": "bcb210844fbf70244e8d94077299f4c9d3b9973f011c21e0ccbdbaa678e496f0",
+    "haystack_components/__init__.py": "eef2ffd546612f5e09b2f7d3b9ca98faeb9df6ec936f3ba0d6f93b1a60d5efea",
+    "haystack_components/components.py": "5724f9af80062b41d90eed24820164cef74c550c95ed7bae5826e179b83b6fde"
+  },
+  "changes": [
+    "Shared modules are identity-preserving compatibility imports; no duplicated core or lexicon.",
+    "Pipeline subclasses shared core and restores from_config.",
+    "Environment file loading now requires explicit --env-file or Config.from_env(dotenv=...).",
+    "Haystack remains optional and does not replace application message lifecycle."
+  ]
+}

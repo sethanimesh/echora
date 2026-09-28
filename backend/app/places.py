@@ -2,8 +2,8 @@
 
 A place is a label with an optional location. It resolves to one of the four
 communication contexts and behaves exactly as that context already does -- the
-same guidance sentence in the Groq prompt, the same retrieval pool, the same
-stamp on an accepted message. Nothing here widens `CommunicationContext`, so a
+same guidance sentence in the Groq prompt and the same specialization scope.
+Nothing here widens `CommunicationContext`, so a
 custom place can never hand the message chain a setting it does not know.
 
 Three places ship and cannot be removed, so the interface always has something
@@ -37,7 +37,7 @@ from .schemas import (
 
 
 # The context each built-in borrows is also its id, so the three shipped places
-# read the same in the store as they do in a history record.
+# read the same in the profile and request as they do in the interface.
 BUILTIN_PLACES: tuple[tuple[str, str, CommunicationContext], ...] = (
     ("home", "Home", "home"),
     ("care", "Care", "care"),

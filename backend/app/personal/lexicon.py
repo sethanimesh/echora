@@ -9,9 +9,18 @@ out by the grounding check and take a working message down with it.
 
 from __future__ import annotations
 
-from ..messaging.alignment import settled_words
 from ..schemas import CommunicationContext, LexiconHint, SpecializationOffer
 from .profile import PersonaProfile
+
+
+_ANCHOR_EQUIVALENTS: dict[str, frozenset[str]] = {
+    # Conservative spelling families observed in this recognizer's beams. They
+    # are aggregated because they are the same communicative word, unlike
+    # genuinely different alternatives such as soup/suit or coffee/toffee.
+    "tea": frozenset({"tea", "tee", "teaa"}),
+    "coffee": frozenset({"coffee", "coffey", "coffe"}),
+    "cream": frozenset({"cream", "creem", "crem"}),
+}
 
 
 def _slot_words(slot: dict[str, object]) -> list[str]:
@@ -75,19 +84,32 @@ def specialization_offers(
     if not profile.specializations:
         return []
     offers: list[SpecializationOffer] = []
-    seen: set[str] = set()
-    for word in sorted(settled_words(slots, anchor_share)):
-        rule = profile.rule_for(word, context)
-        if rule is None or rule.id in seen:
+    for rule in profile.specializations:
+        if not rule.applies_in(context):
             continue
-        seen.add(rule.id)
-        offers.append(
-            SpecializationOffer(
-                anchor=word,
-                plain=rule.plain,
-                surface=rule.surface,
-                source=rule.id,
-                kind=rule.kind,
+        canonical = rule.anchor.strip().lower()
+        family = _ANCHOR_EQUIVALENTS.get(canonical, frozenset({canonical}))
+        for slot in slots:
+            matched = [
+                str(option["word"])
+                for option in slot["options"]  # type: ignore[index]
+                if str(option["word"]) in family  # type: ignore[index]
+            ]
+            share = sum(
+                float(option["share"])
+                for option in slot["options"]  # type: ignore[index]
+                if str(option["word"]) in family  # type: ignore[index]
             )
-        )
+            if matched and share >= anchor_share:
+                offers.append(
+                    SpecializationOffer(
+                        anchor=canonical,
+                        matches=matched,
+                        plain=rule.plain,
+                        surface=rule.surface,
+                        source=rule.id,
+                        kind=rule.kind,
+                    )
+                )
+                break
     return offers

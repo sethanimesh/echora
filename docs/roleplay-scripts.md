@@ -73,16 +73,14 @@ When a detail does not appear, open **Evidence**. It now shows the stance the
 message was actually written under — which is not always the one the screen
 implies, because a place may declare nothing and let the profile decide — and
 what the profile contributed. The panel says it in words; `./scripts/roleplay.py`
-prints the same three counts as `offered= applied= refused=`. Either way:
+prints the same two counts as `offered= applied=`. Either way:
 
 - **nothing offered** — the detail was never put in front of the model. Either
   it is scoped out of this setting, or the anchor did not hold enough of its
   slot. Check the beams: `soup` at 0.82 and `soup` at 0.30 are two different
   tests, and only the fixed lane lets you choose which one you are running.
-- **offered, not used, refused** — the model declared the detail and then wrote
-  a message without it, so the code stripped it back to the plain wording. The
-  model chose brevity; nothing is broken.
-- **offered and used** — the detail is in the message, marked, and **Say it
+- **offered and applied** — the detail is inserted deterministically in code,
+  marked, and **Say it
   plainly instead** reverts it in one tap.
 
 And one trap worth knowing. When the Groq call fails — a rate limit is the usual
@@ -128,7 +126,7 @@ to it. Grace states what she needs.
 | You say | Expected | Holds when |
 |---|---|---|
 | "washroom" | *I need the washroom.* | Always. A need stated to someone who can act on it. |
-| "tea" | *I would like my Lipton tea with milk.* | `tea` is settled in the beams. Scoped `home, care`, so it is offered here. Marked; **Say it plainly instead** → *my tea*. |
+| "tea" | *I need tea.* | **Generic on purpose.** Donna knows which tea she drinks, so the detail is scoped away from home. Contrast with Act III. |
 | "soup" | *the egusi soup from the freezer* | `soup` is settled. Scoped `home` only — this is the one place it can appear. |
 | "cream" | *Could you put on my leg cream from the blue tub?* | `cream` is settled. Scoped `home, care`. The blue tub matters; the white one is for hands. |
 | "buzzer" | *Someone is at the buzzer.* | Always. Lexicon, not a specialization, so no anchor share to satisfy. |
@@ -159,7 +157,7 @@ Tap the **Care** chip. Still **familiar** — a nurse on duty can act.
 | You say | Expected | What changed |
 |---|---|---|
 | "washroom" | *I need the washroom.* | Nothing. Both settings are familiar, so the act is the same. |
-| "tea" | *my Lipton tea with milk* | Still specialized: `home, care` covers here. |
+| "tea" | *I need my **Lipton tea with milk**.* | **Changed.** A rotating agency rota does not know which tea. Marked; **Say it plainly instead** → *my tea*. |
 | "soup" | *Please bring me soup.* | **Changed.** Scoped `home` only, so the egusi is not offered on the ward. |
 | "cream" | *my leg cream from the blue tub* | Still specialized. |
 
@@ -186,15 +184,27 @@ outdoors, so the chain falls to the setting's default: **unfamiliar**.
 |---|---|---|
 | "washroom" | *Where is the washroom?* | **Changed.** A stranger cannot take her; they can point. |
 | "help" | *Could you help me?* | Asked directly, no preamble. |
-| "tea" | *Tea, please.* | **Changed twice.** The specialization is scoped out, and the act became a counter request. |
-| "water" | *Some water, please.* | Over a counter, not a statement of want. |
+| "tea" | *Could you please get me my **Lipton tea with milk**, please.* | **Changed twice.** The act became a complete counter request, and the detail appears — a counter cannot know which tea, so this is where the words are needed. |
+| "water" | *Could you please get me water, please.* | A complete request over a counter, not a statement of want. |
 
-Now the part that is easy to get backwards: **among strangers the message gets
-shorter, not longer.** No "I'm sorry to trouble you", no explaining that she has
-had a stroke, no softening. Sales-clerk ratings of AAC users put short and
-information-bearing above politeness in a time-pressured exchange (Bedrosian,
-Hoag & McCoy, 2008), and people with aphasia are if anything faster with
-unfamiliar partners than familiar ones (Doedens et al., 2021).
+The tea row shows the two layers working together: the listener changes a bare
+need into a complete request, while the profile supplies the exact tea. The
+detail is not decoration: it is what lets a stranger fulfil the request rather
+than guess. Sales-clerk ratings of AAC users put information-bearing messages
+above empty politeness in a time-pressured exchange (Bedrosian, Hoag & McCoy,
+2008): what a stranger needs
+is the thing being asked for, first time, without a preamble.
+
+So the tea detail is scoped to exactly the settings where it is *needed*. Donna
+has made her tea a hundred times and "my tea" is enough; a rotating ward rota and
+a counter have not, and there "Lipton with milk" is the message rather than an
+embellishment on it. The complete polite request must preserve those specifics.
+
+That is per-detail, and it points different ways for different details. `soup` is
+scoped `home` only, in the opposite direction, because "the egusi soup from the
+freezer" means something in her own kitchen and nothing at all to a café. The
+question a scope answers is not "how formal is this setting" — it is "does the
+person in front of her need these words, and can they act on them?"
 
 **Failure to watch for:** *"Excuse me, I'm sorry to bother you, but I wonder if
 you could possibly tell me where the washroom is?"* That is the model being
@@ -214,16 +224,14 @@ Grace is outdoors and her daughter is beside her. Same street, different act.
 | You say | Expected | Why |
 |---|---|---|
 | "washroom" | *I need the washroom.* | Outdoors, and back to a statement. The setting did not change; the listener did. |
-| "tea" | *I would like a tea.* — or *Tea, please.* | The detail stays away either way: still scoped `home, care`. The act is the soft half of this row; see below. |
+| "tea" | *Please bring my **Lipton tea with milk**.* | Same detail as Act III, stated rather than asked. The setting keeps the detail; the listener sets the act. |
 
-Judge Act IV on **washroom**, not on tea, and the reason is worth knowing. The
-listener changes the act only where the words carry an act to change. `washroom`
-is a place, and "I need the washroom." and "Where is the washroom?" are visibly
-two different things to do. `tea` is a bare noun with no verb in it, and "Tea,
-please." is an ordinary thing to say to your own daughter as well as across a
-counter — so the model lands on it under either listener, and that is not wrong.
-The tea row still earns its place because it shows the *detail* staying away
-while the setting is outdoors; it is just not the row to test the act with.
+Read the two rows together and the two knobs come apart cleanly. Against Act III:
+the street did not change and neither did the detail, because the *setting* keeps
+it — only the act moved, from a request put to a stranger to a need stated to her
+daughter. Against Act I: the listener is familiar in both, and the detail is
+present here and absent there, because the *setting* changed. Setting governs
+what is said; listener governs how it is put.
 
 Set `Outdoors` back to **Leave it to whoever is speaking** before you move on.
 
@@ -290,7 +298,7 @@ outdoors, so: **unfamiliar**.
 | You say | Expected | What changed |
 |---|---|---|
 | "which platform, Cascais" | *Which platform for the Cascais train?* | The `train` specialization is unscoped, so `the Cascais train` survives — and it matters, because the Sintra line leaves the same platform. |
-| "coffee" | *A short black coffee, no sugar, please.* — **or** *Some coffee, please.* | See below. |
+| "coffee" | *A short black coffee, no sugar, please.* | The detail is forced once its anchor gate holds. |
 | "washroom" | *Where is the washroom?* | The house example. Asked, not stated. |
 | "I need my tablet" | *Could I have my tablet?* | **Changed.** `home, care` scoping drops the detail, and a stranger cannot be sent for his medication anyway. If the message still says "baclofen", that is a scoping failure worth recording. |
 
@@ -299,15 +307,9 @@ reliably: the detail is *content he supplied* and survives, while the
 statement→question flip is *act*, which the listener owns. Content and act move
 in opposite directions in the same message.
 
-The **coffee** line makes the same point and does **not** hold reliably, so it is
-written here with both outcomes. The unfamiliar stance tells the model to carry
-"the thing being asked for and nothing else", and about half the time it reads
-"a short black coffee, no sugar" as elaboration and trims it — you will see
-`offered=1 applied=0 refused=1` in the trace, meaning the model declared the
-detail and then wrote a message without it. The prompt now says in as many words
-that a detail is *what* is being asked for rather than decoration around it, and
-that the instruction to be short never trims one, which helps and does not settle
-it. Record it as a known wobble, not as a scoping failure.
+The **coffee** line now holds whenever its anchor gate holds. Once the profile
+offers "a short black coffee, no sugar", code applies the detail after Groq has
+formed the message; the model cannot trim it as decoration.
 
 ## Act IV — The precedence chain, in three taps.
 
@@ -340,9 +342,9 @@ chain will look broken.
 ## What to write down after a run
 
 - Did the **act** change between familiar and unfamiliar? Statement at home,
-  question or short request among strangers.
-- Was the unfamiliar message **shorter** than the familiar one? Longer is a bug,
-  every time.
+  location question or complete service request among strangers.
+- Did an unfamiliar request for a thing use the complete **Could you please get
+  me …, please** form, while a location remained a direct question?
 - Did each **specialization** appear only in the settings it lists — with the
   anchor share held constant — and did **Say it plainly instead** put the plain
   wording back in one tap?

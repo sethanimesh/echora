@@ -1,33 +1,12 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-
+import type { Metadata } from 'next';
+import './globals.css';
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "Echora · Say it your way",
-  description: "Local-first communication support for difficult-to-understand speech.",
-  openGraph: {
-    title: "Echora · Say it your way",
-    description: "Literal speech. Honest choices. Your confirmation.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Echora — Say it your way" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Echora · Say it your way",
-    description: "Literal speech. Honest choices. Your confirmation.",
-    images: ["/og.png"],
-  },
+  title: 'Echora — Your voice, your words',
+  description: 'A personal space to express, review, and speak your message.',
 };
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5, // never lock zoom: assistive users need it
-  viewportFit: "cover", // enables env(safe-area-inset-*)
-  interactiveWidget: "resizes-content", // keyboard shrinks the shell instead of covering Confirm
-  themeColor: "#f7f3e9",
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>{children}</body>

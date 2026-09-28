@@ -1,0 +1,13 @@
+{
+  "loopback_proxy": true,
+  "request_header_required": true,
+  "frontend_origin_accepted": true,
+  "foreign_origin_rejected": true,
+  "blank_image_no_prediction": true,
+  "invalid_frame_rejected": true,
+  "invalid_calibration_rejected": true,
+  "fit_accepts_45_balanced_samples": true,
+  "stop_invalidates_session": true,
+  "camera_used": false,
+  "accuracy_tested": false
+}

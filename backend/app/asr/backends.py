@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import logging
 from abc import ABC, abstractmethod
 
 import httpx
@@ -44,9 +45,60 @@ class LocalAsrBackend(AsrBackend):
     def device(self) -> str:
         return f"{self.engine.device}/{str(self.engine.dtype).replace('torch.', '')}"
 
-    async def transcribe(self, audio: np.ndarray, beams: int) -> RawAsrResult:
+    def _release_unused_buffers(self):
+        if self.engine.device == 'mps':
+            import torch
+            try:
+                torch.mps.synchronize()
+                torch.mps.empty_cache()
+            except RuntimeError:
+                logging.getLogger(__name__).warning('Could not release unused MPS buffers')
+
+    async def _locked_inference(self, operation):
         async with self._lock:
-            return await asyncio.to_thread(self.engine.transcribe, audio, beams, "local")
+            worker = asyncio.create_task(asyncio.to_thread(operation))
+            try:
+                return await asyncio.shield(worker)
+            except asyncio.CancelledError:
+                # Cancelling an await cannot stop PyTorch's worker thread. Keep
+                # the model lock until it finishes so a new recording cannot
+                # race that thread or its allocator cleanup.
+                while not worker.done():
+                    try:
+                        await asyncio.shield(worker)
+                    except asyncio.CancelledError:
+                        continue
+                    except Exception:
+                        break
+                if not worker.cancelled():
+                    worker.exception()
+                raise
+
+    async def transcribe(self, audio: np.ndarray, beams: int) -> RawAsrResult:
+        def run():
+            try:
+                return self.engine.transcribe(audio, beams, "local")
+            finally:
+                self._release_unused_buffers()
+        return await self._locked_inference(run)
+
+    async def transcribe_verified(self, audio, beams, verifier):
+        """Keep decoding and frozen-feature scoring under the same model lock."""
+        def run():
+            try:
+                raw = self.engine.transcribe(audio, beams, "local")
+                scores = None
+                if verifier.available:
+                    try:
+                        features = self.engine.extract_features(audio)
+                        scores = verifier.score(features, raw.hypotheses)
+                    except Exception:
+                        # Keep genuine evidence when verification is unavailable.
+                        scores = None
+                return raw, scores
+            finally:
+                self._release_unused_buffers()
+        return await self._locked_inference(run)
 
 
 class _RemoteBackend(AsrBackend):

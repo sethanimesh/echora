@@ -1,0 +1,15 @@
+export const colors = {
+  cream: "#f5f0e7",
+  paper: "#fffdf8",
+  ink: "#16342c",
+  muted: "#62756e",
+  green: "#1e5a4a",
+  greenDark: "#123f34",
+  sage: "#87aa75",
+  sageLight: "#dce8d5",
+  coral: "#d68669",
+  coralLight: "#f3ddd3",
+  line: "#d8d8cf",
+  white: "#ffffff",
+  danger: "#9d3c32",
+};

@@ -8,15 +8,18 @@ from fastapi.testclient import TestClient
 from app import main
 from app.audio import encode_wav
 from app.messaging.groq_chain import MessageChainResult
+from app.personal.profile import PersonaProfile
 from app.places import BUILTIN_IDS, PlaceStore
 from app.schemas import (
     AudioQuality,
+    CommunicationRegister,
     Hypothesis,
     MessageCandidate,
     PersonalBrief,
     PersonaSummary,
     RankerDecision,
     RawAsrResult,
+    ResolvedAudience,
     SpeechAudio,
 )
 
@@ -46,9 +49,13 @@ class FakeChain:
         pass
 
     stances: list[tuple[str, str]] = []
+    styles: list[CommunicationRegister | None] = []
 
-    async def run(self, hypotheses, context="general", brief=None, listener="familiar"):
+    async def run(
+        self, hypotheses, context="general", brief=None, listener="familiar", register=None
+    ):
         FakeChain.stances.append((context, listener))
+        FakeChain.styles.append(register)
         return MessageChainResult(
             ranker=RankerDecision(
                 decision="selected",
@@ -97,7 +104,9 @@ class AmbiguousChain:
     def __init__(self, settings):
         pass
 
-    async def run(self, hypotheses, context="general", brief=None, listener="familiar"):
+    async def run(
+        self, hypotheses, context="general", brief=None, listener="familiar", register=None
+    ):
         messages = [_candidate("m1", "I would like some water."), _candidate("m2", "I would like to wait.")]
         return MessageChainResult(
             ranker=RankerDecision(
@@ -137,8 +146,8 @@ class FakePersonal:
 
     briefs: list[tuple[str, str]] = []
     stances: list[tuple[str, str]] = []
-    remembered: list[tuple[str, str, str]] = []
     declares: dict[str, str] = {}
+    current: PersonaProfile = PersonaProfile(id="user", label="You", baseline=False)
 
     def __init__(self, settings):
         pass
@@ -147,31 +156,77 @@ class FakePersonal:
         return {"krishnan", "user"}
 
     def personas(self):
-        return [PersonaSummary(id="krishnan", label="Krishnan", history_size=3)]
+        return [PersonaSummary(id="krishnan", label="Krishnan")]
+
+    def describe(self, profile_id):
+        return self.current if profile_id == "user" else PersonaProfile(id=profile_id, label="Krishnan")
+
+    def save_user_document(self, request):
+        FakePersonal.current = PersonaProfile(
+            id="user",
+            label=request.label,
+            blurb=request.blurb,
+            baseline=False,
+            context_default=request.context_default,
+            listener_by_setting=request.listener_by_setting,
+            style=request.style,
+            style_by_setting=request.style_by_setting,
+            lexicon=request.lexicon,
+            specializations=request.specializations,
+            audiences=request.audiences,
+        )
+        return FakePersonal.current, []
 
     def listener_for(self, profile_id, context):
         return FakePersonal.declares.get(context)
 
-    async def brief(self, hypotheses, context, profile_id, listener="familiar"):
+    def resolve_audience(self, profile_id, context, audience_id="", declared=None):
+        if profile_id in self.known_ids() and audience_id == "priya":
+            return ResolvedAudience(
+                audience_id="priya",
+                audience_label="Priya",
+                audience_kind="person",
+                listener="familiar",
+                style=CommunicationRegister(
+                    brevity="natural", courtesy="please", formality="informal"
+                ),
+                listener_source="audience",
+                style_source="audience",
+            )
+        listener = declared or FakePersonal.declares.get(context) or (
+            "unfamiliar" if context == "outdoors" else "familiar"
+        )
+        return ResolvedAudience(
+            audience_label="Usual here",
+            listener=listener,
+            style=CommunicationRegister(),
+            listener_source=(
+                "place"
+                if declared
+                else "profile"
+                if FakePersonal.declares.get(context)
+                else "setting"
+            ),
+            style_source="profile",
+        )
+
+    async def brief(
+        self, hypotheses, context, profile_id, listener="familiar", audience_id=""
+    ):
         FakePersonal.briefs.append((profile_id, context))
         FakePersonal.stances.append((context, listener))
         if profile_id not in self.known_ids():
             return None
         return PersonalBrief(profile_id=profile_id, profile_label="Krishnan", speaker_note="note")
 
-    async def remember(self, profile_id, context, heard, message, listener="familiar"):
-        FakePersonal.remembered.append((profile_id, heard, message))
-        FakePersonal.stances.append((context, listener))
-        return True, False, "stored"
-
-
 def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersonal, places_path=None):
     FakeSpeech.spoken = []
     FakeChain.stances = []
+    FakeChain.styles = []
     FakePersonal.briefs = []
     FakePersonal.stances = []
-    FakePersonal.remembered = []
     FakePersonal.declares = {}
+    FakePersonal.current = PersonaProfile(id="user", label="You", baseline=False)
     monkeypatch.setattr(main, "create_backend", lambda settings: FakeBackend())
     monkeypatch.setattr(main, "GroqMessageChain", chain)
     monkeypatch.setattr(main, "GroqSpeech", speech)
@@ -183,7 +238,13 @@ def client(monkeypatch, chain=FakeChain, speech=FakeSpeech, personal=FakePersona
     return TestClient(main.app)
 
 
-def _post(api, context: str | None = None, persona: str | None = None, listener: str | None = None):
+def _post(
+    api,
+    context: str | None = None,
+    persona: str | None = None,
+    listener: str | None = None,
+    audience: str | None = None,
+):
     audio = np.sin(np.linspace(0, 100, 8_000)).astype(np.float32) * 0.1
     form = {}
     if context:
@@ -192,6 +253,8 @@ def _post(api, context: str | None = None, persona: str | None = None, listener:
         form["persona"] = persona
     if listener:
         form["listener"] = listener
+    if audience:
+        form["audience"] = audience
     return api.post(
         "/api/v1/transcriptions",
         files={"audio": ("voice.wav", encode_wav(audio), "audio/wav")},
@@ -346,12 +409,94 @@ def test_a_profile_reaches_the_message_chain(monkeypatch) -> None:
     assert FakePersonal.briefs == [("krishnan", "home")]
 
 
+def test_an_explicit_audience_freezes_listener_and_style(monkeypatch) -> None:
+    with client(monkeypatch) as api:
+        response = _post(
+            api,
+            context="outdoors",
+            persona="krishnan",
+            listener="unfamiliar",
+            audience="priya",
+        )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["listener"] == "familiar"
+    assert body["audience"]["audience_id"] == "priya"
+    assert body["audience"]["audience_label"] == "Priya"
+    assert body["audience"]["listener_source"] == "audience"
+    assert body["audience"]["style"]["courtesy"] == "please"
+    assert FakeChain.stances[-1] == ("outdoors", "familiar")
+    assert FakeChain.styles[-1].formality == "informal"
+
+
+def test_idle_preview_and_transcription_use_the_same_audience_resolver(monkeypatch) -> None:
+    request = {
+        "context": "outdoors",
+        "persona": "krishnan",
+        "audience": "priya",
+        "declared_listener": "unfamiliar",
+    }
+    with client(monkeypatch) as api:
+        preview = api.post("/api/v1/audience/resolve", json=request)
+        result = _post(
+            api,
+            context="outdoors",
+            persona="krishnan",
+            listener="unfamiliar",
+            audience="priya",
+        )
+    assert preview.status_code == 200
+    assert result.status_code == 200
+    assert preview.json() == result.json()["audience"]
+
+
 def test_a_request_without_a_profile_never_asks_the_personal_layer(monkeypatch) -> None:
     with client(monkeypatch) as api:
         response = _post(api)
     assert response.status_code == 200
     assert response.json()["persona"] is None
     assert FakePersonal.briefs == []
+
+
+def test_complete_profile_document_round_trips_without_losing_audiences(monkeypatch) -> None:
+    document = {
+        "label": "Animesh",
+        "blurb": "My reviewed profile.",
+        "context_default": "home",
+        "listener_by_setting": {"outdoors": "unfamiliar"},
+        "style": {"brevity": "natural", "courtesy": "plain", "formality": "neutral"},
+        "style_by_setting": {
+            "care": {"brevity": "complete", "courtesy": "please", "formality": "formal"}
+        },
+        "lexicon": [
+            {
+                "id": "user/person/priya",
+                "word": "priya",
+                "aliases": [],
+                "display": "Priya",
+                "kind": "person",
+            }
+        ],
+        "specializations": [],
+        "audiences": [
+            {
+                "id": "priya",
+                "label": "Priya",
+                "relationship": "Daughter",
+                "listener": "familiar",
+                "style": {"brevity": "natural", "courtesy": "please", "formality": "informal"},
+                "visible_in_settings": ["home"],
+            }
+        ],
+    }
+    with client(monkeypatch) as api:
+        saved = api.put("/api/v1/profile", json=document)
+        read = api.get("/api/v1/profile")
+    assert saved.status_code == 200
+    assert saved.json()["profile"]["audiences"][0]["label"] == "Priya"
+    assert read.status_code == 200
+    assert read.json()["label"] == "Animesh"
+    assert read.json()["audiences"][0]["style"]["formality"] == "informal"
 
 
 def test_an_unknown_profile_is_a_warning_and_still_speaks(monkeypatch) -> None:
@@ -367,7 +512,7 @@ def test_an_unknown_profile_is_a_warning_and_still_speaks(monkeypatch) -> None:
 def test_the_personal_layer_failing_to_load_leaves_transcription_working(monkeypatch) -> None:
     class Broken:
         def __init__(self, settings):
-            raise RuntimeError("no embedding bundle")
+            raise RuntimeError("profile store unavailable")
 
     with client(monkeypatch, personal=Broken) as api:
         assert api.get("/api/v1/health").json()["personal_ready"] is False
@@ -377,28 +522,14 @@ def test_the_personal_layer_failing_to_load_leaves_transcription_working(monkeyp
     assert response.json()["messages"][0]["corrected_text"] == "I would like some water."
 
 
-def test_an_accepted_message_is_handed_to_the_store(monkeypatch) -> None:
+def test_persistent_accepted_history_endpoint_does_not_exist(monkeypatch) -> None:
     with client(monkeypatch) as api:
         response = api.post(
             "/api/v1/accepted",
-            json={"persona": "krishnan", "context": "home", "heard": "water", "message": "I would like some water."},
+            headers={"X-Echora-Client": "1"},
+            json={"persona": "krishnan", "heard": "tea", "message": "Tea, please."},
         )
-    assert response.json() == {"stored": True, "merged": False, "reason": "stored"}
-    assert FakePersonal.remembered == [("krishnan", "water", "I would like some water.")]
-
-
-def test_remembering_is_never_an_error_when_the_layer_is_down(monkeypatch) -> None:
-    class Broken:
-        def __init__(self, settings):
-            raise RuntimeError("no embedding bundle")
-
-    with client(monkeypatch, personal=Broken) as api:
-        response = api.post(
-            "/api/v1/accepted",
-            json={"persona": "krishnan", "heard": "water", "message": "I would like some water."},
-        )
-    assert response.status_code == 200
-    assert response.json()["stored"] is False
+    assert response.status_code == 404
 
 
 # ------------------------------------------------------------------- places
@@ -525,18 +656,7 @@ def test_an_unknown_listener_is_refused_but_an_absent_one_is_not(monkeypatch) ->
         assert _post(api, context="home").status_code == 200
 
 
-def test_the_stance_reaches_the_personal_layer_and_the_store(monkeypatch) -> None:
+def test_the_stance_reaches_the_personal_layer(monkeypatch) -> None:
     with client(monkeypatch) as api:
         _post(api, context="outdoors", persona="krishnan")
-        assert ("outdoors", "unfamiliar") in FakePersonal.stances
-        api.post(
-            "/api/v1/accepted",
-            json={
-                "persona": "krishnan",
-                "context": "outdoors",
-                "listener": "unfamiliar",
-                "heard": "washroom",
-                "message": "Where is the washroom?",
-            },
-        )
         assert ("outdoors", "unfamiliar") in FakePersonal.stances

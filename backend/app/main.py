@@ -16,11 +16,17 @@ from .asr.engine import EXPECTED_ADAPTER_SHA256
 from .audio import AudioValidationError, decode_audio
 from .config import Settings, load_settings
 from .messaging import GroqMessageChain, GroqSpeech
-from .personal import USER_PROFILE_ID, Personalizer
+from .personal import (
+    USER_PROFILE_ID,
+    PersonaProfile,
+    Personalizer,
+    UserProfileInput,
+    UserProfileSaveResponse,
+)
 from .places import PlaceStore, default_settings
 from .schemas import (
-    AcceptedMessageRequest,
-    AcceptedMessageResponse,
+    AudienceResolutionRequest,
+    CommunicationRegister,
     CommunicationContext,
     HealthResponse,
     Listener,
@@ -30,6 +36,7 @@ from .schemas import (
     PlaceSettingsRequest,
     ProfileRequest,
     ProfileResponse,
+    ResolvedAudience,
     SpeechAudio,
     SpeechRequest,
     Timing,
@@ -54,6 +61,8 @@ async def lifespan(app: FastAPI):
         app.state.asr_error = f"{type(error).__name__}: {error}"
     app.state.message_chain = GroqMessageChain(settings)
     app.state.speech = GroqSpeech(settings)
+    from .verification import VerificationRuntime
+    app.state.verification = VerificationRuntime()
     # Personal context loads like the recognizer -- eagerly, and never fatally.
     # Without it every message is produced exactly as it was before this layer.
     app.state.personal = None
@@ -67,7 +76,20 @@ async def lifespan(app: FastAPI):
     # location has to keep working when personal context is off or no profile is
     # picked, so this store stands on its own and never fails the app.
     app.state.places = PlaceStore(settings.places_path)
-    yield
+    # One process owns recognition, profiles, message revisions and playback.
+    # The communication service borrows this initialized runtime rather than
+    # loading another checkpoint or making requests to a second local server.
+    from communication.backend.app import app as communication_app, lifespan as communication_lifespan
+    previous_runtime = getattr(communication_app.state, "runtime", None)
+    communication_app.state.runtime = app.state
+    try:
+        async with communication_lifespan(communication_app):
+            yield
+    finally:
+        if previous_runtime is None:
+            del communication_app.state.runtime
+        else:
+            communication_app.state.runtime = previous_runtime
 
 
 app = FastAPI(
@@ -79,14 +101,37 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=False,
-    allow_methods=["GET", "POST"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT"],
     allow_headers=["*"],
 )
 
 
 def _settings() -> Settings:
     return app.state.settings
+
+
+def _resolve_audience(
+    persona: str,
+    context: CommunicationContext,
+    audience: str = "",
+    declared_listener: Listener | None = None,
+) -> ResolvedAudience:
+    """One resolver shared by the idle preview and frozen audio request."""
+    if app.state.personal is not None:
+        return app.state.personal.resolve_audience(
+            persona, context, audience, declared_listener
+        )
+    listener = resolve_listener(context, declared=declared_listener)
+    return ResolvedAudience(
+        audience_label=(
+            "Someone who knows you" if listener == "familiar" else "Someone new"
+        ),
+        listener=listener,
+        style=CommunicationRegister(),
+        listener_source="place" if declared_listener is not None else "setting",
+        style_source="default",
+    )
 
 
 @app.get("/api/v1/health", response_model=HealthResponse)
@@ -135,12 +180,24 @@ async def model_info() -> ModelInfo:
     )
 
 
+@app.post("/api/v1/audience/resolve", response_model=ResolvedAudience)
+async def resolve_audience_preview(request: AudienceResolutionRequest) -> ResolvedAudience:
+    """Resolve what the idle screen will freeze if recording starts now."""
+    return _resolve_audience(
+        request.persona,
+        request.context,
+        request.audience,
+        request.declared_listener,
+    )
+
+
 @app.post("/api/v1/transcriptions", response_model=TranscriptionResponse)
 async def transcribe(
     audio: UploadFile = File(...),
     context: str = Form(default="general"),
     persona: str = Form(default=""),
     listener: str = Form(default=""),
+    audience: str = Form(default=""),
 ) -> TranscriptionResponse:
     settings = _settings()
     if context not in SUPPORTED_CONTEXTS:
@@ -181,14 +238,11 @@ async def transcribe(
     # actually in), then what the profile says it usually is for this setting,
     # then the setting's own default. Every step falls back, so an absent or
     # unloadable profile lands exactly where the setting alone would.
-    by_profile = (
-        app.state.personal.listener_for(persona, selected_context)
-        if persona and app.state.personal is not None
-        else None
+    declared_listener: Listener | None = listener or None  # type: ignore[assignment]
+    resolved_audience = _resolve_audience(
+        persona, selected_context, audience, declared_listener
     )
-    selected_listener: Listener = resolve_listener(
-        selected_context, listener or None, by_profile  # type: ignore[arg-type]
-    )
+    selected_listener = resolved_audience.listener
     # An unknown profile is a warning, never a rejection. Unlike the setting, it is
     # not part of the prompt, and a stale value in the interface must never stand
     # between the speaker and a spoken message.
@@ -196,17 +250,29 @@ async def transcribe(
     profile_warning: str | None = None
     if persona and app.state.personal is not None:
         brief = await app.state.personal.brief(
-            raw.hypotheses, selected_context, persona, selected_listener
+            raw.hypotheses,
+            selected_context,
+            persona,
+            selected_listener,
+            resolved_audience.audience_id or "",
         )
         if persona not in app.state.personal.known_ids():
             profile_warning = f"Unknown profile '{persona}'; this message was not personalized"
     chain = await app.state.message_chain.run(
-        raw.hypotheses, selected_context, brief=brief, listener=selected_listener
+        raw.hypotheses,
+        selected_context,
+        brief=brief,
+        listener=selected_listener,
+        register=resolved_audience.style,
     )
     recommended = chain.ranker.selected_message_id
     warnings = list(chain.warnings)
     if profile_warning:
         warnings.append(profile_warning)
+    if audience and resolved_audience.audience_id is None:
+        warnings.append(
+            f"Unknown audience '{audience}'; the usual listener for this setting was used"
+        )
     # One surviving message means nothing is left to disambiguate, so it is spoken
     # on arrival. Synthesizing it here rather than in a follow-up request is what
     # lets the browser play it the instant the screen renders.
@@ -225,6 +291,7 @@ async def transcribe(
         device=raw.device,
         context=selected_context,
         listener=selected_listener,
+        audience=resolved_audience,
         persona=persona or None,
         hypotheses=raw.hypotheses,
         audio_quality=raw.audio_quality,
@@ -266,25 +333,6 @@ async def personas() -> list[PersonaSummary]:
     return app.state.personal.personas()
 
 
-@app.post("/api/v1/accepted", response_model=AcceptedMessageResponse)
-async def accepted(request: AcceptedMessageRequest) -> AcceptedMessageResponse:
-    """Record a message the speaker settled on, so later utterances can learn from it.
-
-    Never an error. Failing to remember something is not worth telling a speaker
-    about mid-conversation, and the message has already been said.
-    """
-    if app.state.personal is None:
-        return AcceptedMessageResponse(stored=False, reason="personal context is unavailable")
-    stored, merged, reason = await app.state.personal.remember(
-        request.persona,
-        request.context,
-        request.heard,
-        request.message,
-        request.listener,
-    )
-    return AcceptedMessageResponse(stored=stored, merged=merged, reason=reason)
-
-
 @app.get("/api/v1/places", response_model=PlaceSettings)
 async def read_places() -> PlaceSettings:
     """The known places and whether location may choose between them.
@@ -317,19 +365,29 @@ async def write_places(request: PlaceSettingsRequest) -> PlaceSettings:
         raise HTTPException(status_code=503, detail=f"Places could not be saved: {error}")
 
 
-@app.get("/api/v1/profile", response_model=ProfileResponse)
-async def read_profile(persona: str = USER_PROFILE_ID) -> ProfileResponse:
+@app.get("/api/v1/profile", response_model=PersonaProfile)
+async def read_profile(persona: str = USER_PROFILE_ID) -> PersonaProfile:
     """What Echora currently thinks it knows, so the speaker can see and change it."""
     if app.state.personal is None:
-        return ProfileResponse(saved=False, reason="personal context is unavailable")
+        raise HTTPException(status_code=503, detail="personal context is unavailable")
     profile = app.state.personal.describe(persona)
     if profile is None:
-        return ProfileResponse(saved=False, reason="no such profile")
-    return ProfileResponse(
-        saved=True,
-        lexicon_size=len(profile.lexicon),
-        specialization_size=len(profile.specializations),
-    )
+        raise HTTPException(status_code=404, detail="no such profile")
+    return profile
+
+
+@app.put("/api/v1/profile", response_model=UserProfileSaveResponse)
+async def replace_profile(request: UserProfileInput) -> UserProfileSaveResponse:
+    """Atomically save the complete speaker-reviewed profile document."""
+    if app.state.personal is None:
+        raise HTTPException(status_code=503, detail="Personal context is unavailable")
+    try:
+        profile, refused = await asyncio.to_thread(
+            app.state.personal.save_user_document, request
+        )
+    except Exception as error:
+        raise HTTPException(status_code=422, detail=f"Profile could not be saved: {error}")
+    return UserProfileSaveResponse(profile=profile, refused=refused)
 
 
 @app.post("/api/v1/profile", response_model=ProfileResponse)
@@ -351,3 +409,13 @@ async def write_profile(request: ProfileRequest) -> ProfileResponse:
         refused=refused,
         reason="saved",
     )
+
+
+# Keep the existing native API while web and native share the same service.
+# Specific /api/v1 routes are matched first; all revision-bound communication
+# routes are served by the mounted application in this very same process.
+from communication.backend.app import app as communication_app
+from .native import router as native_router
+
+app.include_router(native_router)
+app.mount("/", communication_app)

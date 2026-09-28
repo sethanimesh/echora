@@ -36,7 +36,7 @@ def test_a_first_run_ships_three_untagged_places_with_detection_off() -> None:
     assert settings.auto_detect is False
     assert all(place.builtin and not place.tagged for place in settings.places)
     # Every built-in borrows the context of the same name, so a place and a
-    # stored history record read identically.
+    # request and profile read identically.
     assert all(place.context == place.id for place in settings.places)
 
 
