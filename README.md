@@ -108,3 +108,5 @@ The Python runner isolates personal storage and blocks external connections. CI 
 Groq, Fish, optional Gemini, and remote recognition receive the inputs required by their selected features. Profiles use local SQLite. Tagged coordinates are stored through the local API and matched in the client. This is a local-first application with optional cloud providers. [Configuration and data →](docs/local-development.md#configuration-and-data)
 
 See the [development record](docs/development-history.md) for the preserved chronology and [contributions](docs/contributions.md) for upstream components and attribution boundaries.
+
+The public repository retains training code, evaluation predictions, model identities, design decisions, contract tests, and documented failures. Personal recordings, transcript sidecars, individual facial-trial exports, and local audit originals stay in ignored storage. Published personal smoke-test results use stable recording aliases; their literal wording and measurements are preserved. See [research evidence boundaries](research/README.md#public-evidence-and-private-inputs).

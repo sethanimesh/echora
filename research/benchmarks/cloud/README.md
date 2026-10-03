@@ -1,5 +1,7 @@
 # L40S foundation gate handoff
 
+Deployment addresses are user-supplied. Set `POD_HOST` and `POD_SSH_PORT` to your own Pod endpoint before running the SSH/SCP examples; the original endpoint is omitted from this public recipe.
+
 This is the reproducible handoff for the first paid-GPU experiment. It compares
 literal ASR from the official, untouched `nvidia/parakeet-tdt-1.1b` foundation
 against the official, untouched `Qwen/Qwen3-ASR-1.7B-hf` foundation on the same
@@ -29,16 +31,16 @@ partial download remained available under `/workspace`.
 
 Current RunPod SSH command:
 
-    ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 root@160.250.71.211 -p 59902
+    ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 root@${POD_HOST} -p ${POD_SSH_PORT}
 
 ## Continue from the current RunPod state
 
 First, from the project root on the Mac, transfer the new run script (the
 original uploaded bundle predates this handoff file):
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 59902 \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
       research/benchmarks/cloud/run_parakeet_gate.sh \
-      root@160.250.71.211:/workspace/echora/research/benchmarks/run_parakeet_gate.sh
+      root@${POD_HOST}:/workspace/echora/research/benchmarks/run_parakeet_gate.sh
 
 Then SSH into the machine and run:
 
@@ -62,8 +64,8 @@ lines here instead of improvising a substitute:
 
 Run this from the project root on the Mac:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 59902 \
-      root@160.250.71.211:/workspace/echora/research/benchmarks/results/foundation_gate/parakeet_tdt_1_1b.tsv \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/research/benchmarks/results/foundation_gate/parakeet_tdt_1_1b.tsv \
       research/benchmarks/results/foundation_gate/parakeet_tdt_1_1b.tsv
 
 Confirm that it has the header plus all 400 results:

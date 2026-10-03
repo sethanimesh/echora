@@ -1,5 +1,7 @@
 # Qwen command v3: one complete literal-ASR experiment
 
+Deployment addresses are user-supplied. Set `POD_HOST` and `POD_SSH_PORT` to your own Pod endpoint before running the SSH/SCP examples; the original endpoint is omitted from this public recipe.
+
 This is the next full experiment for the data we can actually obtain. It does
 not wait for another corpus and it does not run a series of paid micro-tests.
 
@@ -72,7 +74,7 @@ shasum -a 256 /private/tmp/echora-qwen-command-v3.tar.gz
 If it is missing, attach the SSD and rebuild it from any Mac directory:
 
 ```bash
-cd "/Users/animesh/Animesh/Project 2.0/echora"
+cd "/path/to/echora"
 
 ./research/training/cloud/prepare_qwen_command_v3_bundle.sh \
   /private/tmp/echora-qwen-command-v3.tar.gz \
@@ -88,31 +90,31 @@ minutes and produces an archive of about 2.2 GB.
 Set the host and port shown by RunPod in the same Mac terminal:
 
 ```bash
-COMMAND_V3_HOST=202.181.159.233
-COMMAND_V3_PORT=19317
+COMMAND_V3_HOST=${POD_HOST}
+COMMAND_V3_PORT=${POD_SSH_PORT}
 ```
 
 Upload from the Mac:
 
 ```bash
 scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-  -P 19317 \
+  -P ${POD_SSH_PORT} \
   /private/tmp/echora-qwen-command-v3.tar.gz \
-  root@202.181.159.233:/workspace/
+  root@${POD_HOST}:/workspace/
 ```
 
 Connect:
 
 ```bash
 ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-  -p 19317 \
-  root@202.181.159.233
+  -p ${POD_SSH_PORT} \
+  root@${POD_HOST}
 ```
 
 Direct command:
 
 ```bash
-ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -p 19317 root@202.181.159.233
+ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -p ${POD_SSH_PORT} root@${POD_HOST}
 ```
 
 ## Step 3 — Extract and set up the Pod
@@ -226,8 +228,8 @@ Run on the Mac in the terminal where the Pod connection is configured:
 mkdir -p "/Volumes/Extreme Pro/echora/checkpoints"
 
 scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-  -P 19317 -r \
-  root@202.181.159.233:/workspace/echora/checkpoints/qwen3-asr-1.7b-command-v3 \
+  -P ${POD_SSH_PORT} -r \
+  root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-command-v3 \
   "/Volumes/Extreme Pro/echora/checkpoints/"
 ```
 

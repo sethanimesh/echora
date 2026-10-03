@@ -2,7 +2,7 @@
 
 Implemented 5 September 2026. Current status: **experiment inactive; Gemini-only
 facial analysis selected by the user** after the first real-face trial. The
-local model and reports are retained. The trial establishes agreement and timing,
+local model setup and aggregate results are retained. The trial establishes agreement and timing,
 not a general accuracy ranking.
 
 ## What is active
@@ -128,7 +128,7 @@ experiment command makes one explicit trial and does not use app counters.
 4. Open **Facial model comparison** below Your delivery. Read the result and
    time for each model. Label the test after analysis; that label is never sent
    to either model.
-5. Apply the single suggested delivery and Confirm & speak if desired. Mark
+5. Apply the single suggested delivery and use Speak if desired. Mark
    how the speech sounded, then **Save comparison report**.
 6. Repeat with a comfortable smile, keeping it through the end of the phrase.
    Later add head movement, poor lighting and out-of-view controls. Do not
@@ -171,9 +171,7 @@ promote the local model based solely on the blank-image test or reported scores.
 
 ## First user-submitted real-face trial — 5 September 2026
 
-[Original exported report](reports/2026-09-05T152748-user-trial.json), timestamp
-15:27:48.997 UTC (20:57:48.997 India time). The report is preserved as supplied;
-no images or audio accompanied it.
+This summary retains the observed outputs and aggregate timing from one user-submitted trial. The original timestamped export and individual frame scores are kept privately; no images or audio accompanied the export.
 
 | Check | Local EmotiEffLib | Gemini Flash |
 | --- | --- | --- |
@@ -182,9 +180,7 @@ no images or audio accompanied it.
 | Facial tone | Warm | Warm |
 | Processing time | 154 ms | 5,764 ms |
 
-All three local frames passed the existing score and margin thresholds. Scores
-were 0.7798, 0.8098 and 0.7216; these are uncalibrated classifier scores, not
-accuracy measurements. Local processing was 37.4 times faster than Gemini's
+All three local frames passed the existing score and margin thresholds. These are uncalibrated classifier scores, not accuracy measurements. Local processing was 37.4 times faster than Gemini's
 facial check in this single trial (5.610 seconds less). This does not measure
 end-to-end recording/voice latency or establish general speed/accuracy.
 

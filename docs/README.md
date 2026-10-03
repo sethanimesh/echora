@@ -17,4 +17,4 @@
 | How do verification and explicit memory work? | [Verification and memory](verification-and-memory.md) |
 | How is the local application configured? | [Local development](local-development.md) |
 
-The portfolio documentation and decision records were written retrospectively on 28 September 2026. They describe implementation and evidence available on that date. Historical experiment recipes remain under `research/`; machine-specific paths there record the original environment rather than fresh-clone prerequisites.
+The portfolio documentation and decision records were written retrospectively on 28 September 2026. They describe implementation and evidence available on that date. Historical experiment recipes remain under `research/`; local home paths and cloud endpoints are replaced with public placeholders. Historical external-storage layouts describe the original setup rather than fresh-clone prerequisites. The [technical writeup](echora-technical-writeup.md) now describes the current verification and explicit-memory lifecycle.

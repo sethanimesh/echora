@@ -14,4 +14,4 @@ The main communication screen is `app/page.tsx`. Its helpers own recording, plac
 
 Local adapted English uses a separate validated acoustic decision for automatic selection. A single generated suggestion cannot resolve uncertain audio; all literal alternatives remain selectable. Explicit **Remember this message** stores only the displayed revision under the selected profile. Memory management offers individual deletion, clear and writable-profile deletion. Server invalidation events cancel dependent queued or active playback, including delayed confirmation responses.
 
-The original Sites/Cloudflare scaffold is not part of the running app. See the repository README for provider configuration, profile migration, and the chosen immediate-speech and ten-minute follow-up policies.
+See the repository README for provider configuration, profile migration, and the chosen immediate-speech and ten-minute follow-up policies. Generic UI components are retained only where the client uses them; vendored accessibility runtimes and their source manifests support the optional camera/gaze features.

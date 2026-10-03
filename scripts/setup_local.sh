@@ -8,10 +8,6 @@ command -v python3 >/dev/null || { echo "python3 is required" >&2; exit 1; }
 command -v npm >/dev/null || { echo "npm is required" >&2; exit 1; }
 command -v ffmpeg >/dev/null || { echo "ffmpeg is required (brew install ffmpeg)" >&2; exit 1; }
 
-if git rev-parse --git-dir >/dev/null 2>&1; then
-  git config core.hooksPath .githooks
-fi
-
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
 .venv/bin/python -m pip install -r backend/requirements-dev.txt

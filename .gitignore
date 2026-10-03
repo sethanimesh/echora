@@ -69,3 +69,10 @@ communication/.venv*/
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
+
+# Private audit originals and exported user-trial reports.
+data/private/
+communication/experiments/facial-cues/reports/
+.claude/
+rewrite_history.py
+research/benchmarks/clips/*.txt

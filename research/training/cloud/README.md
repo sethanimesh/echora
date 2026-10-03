@@ -1,5 +1,7 @@
 # Qwen Gate 2 — L40S runbook
 
+Deployment addresses are user-supplied. Set `POD_HOST` and `POD_SSH_PORT` to your own Pod endpoint before running the SSH/SCP examples; the original endpoint is omitted from this public recipe.
+
 > Gate 2 is complete. For the full TORGO adaptation, use
 > `research/training/PILOT-README.md`; this file is retained as the mechanics-probe
 > record.
@@ -44,7 +46,7 @@ with a forward/backward pass before the tiny overfit begins.
 Open Terminal and start from the project root. This avoids the path mistake
 that happened with the first gate:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     chmod +x research/training/cloud/prepare_qwen_gate2_bundle.sh
     research/training/cloud/prepare_qwen_gate2_bundle.sh
 
@@ -67,10 +69,10 @@ No automatic Pod shutdown is installed. You remain in control of stopping it.
 
 Use this current RunPod endpoint from the SSH command you provided:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 21605 \
-      /private/tmp/echora-qwen-gate2.tar.gz root@195.26.232.139:/workspace/
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      /private/tmp/echora-qwen-gate2.tar.gz root@${POD_HOST}:/workspace/
 
-    ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 root@195.26.232.139 -p 21605
+    ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 root@${POD_HOST} -p ${POD_SSH_PORT}
 
 Everything from the next section runs inside the RunPod SSH session.
 
@@ -123,30 +125,30 @@ Do not rerun with changed layers, learning rate, model, GPU, or data.
 
 After `QWEN_GATE2_DONE`, open a second Terminal window on the Mac:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     mkdir -p research/training/results/qwen3-asr-1.7b-gate2-v1
     mkdir -p "/Volumes/Extreme Pro/echora/configs/qwen3-asr-1.7b-gate2-v1"
     mkdir -p "/Volumes/Extreme Pro/echora/checkpoints/qwen3-asr-1.7b-gate2-v1"
 
 Use the same endpoint for the data copy:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 21605 \
-      root@195.26.232.139:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/result.json \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/result.json \
       research/training/results/qwen3-asr-1.7b-gate2-v1/result.json
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 21605 \
-      root@195.26.232.139:/workspace/echora/qwen_gate2.log \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/qwen_gate2.log \
       research/training/results/qwen3-asr-1.7b-gate2-v1/qwen_gate2.log
 
 Copy the frozen configuration and both resumable checkpoints to the SSD:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 21605 \
-      root@195.26.232.139:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/qwen_gate2_probe.json \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/qwen_gate2_probe.json \
       "/Volumes/Extreme Pro/echora/configs/qwen3-asr-1.7b-gate2-v1/"
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 21605 \
-      root@195.26.232.139:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/checkpoint-step-18.pt \
-      root@195.26.232.139:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/checkpoint-resumed-step-19.pt \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/checkpoint-step-18.pt \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/checkpoint-resumed-step-19.pt \
       "/Volumes/Extreme Pro/echora/checkpoints/qwen3-asr-1.7b-gate2-v1/"
 
 Confirm all four important files exist:

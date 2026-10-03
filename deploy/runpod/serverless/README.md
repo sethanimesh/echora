@@ -34,14 +34,14 @@ The worker resolves the cached snapshot under `/runpod-volume/huggingface-cache/
 export RUNPOD_ENDPOINT_ID="your-endpoint-id"
 export RUNPOD_API_KEY="your-api-key"
 .venv/bin/python deploy/runpod/serverless/client.py \
-  research/benchmarks/clips/20260815-135933.wav
+  /path/to/private-clip.wav
 ```
 
 For SDK-style local handler testing, generate an input file and run the container with a GPU Linux host:
 
 ```bash
 .venv/bin/python deploy/runpod/serverless/make_test_input.py \
-  research/benchmarks/clips/20260815-135933.wav \
+  /path/to/private-clip.wav \
   deploy/runpod/serverless/test_input.json
 python deploy/runpod/serverless/handler.py --test_input "$(cat deploy/runpod/serverless/test_input.json)"
 ```

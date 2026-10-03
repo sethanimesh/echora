@@ -5,9 +5,9 @@
     "wer": 0.2222222222222222,
     "cer": 0.13157894736842105,
     "transcripts": {
-      "20260815-135933.wav": "I want water.",
-      "20260815-135957.wav": "gotten",
-      "20260815-140043.wav": "I want water, please."
+      "sample-01.wav": "I want water.",
+      "sample-02.wav": "gotten",
+      "sample-03.wav": "I want water, please."
     }
   },
   "pause_stress": {
@@ -15,27 +15,27 @@
       "wer": 0.2222222222222222,
       "cer": 0.18421052631578946,
       "transcripts": {
-        "20260815-135933.wav": "I want water.",
-        "20260815-135957.wav": "high",
-        "20260815-140043.wav": "I want water, please."
+        "sample-01.wav": "I want water.",
+        "sample-02.wav": "high",
+        "sample-03.wav": "I want water, please."
       }
     },
     "1000ms": {
       "wer": 0.2222222222222222,
       "cer": 0.21052631578947367,
       "transcripts": {
-        "20260815-135933.wav": "I want water.",
-        "20260815-135957.wav": "high button",
-        "20260815-140043.wav": "I want water, please."
+        "sample-01.wav": "I want water.",
+        "sample-02.wav": "high button",
+        "sample-03.wav": "I want water, please."
       }
     },
     "2000ms": {
       "wer": 0.2222222222222222,
       "cer": 0.21052631578947367,
       "transcripts": {
-        "20260815-135933.wav": "I want water.",
-        "20260815-135957.wav": "high button",
-        "20260815-140043.wav": "I want water, please."
+        "sample-01.wav": "I want water.",
+        "sample-02.wav": "high button",
+        "sample-03.wav": "I want water, please."
       }
     }
   },

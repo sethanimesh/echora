@@ -1,5 +1,7 @@
 # Qwen TORGO pilot — complete runbook
 
+Deployment addresses are user-supplied. Set `POD_HOST` and `POD_SSH_PORT` to your own Pod endpoint before running the SSH/SCP examples; the original endpoint is omitted from this public recipe.
+
 This is the next experiment after the successful Gate 2 mechanics probe. It is
 an end-to-end literal speech-to-text run, not another six-recording test.
 
@@ -65,7 +67,7 @@ The scripts record this limitation in the frozen config and result metadata.
 
 Start in the project root with the SSD attached:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     test -d "/Volumes/Extreme Pro/echora"
     shasum -a 256 \
       research/training/configs/qwen_torgo_pilot_v1.json \
@@ -111,7 +113,7 @@ Voice subsets anywhere below:
 The builder needs the standard `validated.tsv` (or train/dev/test TSV files)
 and their `clips/` directory. From the project root run:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     .venv/bin/python research/training/prepare_common_voice.py \
       --source data/raw/common_voice \
       --output data/derived/common_voice/pilot-v1 \
@@ -182,20 +184,20 @@ After the Pod starts, do not begin setup until RunPod shows it as running and
 provides the direct SSH command.
 
 Use the current RunPod endpoint and port below in all commands:
-`root@103.196.86.40` on port `47175`.
+`root@${POD_HOST}` on port `${POD_SSH_PORT}`.
 
 ## 5. Upload the archive and verify the GPU
 
 On the Mac:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
       /private/tmp/echora-qwen-pilot-v1.tar.gz \
-      root@103.196.86.40:/workspace/
+      root@${POD_HOST}:/workspace/
 
 Then connect:
 
     ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-      root@103.196.86.40 -p 47175
+      root@${POD_HOST} -p ${POD_SSH_PORT}
 
 Inside the Pod, verify the exact hardware and storage before installing:
 
@@ -324,44 +326,44 @@ are a smoke test, not the checkpoint-selection metric.
 
 On the Mac, create the destinations:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     mkdir -p research/training/results/qwen3-asr-1.7b-torgo-pilot-v1
     mkdir -p "/Volumes/Extreme Pro/echora/configs/qwen3-asr-1.7b-torgo-pilot-v1"
     mkdir -p "/Volumes/Extreme Pro/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1"
 
 Copy the small reports locally:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/result.json \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/run_manifest.json \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/training_history.json \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/result.json \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/run_manifest.json \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/training_history.json \
       research/training/results/qwen3-asr-1.7b-torgo-pilot-v1/
 
 Copy the full literal prediction files and cloud log as well:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 -r \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/predictions \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} -r \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/predictions \
       research/training/results/qwen3-asr-1.7b-torgo-pilot-v1/
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
-      root@103.196.86.40:/workspace/echora/qwen_pilot.log \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/qwen_pilot.log \
       research/training/results/qwen3-asr-1.7b-torgo-pilot-v1/
 
 Copy the deployable adapter and frozen config to the SSD:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/adapter.safetensors \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/adapter_config.json \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/adapter.safetensors \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/adapter_config.json \
       "/Volumes/Extreme Pro/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/"
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/qwen_torgo_pilot_v1.json \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/qwen_torgo_pilot_v1.json \
       "/Volumes/Extreme Pro/echora/configs/qwen3-asr-1.7b-torgo-pilot-v1/"
 
 For continued training, also copy both resumable files to the SSD:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/checkpoint-best.pt \
-      root@103.196.86.40:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/checkpoint-latest.pt \
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/checkpoint-best.pt \
+      root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/checkpoint-latest.pt \
       "/Volumes/Extreme Pro/echora/checkpoints/qwen3-asr-1.7b-torgo-pilot-v1/"
 
 Only stop the Pod after the local sizes and the SHA-256 values recorded in
@@ -399,13 +401,13 @@ and CER across the three clips. Inspect it with:
 On the Mac, generate fixed 0.5, 1.0 and 2.0-second pause-stress copies of the
 three referenced clips:
 
-    cd "/Users/animesh/Animesh/Project 2.0/echora"
+    cd "/path/to/echora"
     .venv/bin/python research/benchmarks/make_pause_stress.py \
       --clips research/benchmarks/clips \
       --output data/derived/pause_stress \
       --seconds 0.5 1.0 2.0
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 -r \
-      data/derived/pause_stress root@103.196.86.40:/workspace/echora/
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} -r \
+      data/derived/pause_stress root@${POD_HOST}:/workspace/echora/
 
 Inside the Pod, transcribe each stress level:
 
@@ -427,8 +429,8 @@ stress tests and never influence checkpoint selection.
 Place a WAV plus an optional same-named transcript sidecar in a local folder,
 for example `new-test/example.wav` and `new-test/example.txt`. Upload it:
 
-    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 47175 -r \
-      new-test root@103.196.86.40:/workspace/echora/
+    scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} -r \
+      new-test root@${POD_HOST}:/workspace/echora/
 
 Then run inside the Pod:
 

@@ -1,5 +1,7 @@
 # Literal ASR v2: Qwen top-5 plus character CTC
 
+Deployment addresses are user-supplied. Set `POD_HOST` and `POD_SSH_PORT` to your own Pod endpoint before running the SSH/SCP examples; the original endpoint is omitted from this public recipe.
+
 This is the exact next experiment. It starts from the verified v1 Qwen adapter,
 trains a monotonic character-CTC branch, then permits a small joint update to
 Qwen's top four audio layers and multimodal projector. The Qwen text decoder
@@ -44,7 +46,7 @@ directory has been copied to the SSD.
 Attach the SSD first. Run this exact command from any Mac directory:
 
 ```bash
-cd "/Users/animesh/Animesh/Project 2.0/echora"
+cd "/path/to/echora"
 
 ./research/training/cloud/prepare_qwen_literal_v2_bundle.sh \
   /private/tmp/echora-qwen-literal-v2.tar.gz \
@@ -60,15 +62,15 @@ does not modify the SSD adapter.
 Use these exact commands for the current Pod:
 
 ```bash
-scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 15936 \
+scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} \
   /private/tmp/echora-qwen-literal-v2.tar.gz \
-  root@91.199.227.82:/workspace/
+  root@${POD_HOST}:/workspace/
 ```
 
 Connect:
 
 ```bash
-ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -p 15936 root@91.199.227.82
+ssh -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -p ${POD_SSH_PORT} root@${POD_HOST}
 ```
 
 ## Step 3 — Extract and set up the Pod
@@ -169,8 +171,8 @@ Run this on the Mac, not the Pod:
 ```bash
 mkdir -p "/Volumes/Extreme Pro/echora/checkpoints"
 
-scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P 15936 -r \
-  root@91.199.227.82:/workspace/echora/checkpoints/qwen3-asr-1.7b-literal-ctc-v2 \
+scp -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 -P ${POD_SSH_PORT} -r \
+  root@${POD_HOST}:/workspace/echora/checkpoints/qwen3-asr-1.7b-literal-ctc-v2 \
   "/Volumes/Extreme Pro/echora/checkpoints/"
 ```
 

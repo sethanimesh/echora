@@ -1,6 +1,6 @@
 {
   "run_id": "qwen3-asr-1.7b-gate2-v1",
-  "source_manifest": "/Users/animesh/Animesh/Project 2.0/Echora/data/derived/torgo/folds/M04/train.jsonl",
+  "source_manifest": "data/derived/torgo/folds/M04/train.jsonl",
   "source_manifest_sha256": "2cec525edfebb52f851090d44e813569aa69b3df883f763f87514d4fbb8a2cdd",
   "config_sha256": "934e7ded6b1bec7d3c8e39e73cf64d241e5c5526c6771dfc6ebd2b4a54157f46",
   "excluded_speakers": [

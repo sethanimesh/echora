@@ -5,18 +5,20 @@
 # The server must already be running on the Pod:
 #   /workspace/echora/research/training/cloud/start_command_v3_server.sh
 #
+# Set ECHORA_POD_HOST and ECHORA_POD_PORT to your own Pod endpoint.
+#
 # Examples:
-#   ./research/training/echora_mic.sh --label animesh --ref "I want water"
+#   ./research/training/echora_mic.sh --label speaker --ref "I want water"
 #   ./research/training/echora_mic.sh --seconds 5 --label helper-voice
-#   ./research/training/echora_mic.sh --file research/benchmarks/clips/20260815-135957.wav --ref "I water"
+#   ./research/training/echora_mic.sh --file /path/to/private-clip.wav --ref "I water"
 #   ./research/training/echora_mic.sh --list-devices
 #
 # Alternatives are raw beam-search output.  Probabilities are relative search
 # scores, not calibrated confidence.  No ranking or semantic repair is applied.
 set -euo pipefail
 
-POD_HOST="${ECHORA_POD_HOST:-202.181.159.233}"
-POD_PORT="${ECHORA_POD_PORT:-19317}"
+POD_HOST="${ECHORA_POD_HOST:-}"
+POD_PORT="${ECHORA_POD_PORT:-}"
 POD_USER="${ECHORA_POD_USER:-root}"
 INBOX=/workspace/echora/serve/inbox
 OUTBOX=/workspace/echora/serve/outbox
@@ -40,7 +42,7 @@ SSH_OPTS=(-o StrictHostKeyChecking=no -o ControlMaster=auto
 pod_ssh() { ssh "${SSH_OPTS[@]}" -p "$POD_PORT" "$POD_USER@$POD_HOST" "$@"; }
 pod_scp() { scp "${SSH_OPTS[@]}" -P "$POD_PORT" "$@"; }
 
-usage() { sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0; }
+usage() { sed -n '2,/^set -euo pipefail/{ /^set -euo pipefail/d; p; }' "$0" | sed 's/^# \{0,1\}//'; exit 0; }
 
 audio_devices() {
   ffmpeg -f avfoundation -list_devices true -i "" 2>&1 \
@@ -82,6 +84,9 @@ while [ $# -gt 0 ]; do
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
 done
+
+: "${POD_HOST:?Set ECHORA_POD_HOST to your Pod endpoint}"
+: "${POD_PORT:?Set ECHORA_POD_PORT to your Pod SSH port}"
 
 command -v ffmpeg >/dev/null || { echo "ffmpeg is required (brew install ffmpeg)" >&2; exit 1; }
 
