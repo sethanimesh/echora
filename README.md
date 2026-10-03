@@ -1,12 +1,11 @@
-# Echora
+# Echora: Assistive Acoustic Model for Pathological Speech (2025–2026)
 
-**A communication assistant that keeps uncertain speech evidence visible while helping a speaker choose and say a message.**
+> ⚠️ **Research Prototype — Not a Clinical Tool**
+> This is a personal research prototype exploring communication support for dysarthric speech.
+> It has **not** been validated for clinical use, accessibility suitability, or individual benefit.
+> See [Limitations](docs/limitations.md) and [Failure Analysis](docs/failure-analysis.md) before any use.
 
-Echora explores communication support for people with difficult-to-understand speech, including stroke survivors. It combines an adapted speech recognizer, constrained message composition, optional personal context, and web/native clients. Its central engineering problem is preserving the speaker's words when a fluent rewrite could conceal a recognition error.
-
-This is a personal research and application prototype. It contains measured ASR experiments and tested interaction contracts; it does not establish clinical benefit or accessibility suitability for an individual.
-
-[Architecture](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Decisions](docs/adr/README.md) · [Run locally](docs/reproducibility.md) · [Failures](docs/failure-analysis.md)
+A research prototype exploring how to preserve literal speech recognition evidence while helping a speaker select a message. **Does not establish clinical benefit, accessibility suitability, or reliable recognition for any individual.**
 
 ## Why this is difficult
 
@@ -20,21 +19,32 @@ This is a personal research and application prototype. It contains measured ASR 
 
 These are separate experiments, not one leaderboard. WER is word error rate; lower is better.
 
-| Experiment | Baseline | Result | Interpretation |
-| --- | --- | --- | --- |
-| Foundation screen, 400 utterances / eight speakers | Parakeet: 45.83% speaker-macro WER | Qwen: 41.90% | Supported foundation selection; not final validation |
-| Command-v3 protected composed-command test | Previous adapter: 72.58% WER | v3: 51.58% | Controlled compositions, not naturally spoken commands |
-| Command-v3 normal-speech retention | 5.23% WER | 5.23% | Retention on this test |
-| Three personal recordings | Previous adapter: 22.22% WER | v3: 44.44% | A real regression |
-| Later verifier, M04 | ASR: 52.62% WER | Fusion: 52.33% | Paired interval crosses zero; improvement not established |
+| Experiment | Data Type | Baseline | Result | Interpretation |
+| --- | --- | --- | --- | --- |
+| Foundation screen, 400 utterances / eight speakers | Development (selection) | Parakeet: 45.83% speaker-macro WER | Qwen: 41.90% | Supported foundation selection; not final validation |
+| Command-v3 protected composed-command test | Held-out test (M04) | Previous adapter: 72.58% WER | v3: 51.58% | Controlled compositions, not naturally spoken commands |
+| Command-v3 normal-speech retention | Held-out test | 5.23% WER | 5.23% | Retention on this test |
+| Three personal recordings | Personal clips (target user) | Previous adapter: 22.22% WER | v3: 44.44% | A real regression |
+| Later verifier, M04 | Held-out test (fusion vs ASR) | ASR: 52.62% WER | Fusion: 52.33% | Paired interval crosses zero; improvement not established |
 
 The separate five-beam command diagnostic finds the exact reference somewhere in the beams for **36.46%** of utterances. This is oracle coverage, not automatic-selection accuracy. The learned verifier's acceptance audit failed its minimum evidence requirement, so **learned automatic selection remains disabled**. [Sources and protocol differences →](docs/evaluation.md)
+
+## Critical Limitations at a Glance
+
+| Limitation | Detail |
+|------------|--------|
+| **Speakers** | Only **8 dysarthric speakers** (TORGO) across all train/dev/test folds |
+| **Task** | Results on **composed commands** (stitched isolated words), not natural speech |
+| **Personal regression** | Released adapter **worsened** from 22.22% → 44.44% WER on 3 target-user clips |
+| **Learned selection** | **Disabled** — acceptance audit failed (14/20 required groups); all results request user choice |
+| **Test overlap** | Held-out speaker M04 shares 227/229 prompt groups with training |
+| **No clinical validation** | No participant study, IRB, or SLP assessment |
 
 ## Interface
 
 ![Echora connected interface](assets/screenshots/main-interface.png)
 
-*Actual application capture with an isolated demonstration store and cloud keys disabled. The recognizer selector exposes the chosen route; recording and typed input are distinct actions. [Typed-message view and walkthrough](docs/demo.md).*
+*Screenshot of running application using **synthetic typed input** (not speech recognition), isolated demonstration profile store, and all cloud provider keys disabled. [Demo walkthrough](docs/demo.md) — does not demonstrate recognition quality or audible playback.*
 
 ## How it works
 
@@ -69,7 +79,7 @@ cd echora
 python3 scripts/reproduce_results.py
 ```
 
-This verifies saved evidence; it does not rerun inference or training. For the application, use an Apple Silicon Mac, Python 3.12–3.14, Node 22.13+, FFmpeg, and the verified model bundle:
+This verifies **saved predictions only** — it does not rerun inference, retrain the adapter, or download models/audio. For the application, use an Apple Silicon Mac, Python 3.12–3.14, Node 22.13+, FFmpeg, and the verified model bundle:
 
 ```sh
 cp .env.example .env

@@ -2,6 +2,13 @@
 
 Entries describe repository milestones, not a reconstructed release schedule.
 
+## Current Status (as of 2026-09-28)
+
+- **Learned automatic selection: DISABLED** — acceptance audit failed (14/20 required)
+- **Personal regression documented:** v3 WER 44.44% vs v1 22.22% on 3 target-user clips
+- **8 speakers total** across all folds — not a population study
+- **Composed commands only** — controlled augmentations, not natural speech
+
 ## 2026-09-28 — Unified application and evidence documentation
 
 - Consolidated web and Expo clients around one backend message, revision, speech and explicit-memory lifecycle.
