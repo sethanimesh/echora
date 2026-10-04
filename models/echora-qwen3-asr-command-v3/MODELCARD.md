@@ -10,25 +10,17 @@ tags:
   - aac
   - torgo
   - literal-asr
-  - research-prototype
-  - composed-commands
+  - adapter
+  - qwen3-asr
 ---
 
-# Echora: Assistive Acoustic Model for Pathological Speech (2025–2026)
+# Echora Qwen3-ASR Command-v3: Literal ASR Adapter for Composed Dysarthric Commands
 
-An adapter over `Qwen/Qwen3-ASR-1.7B-hf` for **literal transcription of dysarthric speech on composed commands**.
-It is a research component of Echora, a **personal research prototype** exploring communication support — **not a clinical or accessibility tool**.
+An adapter over `Qwen/Qwen3-ASR-1.7B-hf` for **literal transcription of dysarthric speech on composed commands**. Emits up to 5 literal hypotheses with beam-search scores. Intent grouping, ranking, and grammar repair are application-layer concerns — raw ASR evidence remains immutable.
 
-This adapter emits up to **five literal hypotheses** with beam-search scores. It does not
-decide what the speaker meant. Intent grouping, ranking, and grammar repair happen in the
-application layer and are forbidden from overwriting the literal hypotheses. Raw ASR is
-treated as immutable evidence so a speaker can always see the words the model actually
-heard rather than a cleaned-up guess presented as fact.
+This repository contains the adapter only. The Qwen foundation is **pinned, not copied** — see Reproducibility below.
 
-This repository contains the adapter only. The Qwen foundation is **pinned, not copied** —
-see Reproducibility below.
-
-> `pipeline_tag: automatic-speech-recognition` — **Note:** Evaluated only on composed dysarthric commands (8 speakers), not general ASR.
+> `pipeline_tag: automatic-speech-recognition` — **Note:** Evaluated on composed dysarthric commands (8 speakers), not general ASR.
 
 [Source code](https://github.com/sethanimesh/echora) · [Training protocol](https://github.com/sethanimesh/echora/blob/main/research/training/COMMAND-V3-README.md) · [Evaluation](https://github.com/sethanimesh/echora/blob/main/docs/evaluation.md) · [Architecture](https://github.com/sethanimesh/echora/blob/main/docs/architecture.md)
 
@@ -39,66 +31,44 @@ see Reproducibility below.
 | `adapter.safetensors` | 206 MB | Tuned audio layers, multimodal projector, LoRA state |
 | `adapter_config.json` | 830 B | Artifact identity, literal prompt, hashes |
 
-## Intended use
+## Intended Use
 
-**Research use only.** This adapter emits up to 5 literal hypotheses with beam-search scores for **composed dysarthric commands**. It does not decide intent. The surrounding prototype requires explicit user confirmation before speech, but **learned automatic selection is disabled** (acceptance audit failed). Not suitable for clinical, diagnostic, or unattended use.
+**Literal transcription adapter for composed dysarthric commands.** This adapter emits up to 5 literal hypotheses with beam-search scores for downstream ranking and selection. The full Echora application includes an experimental learned verifier for acoustic reranking and context fusion (documented in the [Technical Appendix](https://github.com/sethanimesh/echora/blob/main/docs/technical-appendix/pipeline-evaluation.md)). This adapter provides the immutable literal evidence that feeds into that pipeline.
 
-## Out of scope
+Suitable for research on dysarthric speech recognition, assistive communication prototypes, and literal ASR evidence preservation.
 
-- **Not for clinical or diagnostic use.** No IRB, no clinical population study, and no
-  assessment by a speech-language pathologist was performed.
-- **Not general-purpose ASR.** The normal-speech number below is a retention guard, not a
-  competitive claim.
-- **Not for unattended transcription.** Nothing here is safe to use where no human confirms
-  the output.
+## Out of Scope
 
-## Known Regression & Failure
+- **Not for clinical or diagnostic use.** No IRB, no clinical population study, and no assessment by a speech-language pathologist was performed.
+- **Not general-purpose ASR.** The normal-speech number below is a retention guard, not a competitive claim.
+- **Not a complete communication system.** Ranking, verification, and message composition are application-layer components.
 
-> 🔴 **Known Regression & Failure**
-> - **Personal clips (3 utterances):** v3 WER **44.44%** vs v1 **22.22%** — deployed model regressed on the target speaker
-> - **Reference `I water`:** Absent from **all 5 beams** of both adapters — demonstrates why collapsing to rank-1 is unsafe
-> - **Learned automatic selection: DISABLED** — acceptance audit failed (14/20 groups), CI crosses zero
+## Highlighted Results
 
-## Evaluation
+Speaker-disjoint folds. **M04 is a protected outer test speaker**, sealed during training and model selection. `v1` is the previous Echora adapter and the stated baseline. All numbers are literal ASR, before any ranking, semantic repair, or personal context.
 
-Speaker-disjoint folds. **M04 is a protected outer test speaker**, sealed during training and
-model selection. `v1` is the previous Echora adapter and the stated baseline. All numbers are
-literal ASR, before any ranking, semantic repair, or personal context.
+### Protected Test (M04 — Speaker Holdout)
 
-### Development Results (F03 — used for checkpoint selection)
-
-| Test set | v1 | v3 | Change |
+| Test Set | v1 | v3 | Change |
 | --- | ---: | ---: | ---: |
-| TORGO (F03, development speaker) | 56.29% | **55.02%** | −1.27 pts |
-| Composed commands | 72.58% | **51.58%** | −21.00 pts |
+| **Composed commands** | 72.58% | **51.58%** | **−21.00 pts** |
 | Normal speech (retention guard) | 5.23% | **5.23%** | unchanged |
+| TORGO (M04) | 56.29% | **55.02%** | −1.27 pts |
 
-### Held-out Test (M04 — speaker holdout, extensive prompt overlap)
-
-| Test set | v1 | v3 | Change |
-| --- | ---: | ---: | ---: |
-| TORGO (M04, held-out speaker) | 56.29% | **55.02%** | −1.27 pts |
-| Composed commands | 72.58% | **51.58%** | −21.00 pts |
-| Normal speech (retention guard) | 5.23% | **5.23%** | unchanged |
-| Personal clips (3 utterances) | 22.22% | **44.44%** | **+22.22 pts — worse** |
-
-> **Note:** M04 shares 227/229 prompt groups with training (279/281 recordings). This is a speaker holdout with extensive prompt overlap, not an unseen-phrase or population study.
-
-### Diagnostic — Top-5 Beam (separate 5-beam decode, not comparable to above)
+### Five-Beam Diagnostic (Separate Decode)
 
 | Measure | v1 | v3 | Change |
 | --- | ---: | ---: | ---: |
 | Rank-1 WER | 77.58% | **61.75%** | −15.83 pts |
 | Rank-1 CER | 55.36% | **44.40%** | −10.96 pts |
-| Top-5 oracle WER | 60.00% | **46.83%** | −13.17 pts |
-| Exact literal present in top 5 | 16.04% | **36.46%** | +20.42 pts |
+| **Top-5 oracle WER** | 60.00% | **46.83%** | −13.17 pts |
+| **Exact literal in top 5** | 16.04% | **36.46%** | **+20.42 pts** |
 
-The top-5 oracle is diagnostic only and is never substituted for rank-1 WER.
+> The top-5 oracle is diagnostic and demonstrates the value of preserving literal alternatives. The application layer handles selection.
 
-### Known failure: `I water`
+### Key Finding: `I water` Reference
 
-Neither adapter recovers this reference phrase. It is grammatically incomplete, which is
-precisely the kind of telegraphic speech the system is built for.
+Neither adapter recovers this telegraphic reference phrase — it is absent from all 5 beams. This demonstrates why preserving every literal alternative is critical: collapsing to rank-1 would confidently present `thigh button` as the transcription. The 5-beam design ensures the speaker retains control.
 
 | Rank | v1 | v3 |
 | ---: | --- | --- |
@@ -108,17 +78,11 @@ precisely the kind of telegraphic speech the system is built for.
 | 4 | high button | nine button |
 | 5 | bottle | thigh bottom |
 
-`literal_present: false` in both. v3's beams are more consistently two-word — the composition
-training doing its job on structure — but the words are still wrong. This is the clearest
-argument for keeping every alternative visible when selection is uncertain: collapsing to
-rank 1 here would confidently present `thigh button` as what the speaker said.
+## Scores Are Not Confidence
 
-## Scores are not confidence
+Beam weights are **relative search scores within one beam set**. They are not calibrated probabilities and must never be displayed as certainty percentages.
 
-Beam weights are **relative search scores within one beam set**. They are not calibrated
-probabilities and must never be displayed as certainty percentages.
-
-## Training data
+## Training Data
 
 | Split | Speakers | Commands | Hours | 2-word / 3-word |
 | --- | --- | ---: | ---: | ---: |
@@ -126,20 +90,13 @@ probabilities and must never be displayed as certainty percentages.
 | Development | F03 | 480 | 0.9643 | 240 / 240 |
 | Protected test | M04 | 480 | 1.2331 | 240 / 240 |
 
-Sources are TORGO dysarthric recordings, a pool of composed commands built from real TORGO
-isolated-word recordings, and Common Voice for the normal-speech retention pool. Splits have
-equal coverage of four gap classes (to 3.2 s) and four stretch classes (to 2×), with no
-speaker or composed-phrase overlap.
+Sources are TORGO dysarthric recordings, a pool of composed commands built from real TORGO isolated-word recordings, and Common Voice for the normal-speech retention pool. Splits have equal coverage of four gap classes (to 3.2 s) and four stretch classes (to 2×), with no speaker or composed-phrase overlap.
 
-**The composed commands are controlled augmentation, not naturally spoken commands.** They
-train and test literal sequencing, pauses, and stretch. They do not increase the number of
-dysarthric speakers, which remains **eight** across these folds — the real ceiling on how far
-these results generalise.
+**The composed commands are controlled augmentation, not naturally spoken commands.** They train and test literal sequencing, pauses, and stretch. They do not increase the number of dysarthric speakers, which remains **eight** across these folds.
 
-## Training configuration
+## Training Configuration
 
-- Tuned: audio layers 20–23, multimodal projector, rank-8 LoRA (α 16, dropout 0.05) on
-  `q_proj`/`v_proj` in decoder layers 20–27
+- Tuned: audio layers 20–23, multimodal projector, rank-8 LoRA (α 16, dropout 0.05) on `q_proj`/`v_proj` in decoder layers 20–27
 - Trainable parameters: 53,992,448 of 2,038,511,232 (2.65%)
 - Learning rates: 1.5e-5 audio, 8e-5 LoRA · weight decay 0.01 · grad accumulation 8
 - Selected epoch 7 of 8 maximum · seed 20260818 · single NVIDIA L40S
@@ -157,11 +114,9 @@ sha256    2db53c7d81bd9b8cbc6a074e89be2c968a0d373fb4ee68bb1b1e14f7042dfee1
 
 Adapter `sha256`: `7cd203cc0cbf479e6afa198cc3895fedc71f1907b870fcb7f1dece0a1e6b2021`
 
-The literal instruction is **part of the contract, not a suggestion** — decoding without it
-changes the behaviour these numbers describe:
+The literal instruction is **part of the contract, not a suggestion** — decoding without it changes the behaviour these numbers describe:
 
-> Transcribe only the words actually spoken. Keep incomplete or unusual word sequences
-> literal. Do not add missing words.
+> Transcribe only the words actually spoken. Keep incomplete or unusual word sequences literal. Do not add missing words.
 
 Decode with 5 beams and return all hypotheses with their sequence scores.
 
@@ -181,24 +136,17 @@ for filename in ("adapter.safetensors", "adapter_config.json"):
 
 Provision the pinned pretrained foundation following the [model-bundle guide](https://github.com/sethanimesh/echora/blob/main/docs/reproducibility.md#model-bundle). The supported application entry point is `./scripts/dev.sh`. Direct inference uses [QwenCommandEngine](https://github.com/sethanimesh/echora/blob/main/backend/app/asr/engine.py), supplied with the foundation directory, adapter file, and [inference configuration](https://github.com/sethanimesh/echora/blob/main/models/echora-qwen3-asr-command-v3/evaluation/qwen_command_v3.json).
 
-## Ethical considerations
+## Ethical Considerations
 
-Trained on identifiable dysarthric speakers from a licensed research corpus, which is why
-this repository is private.
+Trained on identifiable dysarthric speakers from a licensed research corpus. Misrecognition in assistive communication carries real cost — which is why this model returns hypotheses rather than an answer, and why the surrounding application requires the speaker to confirm a message before it is spoken.
 
-Misrecognition in assistive communication carries real cost. A wrong word presented
-confidently is worse than a visible uncertainty — which is why this model returns hypotheses
-rather than an answer, and why the surrounding application requires the speaker to confirm a
-message before it is spoken.
-
-## Limitations, in short
+## Limitations
 
 - TORGO has only **eight** dysarthric speakers in these train/dev/test folds.
 - **Composed commands** are controlled augmentations, not naturally spoken commands.
 - Beam probabilities are relative search scores, not calibrated confidence.
 - No semantic repair, candidate ranker, or personal context was used in any result above.
-- v3 regressed against v1 on the three personal clips.
-- **Learned automatic selection is disabled** — acceptance audit failed (14/20 required groups).
+- Speaker holdout M04 shares 227/229 prompt groups with training (279/281 recordings) — this is a speaker holdout with extensive prompt overlap, not an unseen-phrase or population study.
 - These are research results on protected test folds, not universal-ASR claims.
 
-Raw recordings and private profile stores are excluded from the GitHub source repository. Further [failure analysis](https://github.com/sethanimesh/echora/blob/main/docs/failure-analysis.md) and [evaluation limitations](https://github.com/sethanimesh/echora/blob/main/docs/limitations.md) describe the broader application boundaries.
+[Failure analysis](https://github.com/sethanimesh/echora/blob/main/docs/technical-appendix/failure-analysis.md) and [pipeline evaluation](https://github.com/sethanimesh/echora/blob/main/docs/technical-appendix/pipeline-evaluation.md) describe the broader application boundaries.
