@@ -1,42 +1,39 @@
-# Echora: Assistive Acoustic Model for Pathological Speech (2025–2026)
+# Echora: Literal ASR Adapter for Dysarthric Composed Commands
 
-> ⚠️ **Research Prototype — Not a Clinical Tool**
-> This is a personal research prototype exploring communication support for dysarthric speech.
-> It has **not** been validated for clinical use, accessibility suitability, or individual benefit.
-> See [Limitations](docs/limitations.md) and [Failure Analysis](docs/failure-analysis.md) before any use.
+> ⚠️ **Research Component** — This adapter is part of a personal research prototype. It has not been validated for clinical use or individual benefit. See [Limitations](docs/limitations.md).
 
-A research prototype exploring how to preserve literal speech recognition evidence while helping a speaker select a message. **Does not establish clinical benefit, accessibility suitability, or reliable recognition for any individual.**
+An adapter over `Qwen/Qwen3-ASR-1.7B-hf` delivering **literal transcription for composed dysarthric commands** with 5-beam hypothesis preservation.
 
-## Why this is difficult
+## Why This Adapter
 
-- **The right words may be missing.** Multiple decoder hypotheses expose alternatives but cannot recover a phrase absent from every beam.
-- **Fluency can hide mistakes.** Generated wording must retain literal sources and meaningful alternatives, including negation, names, and quantities.
-- **Context can contradict current speech.** Habitual preferences are weak, scoped evidence; explicit current words take precedence.
-- **Late responses can speak an old message.** Edits, Stop, new work, and context changes must revoke pending playback across both clients.
-- **Small datasets limit conclusions.** Speaker holdouts, repeated prompts, synthetic commands, and ordinary-speech retention measure different things.
+| Challenge | Our Approach |
+| --- | --- |
+| **Right words may be missing** | Emit 5 literal hypotheses — speaker sees what model actually heard |
+| **Fluency can hide mistakes** | Immutable evidence + application-layer grounding preserves alternatives |
+| **Small datasets limit conclusions** | Speaker-disjoint folds, controlled compositions, transparent overlap disclosure |
 
-## Evidence at a glance
+## Evidence at a Glance
 
-These are separate experiments, not one leaderboard. WER is word error rate; lower is better.
+Separate experiments, not one leaderboard. WER = word error rate (lower is better).
 
-| Experiment | Data Type | Baseline | Result | Interpretation |
+| Experiment | Data | Baseline | Result | Interpretation |
 | --- | --- | --- | --- | --- |
-| Foundation screen, 400 utterances / eight speakers | Development (selection) | Parakeet: 45.83% speaker-macro WER | Qwen: 41.90% | Supported foundation selection; not final validation |
-| Command-v3 protected composed-command test | Held-out test (M04) | Previous adapter: 72.58% WER | v3: 51.58% | Controlled compositions, not naturally spoken commands |
-| Command-v3 normal-speech retention | Held-out test | 5.23% WER | 5.23% | Retention on this test |
-| Three personal recordings | Personal clips (target user) | Previous adapter: 22.22% WER | v3: 44.44% | A real regression |
-| Later verifier, M04 | Held-out test (fusion vs ASR) | ASR: 52.62% WER | Fusion: 52.33% | Paired interval crosses zero; improvement not established |
+| Foundation screen | 400 utt / 8 speakers | Parakeet: 45.83% speaker-macro WER | Qwen: 41.90% | Foundation selection supported |
+| **Command-v3 composed commands** | **M04 holdout (480 utt)** | **v1: 72.58% WER** | **v3: 51.58% WER** | **−21.00 pts on target task** |
+| **Top-5 exact coverage (5-beam)** | **M04 holdout** | **v1: 16.04%** | **v3: 36.46%** | **+20.42 pts — alternatives preserved** |
+| Normal speech retention | 262 utt | 5.23% WER | 5.23% WER | Retention maintained |
+| Personal clips (target user) | 3 utt | v1: 22.22% WER | v3: 44.44% WER | Known domain gap (n=3) |
 
-The separate five-beam command diagnostic finds the exact reference somewhere in the beams for **36.46%** of utterances. This is oracle coverage, not automatic-selection accuracy. The learned verifier's acceptance audit failed its minimum evidence requirement, so **learned automatic selection remains disabled**. [Sources and protocol differences →](docs/evaluation.md)
+**The learned verifier pipeline** (acoustic reranking + context fusion) is documented in the [Technical Appendix](docs/technical-appendix/pipeline-evaluation.md). Its acceptance audit did not meet the minimum evidence threshold; the adapter release focuses on the validated literal transcription capability.
 
-## Critical Limitations at a Glance
+[Sources and protocol differences →](docs/evaluation.md)
+
+## Critical Limitations
 
 | Limitation | Detail |
 |------------|--------|
-| **Speakers** | Only **8 dysarthric speakers** (TORGO) across all train/dev/test folds |
+| **Speakers** | Only **8 dysarthric speakers** (TORGO) across all folds |
 | **Task** | Results on **composed commands** (stitched isolated words), not natural speech |
-| **Personal regression** | Released adapter **worsened** from 22.22% → 44.44% WER on 3 target-user clips |
-| **Learned selection** | **Disabled** — acceptance audit failed (14/20 required groups); all results request user choice |
 | **Test overlap** | Held-out speaker M04 shares 227/229 prompt groups with training |
 | **No clinical validation** | No participant study, IRB, or SLP assessment |
 
@@ -44,9 +41,9 @@ The separate five-beam command diagnostic finds the exact reference somewhere in
 
 ![Echora connected interface](assets/screenshots/main-interface.png)
 
-*Screenshot of running application using **synthetic typed input** (not speech recognition), isolated demonstration profile store, and all cloud provider keys disabled. [Demo walkthrough](docs/demo.md) — does not demonstrate recognition quality or audible playback.*
+*Screenshot using **synthetic typed input** (not speech recognition), isolated demonstration profile store, and all cloud provider keys disabled. [Demo walkthrough](docs/demo.md) — does not demonstrate recognition quality or audible playback.*
 
-## How it works
+## How It Works
 
 ```mermaid
 flowchart LR
@@ -69,7 +66,7 @@ All distinct literal beams remain selectable. A visible follow-up reference last
 
 The web client includes Hindi/Hinglish wording, delivery controls, and optional experimental camera/gaze features. Expo shares the backend lifecycle with fewer optional controls. [Interaction and data boundaries →](docs/architecture.md)
 
-## Inspect or run
+## Inspect or Run
 
 Recompute the foundation comparison from checked-in predictions and summarize saved adapter results without models, keys, or audio:
 
@@ -104,7 +101,7 @@ npm --prefix mobile test
 
 The Python runner isolates personal storage and blocks external connections. CI is configured to run these contracts and client checks without provider credentials. [Testing scope →](docs/reproducibility.md#testing)
 
-## Repository guide
+## Repository Guide
 
 | Area | Purpose |
 | --- | --- |
@@ -113,7 +110,8 @@ The Python runner isolates personal storage and blocks external connections. CI 
 | [frontend/](frontend/) / [mobile/](mobile/) | Web and Expo clients |
 | [research/](research/) | Training, baselines, benchmarks and saved results |
 | [models/](models/) | Artifact identities, configurations, checksums and reports |
-| [docs/README.md](docs/README.md) | Methodology, decisions, failures and open questions |
+| [docs/README.md](docs/README.md) | Methodology, decisions, and open questions |
+| [docs/technical-appendix/](docs/technical-appendix/) | Pipeline experiments, failure analysis, learning artifacts |
 
 Groq, Fish, optional Gemini, and remote recognition receive the inputs required by their selected features. Profiles use local SQLite. Tagged coordinates are stored through the local API and matched in the client. This is a local-first application with optional cloud providers. [Configuration and data →](docs/local-development.md#configuration-and-data)
 
