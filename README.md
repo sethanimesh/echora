@@ -1,7 +1,5 @@
 # Echora: Literal ASR Adapter for Dysarthric Composed Commands
 
-> ⚠️ **Research Component** — This adapter is part of a personal research prototype. It has not been validated for clinical use or individual benefit. See [Limitations](docs/limitations.md).
-
 An adapter over `Qwen/Qwen3-ASR-1.7B-hf` delivering **literal transcription for composed dysarthric commands** with 5-beam hypothesis preservation.
 
 ## Why This Adapter
