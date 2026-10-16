@@ -1,4 +1,4 @@
-# Echora: Literal ASR Adapter for Dysarthric Composed Commands
+# Echora: Assistive Acoustic Model for Pathological Speech
 
 An adapter over `Qwen/Qwen3-ASR-1.7B-hf` delivering **literal transcription for composed dysarthric commands** with 5-beam hypothesis preservation.
 
